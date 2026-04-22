@@ -9,8 +9,8 @@
   :root {
     --bg: #F7F8FA; --bg-elevated: #FFFFFF; --surface: #FFFFFF;
     --surface-alt: #F0F2F7; --paper: #F7F8FA; --paper-2: #F0F2F7;
-    --ink: #090B33; --ink-soft: #1F2150; --muted: #6B6E8A; --muted-soft: #9DA1B5;
-    --brand: #090B33; --brand-dark: #05061E; --brand-light: #2A2E5C; --brand-bg: #EDEEF4;
+    --ink: #090B33; --ink-soft: #1F2150; --muted: #6B6E8A;
+    --brand: #090B33; --brand-dark: #05061E; --brand-bg: #EDEEF4;
     --accent: #1800FF; --accent-dark: #1000B0; --accent-bg: #E6E4FF;
     --cir: #2E3AB8; --cir-bg: #E6E8FA; --cir-dark: #1A2080;
     --cii: #00A668; --cii-bg: #D9F7EA; --cii-dark: #006E43;
@@ -28,32 +28,21 @@
     --slate: var(--info); --slate-bg: var(--info-bg); --slate-dark: var(--info-dark);
     --gray: #C8CED7; --gray-bg: #F1F3F7;
     --gold: var(--subv); --gold-bg: var(--subv-bg); --gold-dark: var(--subv-dark);
-    --border: #D9DBE5; --border-soft: #E7E8EF; --border-strong: #BCC0D2;
-    --royal: var(--slate); --royal-bg: var(--slate-bg);
-    --pdj-navy: var(--ink); --pdj-accent: var(--cyan); --pdj-accent-2: var(--cyan-bg);
-    --pdj-bg: var(--paper); --pdj-border: var(--border); --pdj-muted: var(--muted);
-    --pdj-red: var(--brick); --pdj-amber: var(--amber);
+    --border: #D9DBE5; --border-soft: #E7E8EF;
+    --royal: var(--slate);
     --horizon: linear-gradient(90deg, var(--brand) 0%, var(--accent) 35%, var(--cii) 70%, var(--danger) 100%);
-    --fs-xs: 10px; --fs-sm: 11px; --fs-md: 13px; --fs-lg: 15px; --fs-xl: 19px;
-    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
-    --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+    --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
     --radius-md: 4px;
-    --stack-base: "Montserrat", -apple-system, sans-serif;
-    --stack-sans: "Montserrat", sans-serif;
-    --t1: var(--brand); --t1-bg: var(--brand-bg);
-    --t2: var(--cir-dark); --t2-bg: var(--cir-bg);
-    --t3: var(--danger-dark); --t3-bg: var(--danger-bg);
   }
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
-  html, body { font-family: "Montserrat", sans-serif !important; font-feature-settings: 'tnum'; -webkit-font-smoothing: antialiased; line-height: 1.5; margin: 0; background: var(--bg); color: var(--ink); }
-  h1, h2, h3, h4 { font-family: "Montserrat", sans-serif !important; }
+  html, body { font-family: "Montserrat", sans-serif !important; line-height: 1.5; margin: 0; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: "Montserrat", sans-serif !important; }
   h1 { font-weight: 900; text-transform: uppercase; }
   h2 { font-weight: 800; }
   h3 { font-weight: 700; }
   .num, .kpi-card .kv { font-variant-numeric: tabular-nums; }
   * { box-sizing: border-box; }
   .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
-
   .home-screen { padding: var(--sp-8) 0; }
   .home-card { padding: 0 var(--sp-8); max-width: 1240px; margin: 0 auto; }
   .home-brand { display: flex; align-items: center; gap: var(--sp-4); margin-bottom: var(--sp-7); padding-bottom: var(--sp-6); border-bottom: 1px solid var(--border); }
@@ -73,9 +62,13 @@
   .client-tile .ctmeta { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
   .client-tile .ctci { font-size: 22px; color: var(--brand); font-weight: 900; margin-top: auto; padding-top: var(--sp-3); line-height: 1; }
   .client-tile .ctci small { display: block; font-size: 10px; color: var(--muted); font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; margin-top: 4px; }
-
+  .ct-deadline { margin-top: 8px; padding: 5px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 2px; display: inline-block; }
+  .urg-late { background: var(--brick); color: #fff; }
+  .urg-soon { background: var(--brick-bg); color: var(--brick-dark); border: 1px solid var(--brick); }
+  .urg-close { background: var(--amber-bg); color: var(--amber-dark); border: 1px solid var(--amber); }
+  .urg-ok { background: var(--green-bg); color: var(--green-dark); border: 1px solid var(--green); }
   .sidebar { background: #fff; padding: var(--sp-5) var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-4); overflow-y: auto; max-height: 100vh; border-right: 1px solid var(--border); }
-  .sb-brand { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-2) var(--sp-4); color: var(--ink); font-size: var(--fs-md); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .sb-brand { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-2) var(--sp-4); color: var(--ink); font-size: 13px; font-weight: 700; border-bottom: 1px solid var(--border); }
   .sb-brand .logo { width: 32px; height: 32px; border-radius: 6px; background: var(--brand); color: #fff; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
   .sb-brand .logo::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--horizon); }
   .sb-client-head { background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--sp-4); position: relative; }
@@ -84,6 +77,7 @@
   .sb-client-head .name { font-size: 14px; font-weight: 800; text-transform: uppercase; }
   .sb-client-head .meta { font-size: 10px; color: var(--muted); margin-top: var(--sp-2); text-transform: uppercase; }
   .sb-client-head .switch { font-size: 11px; color: var(--brand); cursor: pointer; margin-top: var(--sp-3); text-decoration: none; font-weight: 500; }
+  .sb-alert-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--brick); color: #fff; padding: 4px 10px; border-radius: 2px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 8px; }
   .sb-nav-item { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-md); color: var(--ink-soft); text-decoration: none; font-size: 13px; cursor: pointer; margin-bottom: 2px; border-left: 2px solid transparent; }
   .sb-nav-item:hover { background: var(--surface-alt); color: var(--ink); }
   .sb-nav-item.active { background: var(--brand-bg); color: var(--brand-dark); border-left-color: var(--brand); font-weight: 600; }
@@ -94,8 +88,13 @@
   .sb-sublist .sb-nav-item { font-size: 12px; padding: 6px 10px; }
   .sb-toggle { margin-left: auto; transition: transform 0.15s; font-size: 11px; opacity: 0.6; }
   .sb-nav-item.expanded .sb-toggle { transform: rotate(90deg); }
+  .sb-deadlines { padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-radius: 2px; margin: 12px 0; }
+  .sb-deadlines .sbd-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px; }
+  .sb-deadlines .sbd-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; font-size: 11px; border-bottom: 1px dashed var(--border-soft); }
+  .sb-deadlines .sbd-item:last-child { border-bottom: none; }
+  .sb-deadlines .sbd-item .nm { flex: 1; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sb-deadlines .sbd-item .dt { font-weight: 700; padding: 2px 6px; border-radius: 2px; font-size: 9px; }
   .sb-footer { margin-top: auto; padding-top: var(--sp-3); border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); }
-
   main { overflow-x: hidden; }
   .topbar { background: #fff; border-bottom: 1px solid var(--border-soft); padding: var(--sp-3) var(--sp-6); display: flex; gap: var(--sp-5); align-items: center; min-height: 44px; }
   .breadcrumb { color: var(--muted); font-size: 11px; }
@@ -111,7 +110,6 @@
   .pill.blue { background: var(--brand-bg); color: var(--brand-dark); border-color: transparent; }
   .pill.purple { background: var(--jei-bg); color: var(--jei-dark); border-color: transparent; }
   .pill.gray { background: var(--surface-alt); color: var(--muted); border-color: transparent; }
-
   .client-head { background: #fff; padding: var(--sp-6) var(--sp-7) 0; border-bottom: 1px solid var(--border-soft); position: relative; }
   .client-head-top { margin-bottom: var(--sp-6); max-width: 800px; }
   .client-head .mode-tag { display: inline-flex; align-items: center; gap: 10px; font-size: 10px; color: var(--brand); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
@@ -126,7 +124,6 @@
   .kpi-card .kl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
   .kpi-card .kv { font-size: 32px; font-weight: 900; margin: var(--sp-3) 0 0; color: var(--ink); line-height: 1; }
   .kpi-card .kf { font-size: 11px; color: var(--muted); margin: auto 0 0; line-height: 1.5; padding-top: var(--sp-3); }
-
   .lectures { background: #fff; padding: 0 var(--sp-7); border-bottom: 1px solid var(--border); display: flex; position: sticky; top: 0; z-index: 10; }
   .lecture-tab { padding: var(--sp-3) var(--sp-5); border: none; background: transparent; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; gap: var(--sp-3); font-family: inherit; }
   .lecture-tab:hover { color: var(--ink); background: var(--surface-alt); }
@@ -135,7 +132,6 @@
   .lecture-tab .lt-lbl small { font-size: 10px; font-weight: 500; color: var(--muted); margin-top: 2px; }
   .lecture-tab.active { color: var(--ink); background: #fff; border-bottom-color: var(--brand); }
   .lecture-tab.active .lt-num { background: var(--brand); color: #fff; }
-
   .content { padding: var(--sp-6) var(--sp-7) var(--sp-8); max-width: 1320px; }
   .panel { display: none; }
   .panel.active { display: block; }
@@ -149,8 +145,7 @@
   .grid { display: grid; gap: var(--sp-4); }
   .grid.c2 { grid-template-columns: 1fr 1fr; }
   .grid.c3 { grid-template-columns: repeat(3, 1fr); }
-  .grid.c4 { grid-template-columns: repeat(4, 1fr); }
-  @media (max-width: 1100px) { .grid.c4, .grid.c3, .grid.c2 { grid-template-columns: 1fr; } }
+  @media (max-width: 1100px) { .grid.c3, .grid.c2 { grid-template-columns: 1fr; } }
   .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--sp-5); }
   .card h3 { margin: 0 0 var(--sp-4); font-size: 14px; color: var(--ink); text-transform: uppercase; }
   .card .muted { color: var(--muted); font-size: 11px; }
@@ -180,6 +175,8 @@
   .type-ci.cii, .strategie-pi.cii { background: var(--green-bg); color: var(--green-dark); border-color: var(--green); }
   .type-ci.jei, .strategie-pi.jei { background: var(--purple-bg); color: var(--purple-dark); border-color: var(--purple); }
   .subv-cell { color: var(--gold-dark); font-weight: 600; }
+  .subv-equation { background: var(--gold-bg); border: 1px solid var(--gold); border-left: 3px solid var(--gold-dark); padding: 10px 14px; border-radius: 2px; font-size: 12px; color: var(--ink-soft); margin: 10px 0; }
+  .subv-equation b { color: var(--gold-dark); font-weight: 600; }
   .objectif-block { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--cyan); padding: 14px 18px; border-radius: 2px; margin-bottom: 12px; }
   .objectif-block .lbl { font-size: 10px; color: var(--cyan-dark); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
   .objectif-block p { margin: 4px 0 0; font-size: 13px; line-height: 1.6; color: var(--ink-soft); }
@@ -197,12 +194,45 @@
   .risque-bloc .rinfo-grid .val { font-size: 17px; font-weight: 700; color: var(--ink); margin-top: 3px; }
   .risque-bloc .ractions { background: var(--paper-2); padding: 14px 16px; border-radius: 2px; font-size: 13px; line-height: 1.7; border-left: 3px solid var(--brick); }
   .risque-bloc .ractions b { color: var(--brick); text-transform: uppercase; font-size: 10px; font-weight: 700; display: block; margin-bottom: 4px; }
+  .risque-bloc .rprojets { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 10px; }
+  .risque-bloc .rprojets b { color: var(--ink); font-weight: 600; font-style: normal; }
   .lecture-intro { max-width: 820px; margin: var(--sp-5) 0 var(--sp-7); padding: 0 0 var(--sp-6); position: relative; }
   .lecture-intro::after { content: ''; position: absolute; bottom: 0; left: 0; width: 140px; height: 2px; background: var(--horizon); }
   .lecture-intro .li-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: var(--accent); margin-bottom: var(--sp-3); display: inline-flex; align-items: center; gap: 10px; }
   .lecture-intro .li-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--accent); }
   .lecture-intro .li-title { font-size: 26px; font-weight: 900; color: var(--ink); margin: 0; text-transform: uppercase; max-width: 720px; }
   .lecture-intro .li-lead { font-size: 15px; color: var(--ink-soft); margin: var(--sp-4) 0 0; line-height: 1.65; font-weight: 500; max-width: 680px; }
+  .livrable-list { display: flex; flex-direction: column; gap: 10px; }
+  .livrable-row { display: grid; grid-template-columns: 90px 1fr auto auto auto; gap: 14px; align-items: center; padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-radius: 2px; }
+  .livrable-row .lvr-date { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 6px 10px; text-align: center; border-radius: 2px; }
+  .livrable-row .lvr-name { font-weight: 700; color: var(--ink); font-size: 14px; }
+  .livrable-row .lvr-sub { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+  .livrable-row .lvr-type { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; background: var(--paper-2); color: var(--ink-soft); border: 1px solid var(--border); }
+  .livrable-row .lvr-pri { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
+  .livrable-row .lvr-pri.pri-hi { background: var(--brick); color: #fff; }
+  .livrable-row .lvr-pri.pri-md { background: var(--amber); color: #fff; }
+  .livrable-row .lvr-pri.pri-lo { background: var(--gray-bg); color: var(--muted); border: 1px solid var(--border); }
+  .reunion-timeline { position: relative; padding: 10px 0 10px 30px; border-left: 2px solid var(--border); margin: 10px 0; }
+  .reunion-item { position: relative; padding: 10px 14px; margin-bottom: 14px; background: #fff; border: 1px solid var(--border); border-radius: 2px; }
+  .reunion-item::before { content: ''; position: absolute; left: -36px; top: 16px; width: 12px; height: 12px; background: var(--royal); border: 3px solid var(--paper); border-radius: 50%; }
+  .reunion-item .rn-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 4px; }
+  .reunion-item .rn-type { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; background: var(--slate-bg); color: var(--slate-dark); border-radius: 2px; border: 1px solid var(--slate); }
+  .reunion-item .rn-date { font-size: 11px; color: var(--muted); }
+  .reunion-item .rn-nom { font-weight: 700; font-size: 14px; color: var(--ink); }
+  .reunion-item .rn-linked { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .team-card { background: #fff; border: 1px solid var(--border); border-radius: 2px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; }
+  .team-card .tc-avatar { width: 42px; height: 42px; background: var(--paper-2); color: var(--ink-soft); display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; font-size: 13px; border: 1px solid var(--border); }
+  .team-card .tc-name { font-weight: 700; font-size: 13px; color: var(--ink); }
+  .team-card .tc-fn { font-size: 10px; text-transform: uppercase; color: var(--muted); margin-top: 1px; }
+  .team-card .tc-contact { font-size: 11px; color: var(--ink-soft); margin-top: 3px; }
+  .team-card .tc-contact a { color: var(--cyan-dark); text-decoration: none; }
+  .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .doc-card { display: flex; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 2px; padding: 10px 14px; text-decoration: none; color: var(--ink); transition: all 0.15s; }
+  .doc-card:hover { background: var(--paper-2); border-color: var(--ink); }
+  .doc-card .dc-ico { font-size: 20px; color: var(--ink-soft); width: 28px; text-align: center; }
+  .doc-card .dc-nom { font-size: 13px; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .doc-card .dc-type { font-size: 9px; text-transform: uppercase; padding: 2px 7px; background: var(--paper-2); color: var(--muted); border: 1px solid var(--border-soft); border-radius: 2px; }
   @media (max-width: 1100px) { .app { grid-template-columns: 1fr; } .kpi-row { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
@@ -235,21 +265,14 @@
       <div class="meta" id="sbMeta">—</div>
       <div class="switch" onclick="goHome()">← Changer d'espace</div>
     </div>
+    <div id="sbDeadlines"></div>
     <div>
-      <div class="sb-nav-item active" data-view="overview" onclick="setView('overview')">
-        📊 Vue d'ensemble
-      </div>
-      <div class="sb-nav-item section-parent" id="nav-projets" onclick="toggleSection('projets')">
-        🧪 Projets R&D <span class="badge" id="badge-projets">0</span><span class="sb-toggle">▸</span>
-      </div>
+      <div class="sb-nav-item active" data-view="overview" onclick="setView('overview')">📊 Vue d'ensemble</div>
+      <div class="sb-nav-item section-parent" id="nav-projets" onclick="toggleSection('projets')">🧪 Projets R&D <span class="badge" id="badge-projets">0</span><span class="sb-toggle">▸</span></div>
       <div class="sb-sublist" id="sublist-projets" style="display:none;"></div>
-      <div class="sb-nav-item section-parent" id="nav-years" onclick="toggleSection('years')">
-        📅 Années <span class="badge" id="badge-years">0</span><span class="sb-toggle">▸</span>
-      </div>
+      <div class="sb-nav-item section-parent" id="nav-years" onclick="toggleSection('years')">📅 Années <span class="badge" id="badge-years">0</span><span class="sb-toggle">▸</span></div>
       <div class="sb-sublist" id="sublist-years" style="display:none;"></div>
-      <div class="sb-nav-item section-parent" id="nav-dossiers" onclick="toggleSection('dossiers')">
-        📁 Dossiers <span class="badge" id="badge-dossiers">0</span><span class="sb-toggle">▸</span>
-      </div>
+      <div class="sb-nav-item section-parent" id="nav-dossiers" onclick="toggleSection('dossiers')">📁 Dossiers <span class="badge" id="badge-dossiers">0</span><span class="sb-toggle">▸</span></div>
       <div class="sb-sublist" id="sublist-dossiers" style="display:none;"></div>
     </div>
     <div class="sb-footer">
@@ -265,7 +288,6 @@
       </div>
     </div>
   </aside>
-
   <main>
     <div class="topbar">
       <div class="breadcrumb" id="breadcrumb">—</div>
@@ -294,12 +316,10 @@
     </footer>
   </main>
 </div>
-<script>
-let DATA = null;
-let CURRENT_SOCIETE = null;
-let CURRENT_VIEW = 'overview';
-let charts = {};
 
+<script>
+/* ===== ÉTAT & UTILS ===== */
+let DATA = null, CURRENT_SOCIETE = null, CURRENT_VIEW = 'overview', charts = {};
 const euro = n => (n==null ? '—' : new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n));
 const shortEuro = n => { if (n==null) return '—'; if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(2)+' M€'; if (Math.abs(n) >= 1000) return Math.round(n/1000)+' k€'; return Math.round(n)+' €'; };
 const pct = n => (n==null ? '—' : Math.round(n*100)+'%');
@@ -308,15 +328,28 @@ const $ = id => document.getElementById(id);
 const typeCIClass = t => (t||'').toLowerCase().replace(/[^a-z]/g,'');
 const kpiCard = (l,v,f) => '<div class="kpi-card"><div class="kl">'+l+'</div><div class="kv">'+v+'</div><div class="kf">'+(f||'')+'</div></div>';
 const renderKPIs = items => { $('kpiRow').innerHTML = items.map(i => kpiCard(i.label,i.value,i.footer)).join(''); };
-const pillStatus = e => { const c = {'Payée':'green','A facturer':'amber','Envoyée':'blue','En retard':'red','Annulée':'gray'}[e] || 'gray'; return '<span class="pill '+c+'">'+e+'</span>'; };
+const pillStatus = e => { const c = {'Payée':'green','A facturer':'amber','Envoyée':'blue','En retard':'red','Annulée':'gray'}[e] || 'gray'; return '<span class="pill '+c+'">'+(e||'—')+'</span>'; };
 const initials = n => (n||'').split(/\s+/).map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+const etatPill = e => { const c = {'Terminé':'green','En validation':'amber','En cours':'blue','En attente':'gray','Annulé':'red'}[e] || 'gray'; return '<span class="pill '+c+'">'+(e||'—')+'</span>'; };
+const docIcon = t => ({Sheet:'▦', Doc:'▤', Slide:'▥', PDF:'▣', Image:'◨', web:'↗', Autre:'◌'}[t] || '◌');
+const priClass = p => ({Haute:'pri-hi', Moyenne:'pri-md', Basse:'pri-lo'}[p] || '');
+const livTypeClass = t => 't-' + (t||'').toLowerCase().replace(/[^a-z]/g, '');
+const contactFullName = c => ((c.prenom||'')+' '+(c.nom_famille||'')).trim() || '—';
+const getContacts = soc => (DATA.contacts||[]).filter(c => c.societe === soc);
+const getLivrables = soc => (DATA.livrables||[]).filter(l => l.societe === soc);
+const getDocuments = soc => (DATA.documents||[]).filter(d => d.societe === soc);
+const getReunions = soc => (DATA.reunions||[]).filter(r => r.societe === soc);
+const daysUntil = iso => { if (!iso) return null; const n = new Date(); n.setHours(0,0,0,0); const d = new Date(iso+'T00:00:00Z'); return Math.round((d-n)/86400000); };
+const relDays = iso => { const d = daysUntil(iso); if (d===null) return '—'; if (d===0) return "aujourd'hui"; if (d===1) return 'demain'; if (d===-1) return 'hier'; if (d>0) return 'dans '+d+'j'; return 'il y a '+Math.abs(d)+'j'; };
+const urgencyClass = iso => { const d = daysUntil(iso); if (d===null) return ''; if (d<0) return 'urg-late'; if (d<=3) return 'urg-soon'; if (d<=10) return 'urg-close'; return 'urg-ok'; };
+const pendingLivrables = soc => getLivrables(soc).filter(l => l.etat !== 'Terminé' && l.etat !== 'Annulé').sort((a,b) => (a.deadline||'9999').localeCompare(b.deadline||'9999'));
+
 const trlBar = (trl, cible, large) => {
   const t = trl || 0, c = cible || 0;
   let h = '<span class="trl'+(large?' trl-large':'')+'">';
   for (let i=1; i<=9; i++) {
     let cls = '';
-    if (i === t && i === c) cls = 'current';
-    else if (i === t) cls = 'current';
+    if (i === t) cls = 'current';
     else if (i === c) cls = 'target';
     else if (i < t) cls = 'past';
     else if (i > t && i < c) cls = 'between';
@@ -325,6 +358,22 @@ const trlBar = (trl, cible, large) => {
   return h+'</span>';
 };
 
+function renderLivrableRow(l) {
+  const prio = l.priorite ? '<span class="lvr-pri '+priClass(l.priorite)+'">'+l.priorite+'</span>' : '';
+  return '<div class="livrable-row">'
+    + '<div class="lvr-date '+urgencyClass(l.deadline)+'">'+(l.deadline ? relDays(l.deadline) : '—')+'</div>'
+    + '<div><div class="lvr-name">'+l.nom+'</div><div class="lvr-sub">'+(l.etat||'—')+(l.deadline ? ' · '+l.deadline : '')+'</div></div>'
+    + '<span class="lvr-type">'+(l.type||'—')+'</span>'
+    + prio + etatPill(l.etat) + '</div>';
+}
+
+function renderDocCard(d) {
+  const href = d.url ? 'href="'+d.url+'" target="_blank"' : '';
+  const tag = d.url ? 'a' : 'div';
+  return '<'+tag+' class="doc-card" '+href+'><span class="dc-ico">'+docIcon(d.type)+'</span><span class="dc-nom" title="'+d.nom+'">'+d.nom+'</span><span class="dc-type">'+(d.type||'—')+'</span></'+tag+'>';
+}
+
+/* ===== CHARGEMENT DONNÉES ===== */
 const LIVE_MODE = { available: false, autoRefreshMs: 120000 };
 
 async function loadData() {
@@ -353,10 +402,8 @@ async function syncNow() {
 function refreshSync() {
   if (!DATA || !DATA._meta) return;
   const d = new Date(DATA._meta.generated_at);
-  const el = $('syncMeta');
-  if (el) el.textContent = d.toLocaleString('fr-FR');
-  const el2 = $('lastSync');
-  if (el2) el2.textContent = d.toLocaleString('fr-FR');
+  if ($('syncMeta')) $('syncMeta').textContent = d.toLocaleString('fr-FR');
+  if ($('lastSync')) $('lastSync').textContent = d.toLocaleString('fr-FR');
 }
 
 function setupAutoRefresh() {
@@ -390,6 +437,7 @@ async function init() {
   goHome();
 }
 
+/* ===== NAVIGATION ===== */
 function goHome() {
   $('appScreen').style.display = 'none';
   $('homeScreen').style.display = 'block';
@@ -405,17 +453,22 @@ function renderHome() {
   const tile = s => {
     const j = DATA.jalons.filter(x => x.societe === s.nom);
     const projets = DATA.projets.filter(p => p.societe === s.nom);
-    const risques = (DATA.risques || []).filter(r => r.societe === s.nom && r.statut !== 'Résolu');
+    const risques = (DATA.risques||[]).filter(r => r.societe === s.nom && r.statut !== 'Résolu' && r.statut !== 'Classé sans suite');
     const ci = j.reduce((sum,x) => sum + (x.montant_ci||0), 0);
-    return '<div class="client-tile" onclick="openSociete(\''+s.nom.replace(/'/g,"\\'")+'\')">'
-      + '<div class="ctlogo">'+initials(s.nom)+'</div>'
+    const pend = pendingLivrables(s.nom);
+    const next = pend[0];
+    return '<div class="client-tile" onclick="openSociete(\''+s.nom.replace(/'/g,"\\'")+'\')"'+(risques.length?' style="border-color:var(--brick);"':'')+'>'
+      + '<div class="ctlogo"'+(risques.length?' style="background:var(--brick-bg); color:var(--brick);"':'')+'>'+initials(s.nom)+'</div>'
       + '<div class="ctname">'+s.nom+'</div>'
-      + '<div class="ctmeta">'+projets.length+' projets · '+j.length+' jalons'+(risques.length?' · ⚠ '+risques.length:'')+'</div>'
+      + '<div class="ctmeta">'+projets.length+' projet'+(projets.length>1?'s':'')+' · '+j.length+' jalon'+(j.length>1?'s':'')
+      + (pend.length?' · <b>'+pend.length+' livrable'+(pend.length>1?'s':'')+'</b>':'')
+      + (risques.length?' · <b style="color:var(--brick);">⚠ '+risques.length+' alerte'+(risques.length>1?'s':'')+'</b>':'')+'</div>'
       + (ci > 0 ? '<div class="ctci">' + shortEuro(ci) + '<small>CI cumulé</small></div>' : '<div class="ctci" style="color:var(--muted);">—<small>'+s.statut+'</small></div>')
+      + (next ? '<div class="ct-deadline '+urgencyClass(next.deadline)+'">'+relDays(next.deadline)+' · '+(next.type||'livrable')+'</div>' : '')
       + '</div>';
   };
-  $('clientGrid').innerHTML = clients.map(tile).join('');
-  $('partenaireGrid').innerHTML = autres.map(tile).join('');
+  $('clientGrid').innerHTML = clients.map(tile).join('') || '<div class="empty">Aucun client.</div>';
+  $('partenaireGrid').innerHTML = autres.map(tile).join('') || '<div class="empty">Aucun partenaire.</div>';
 }
 
 function openSociete(name) {
@@ -426,7 +479,13 @@ function openSociete(name) {
   const s = DATA.societes.find(x => x.nom === name);
   $('sbAvatar').textContent = initials(name);
   $('sbName').textContent = name;
-  $('sbMeta').innerHTML = s.statut + (s.lieu ? ' · ' + s.lieu : '');
+  const risquesOuverts = (DATA.risques||[]).filter(r => r.societe === name && r.statut !== 'Résolu' && r.statut !== 'Classé sans suite');
+  const meta = $('sbMeta');
+  meta.innerHTML = s.statut + (s.lieu ? ' · ' + s.lieu : '');
+  if (risquesOuverts.length) {
+    const critiques = risquesOuverts.filter(r => r.severite === 'Critique').length;
+    meta.innerHTML += '<br/><span class="sb-alert-badge">⚠ '+risquesOuverts.length+' alerte'+(risquesOuverts.length>1?'s':'')+(critiques?' · '+critiques+' critique'+(critiques>1?'s':''):'')+'</span>';
+  }
   buildSidebar();
   setView('overview');
 }
@@ -449,6 +508,11 @@ function buildSidebar() {
   }).join('') || '<div class="sb-nav-item" style="color:#8fa0ba;font-style:italic;">Aucune année</div>';
   $('sublist-dossiers').innerHTML = dossiers.sort((a,b) => (b.annee||0) - (a.annee||0)).map(d => '<div class="sb-nav-item" data-view="dossier:'+d.id+'" onclick="setView(\'dossier:'+d.id+'\')"><span style="flex:1;">'+d.annee+' · '+d.type+'</span></div>').join('') || '<div class="sb-nav-item" style="color:#8fa0ba;font-style:italic;">Aucun dossier</div>';
   ['projets','years','dossiers'].forEach(k => { $('sublist-'+k).style.display = 'none'; $('nav-'+k).classList.remove('expanded'); });
+
+  const pend = pendingLivrables(CURRENT_SOCIETE).slice(0, 3);
+  $('sbDeadlines').innerHTML = pend.length ? '<div class="sb-deadlines"><div class="sbd-title">Prochaines échéances</div>'
+    + pend.map(l => '<div class="sbd-item"><span class="nm" title="'+l.nom+'">'+l.nom+'</span><span class="dt '+urgencyClass(l.deadline)+'">'+relDays(l.deadline)+'</span></div>').join('')
+    + '</div>' : '';
 }
 
 function toggleSection(key) {
@@ -474,6 +538,7 @@ function setView(view) {
   else if (view.startsWith('dossier:')) renderDossier(view.slice(8));
 }
 
+/* ===== OVERVIEW CLIENT ===== */
 function renderOverview() {
   const name = CURRENT_SOCIETE;
   const s = DATA.societes.find(x => x.nom === name);
@@ -481,81 +546,146 @@ function renderOverview() {
   const dossiers = DATA.dossiers.filter(d => d.societe === name);
   const jalons = DATA.jalons.filter(j => j.societe === name);
   const factures = DATA.factures.filter(f => f.societe === name);
+  const risques = (DATA.risques||[]).filter(r => r.societe === name);
+  const contacts = getContacts(name);
+  const livrables = getLivrables(name);
+  const documents = getDocuments(name);
+  const reunions = getReunions(name);
+
   $('modeTag').textContent = "VUE D'ENSEMBLE";
   $('entityName').textContent = name;
   $('breadcrumb').innerHTML = '<a onclick="goHome()">Accueil</a> › <b>'+name+'</b>';
-  $('entitySub').textContent = [s.lieu, s.statut, projets.length+' projets', jalons.length+' jalons'].filter(Boolean).join(' · ');
+  $('entitySub').textContent = [s.lieu, s.statut, projets.length+' projets', jalons.length+' jalons', dossiers.length+' dossiers'].filter(Boolean).join(' · ');
   $('topRight').innerHTML = '<span class="pill green">'+s.statut+'</span>';
+
   const j25 = jalons.filter(j => j.annee === 2025);
   const ci = j25.reduce((s,j) => s+(j.montant_ci||0), 0);
   const eng = j25.reduce((s,j) => s+(j.depenses_engagees||0), 0);
   const ciTotal = jalons.reduce((s,j) => s+(j.montant_ci||0), 0);
+  const subvTotal = jalons.reduce((s,j) => s+(j.subvention_percue||0), 0);
+  const pend = pendingLivrables(name);
+
   renderKPIs([
-    { label: 'Dép. engagées 2025', value: shortEuro(eng), footer: j25.length+' jalons' },
-    { label: 'CI 2025', value: shortEuro(ci), footer: '' },
+    { label: 'CI 2025', value: shortEuro(ci), footer: eng ? 'sur '+shortEuro(eng)+' engagées' : j25.length+' jalons' },
     { label: 'CI cumulé', value: shortEuro(ciTotal), footer: jalons.length+' jalons total' },
-    { label: 'Projets R&D', value: projets.length, footer: projets.filter(p => (p.cloture||0) >= 2025).length+' en cours' },
+    { label: 'Subventions cumulées', value: shortEuro(subvTotal), footer: subvTotal ? 'aides perçues' : 'aucune' },
+    { label: 'Livrables en cours', value: pend.length, footer: pend[0] ? '→ '+relDays(pend[0].deadline) : 'aucune échéance' },
   ]);
-  _t1(jalons, factures);
-  _t2(projets);
-  _t3(jalons, projets, name);
+
+  _t1_client(jalons, factures, dossiers, livrables, documents, risques, name);
+  _t2_client(projets, livrables, reunions, risques, jalons, name);
+  _t3_client(jalons, projets, risques, contacts, documents, name);
 }
 
-function _t1(jalons, factures) {
+/* ===== LECTURE I — DAF / FINANCIÈRE ===== */
+function _t1_client(jalons, factures, dossiers, livrables, documents, risques, name) {
   const years = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
   const byYear = {};
-  years.forEach(y => byYear[y] = { eng: 0, ci: {}, total_ci: 0 });
+  years.forEach(y => byYear[y] = { eng: 0, valo: 0, ci: {}, total_ci: 0, subv: 0 });
   jalons.forEach(j => {
     if (!byYear[j.annee]) return;
     byYear[j.annee].eng += j.depenses_engagees || 0;
+    byYear[j.annee].valo += j.depenses_valorisables || 0;
     byYear[j.annee].total_ci += j.montant_ci || 0;
+    byYear[j.annee].subv += j.subvention_percue || 0;
     if (j.type_ci) byYear[j.annee].ci[j.type_ci] = (byYear[j.annee].ci[j.type_ci] || 0) + (j.montant_ci || 0);
   });
   const types = [...new Set(jalons.map(j => j.type_ci).filter(Boolean))].sort();
   const CI_COL = { CIR: '#2E3AB8', CII: '#00A668', JEI: '#C01E60' };
 
-  let totE=0, totC=0, rows = years.map(y => {
-    const r = byYear[y]; totE += r.eng; totC += r.total_ci;
+  let totE=0, totV=0, totC=0, totS=0;
+  const rowsMatrice = years.map(y => {
+    const r = byYear[y]; totE += r.eng; totV += r.valo; totC += r.total_ci; totS += r.subv;
     const cells = types.map(t => '<td class="num">' + ((r.ci[t]||0) > 0 ? euro(r.ci[t]) : '—') + '</td>').join('');
-    return '<tr><td><b>'+y+'</b></td><td class="num">'+euro(r.eng)+'</td>'+cells+'<td class="num"><b>'+euro(r.total_ci)+'</b></td></tr>';
+    return '<tr><td><b>'+y+'</b></td><td class="num">'+euro(r.eng)+'</td><td class="num">'+euro(r.valo)+'</td>'+cells+'<td class="num"><b>'+euro(r.total_ci)+'</b></td><td class="num subv-cell">'+(r.subv ? euro(r.subv) : '—')+'</td></tr>';
   }).join('');
+
+  const livrablesFisc = livrables.filter(l => ['Calcul CI','Déclaration','Rapport technique','Analyse éligibilité','Litige fiscal','Audit'].includes(l.type));
+  const documentsFisc = documents.filter(d => ['Sheet','Doc','PDF','Slide'].includes(d.type));
+
+  // Dossiers matrice Type × Année
+  const dossTypes = [...new Set(dossiers.map(d => d.type).filter(Boolean))].sort();
+  const dossYears = [...new Set(dossiers.map(d => d.annee).filter(Boolean))].sort((a,b)=>b-a);
+  const dossMatrix = dossYears.length ? '<div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Année</th>'
+    + dossTypes.map(t => '<th class="num"><span class="type-ci '+typeCIClass(t)+'">'+t+'</span></th>').join('')
+    + '</tr></thead><tbody>'
+    + dossYears.map(y => '<tr><td><b>'+y+'</b></td>'
+      + dossTypes.map(t => { const d = dossiers.find(x => x.annee===y && x.type===t); return '<td class="num">'+(d?'✓':'—')+'</td>'; }).join('')
+      + '</tr>').join('')
+    + '</tbody></table></div>' : '<div class="card empty">Aucun dossier fiscal enregistré.</div>';
+
+  // Facturation État × Exercice
+  const factStates = ['A facturer','Envoyée','Payée','En retard'];
+  const factYears = [...new Set(factures.map(f => f.exercice).filter(Boolean))].sort((a,b)=>b-a);
+  const factMatrix = factYears.length ? '<div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Exercice</th>'
+    + factStates.map(s => '<th class="num">'+s+'</th>').join('')+'<th class="num">Total</th></tr></thead><tbody>'
+    + factYears.map(y => {
+      let total = 0;
+      const cells = factStates.map(st => {
+        const sum = factures.filter(f => f.exercice===y && f.etat===st).reduce((s,f)=>s+(f.montant||0), 0);
+        total += sum;
+        return '<td class="num">'+(sum ? euro(sum) : '—')+'</td>';
+      }).join('');
+      return '<tr><td><b>'+y+'</b></td>'+cells+'<td class="num"><b>'+euro(total)+'</b></td></tr>';
+    }).join('')
+    + '</tbody></table></div>' : '<div class="card empty">Aucune facture.</div>';
+
+  const risquesFisc = risques.filter(r => ['Risque fiscal','Prescription','Risque contrôle','Requalification'].includes(r.type_alerte) && r.statut !== 'Résolu' && r.statut !== 'Classé sans suite');
 
   $('panel-t1').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Lecture I · Direction financière</div>
       <h2 class="li-title">Où passe l'euro de R&amp;D et que revient-il en crédit d'impôt&nbsp;?</h2>
-      <p class="li-lead">Mécanique fiscale pluriannuelle : dépenses engagées, crédits d'impôt par dispositif, factures PDJ. Données live depuis Notion.</p>
+      <p class="li-lead">Mécanique fiscale pluriannuelle : dépenses engagées, dépenses valorisables, crédits d'impôt par dispositif, subventions perçues et facturation PDJ.</p>
     </div>
+
     <div class="section-title"><h2>Trajectoire du financement R&amp;D</h2><span class="tag t1-tag">Temps 1</span></div>
     <div class="grid c2">
       <div class="card"><h3>Dépenses vs CI par année</h3><div class="chart-wrap"><canvas id="ch1a"></canvas></div></div>
-      <div class="card"><h3>CI par dispositif (cumul)</h3><div class="chart-wrap"><canvas id="ch1b"></canvas></div></div>
+      <div class="card"><h3>CI cumulé par dispositif</h3><div class="chart-wrap"><canvas id="ch1b"></canvas></div></div>
     </div>
-    <div class="section-title"><h2>Synthèse par année</h2><span class="tag t1-tag">matrice</span></div>
+
+    <div class="section-title"><h2>Synthèse des financements R&amp;D</h2><span class="tag t1-tag">matrice annuelle</span></div>
+    ${totS > 0 ? '<div class="subv-equation"><b>Règle de valorisation :</b> Dép. valorisables = Dép. engagées − Subventions perçues. Les subventions ci-dessous ont été déduites du calcul CI.</div>' : ''}
     <div class="card" style="padding:0; overflow-x:auto;">
       <table>
-        <thead><tr><th>Année</th><th class="num">Engagées</th>${types.map(t => '<th class="num"><span class="type-ci '+typeCIClass(t)+'">'+t+'</span></th>').join('')}<th class="num">Total CI</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="'+(3+types.length)+'" class="empty">Aucun jalon.</td></tr>'}
-        ${years.length ? '<tr class="total-row"><td>Total</td><td class="num">'+euro(totE)+'</td>'+types.map(t => '<td class="num">'+euro(years.reduce((s,y) => s+(byYear[y].ci[t]||0), 0))+'</td>').join('')+'<td class="num"><b>'+euro(totC)+'</b></td></tr>' : ''}
+        <thead><tr><th>Année</th><th class="num">Engagées</th><th class="num">Valorisables</th>${types.map(t => '<th class="num"><span class="type-ci '+typeCIClass(t)+'">'+t+'</span></th>').join('')}<th class="num">Total CI</th><th class="num">Subventions</th></tr></thead>
+        <tbody>${rowsMatrice || '<tr><td colspan="'+(5+types.length)+'" class="empty">Aucun jalon.</td></tr>'}
+        ${years.length ? '<tr class="total-row"><td>Total</td><td class="num">'+euro(totE)+'</td><td class="num">'+euro(totV)+'</td>'+types.map(t => '<td class="num">'+euro(years.reduce((s,y) => s+(byYear[y].ci[t]||0), 0))+'</td>').join('')+'<td class="num"><b>'+euro(totC)+'</b></td><td class="num subv-cell">'+(totS ? euro(totS) : '—')+'</td></tr>' : ''}
         </tbody>
       </table>
     </div>
-    <div class="section-title"><h2>Jalons détaillés</h2><span class="tag t1-tag">par projet</span></div>
-    <div class="card" style="padding:0; overflow-x:auto;">
-      <table><thead><tr><th>Projet</th><th>Année</th><th>Disp.</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">CI</th><th>Avanc.</th></tr></thead>
-      <tbody>${jalons.slice().sort((a,b) => (b.annee||0)-(a.annee||0)).map(j => '<tr><td>'+j.projet+'</td><td>'+(j.annee||'—')+'</td><td>'+(j.type_ci ? '<span class="type-ci '+typeCIClass(j.type_ci)+'">'+j.type_ci+'</span>' : '—')+'</td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num"><b>'+euro(j.montant_ci)+'</b></td><td>'+pct(j.avancement)+'</td></tr>').join('') || '<tr><td colspan="7" class="empty">—</td></tr>'}</tbody></table>
-    </div>
-    <div class="section-title"><h2>Factures PDJ</h2><span class="tag t1-tag">honoraires</span></div>
-    <div class="card" style="padding:0; overflow-x:auto;">
-      <table><thead><tr><th>Facture</th><th>Type</th><th class="num">Montant</th><th>État</th><th>Date</th></tr></thead>
-      <tbody>${factures.map(f => '<tr><td>'+f.nom+'</td><td>'+f.type+'</td><td class="num">'+euro(f.montant)+'</td><td>'+pillStatus(f.etat)+'</td><td>'+(f.date||'—')+'</td></tr>').join('') || '<tr><td colspan="5" class="empty">Aucune facture.</td></tr>'}</tbody></table>
-    </div>`;
 
+    <div class="section-title"><h2>Jalons détaillés</h2><span class="tag t1-tag">${jalons.length} jalon${jalons.length>1?'s':''}</span></div>
+    <div class="card" style="padding:0; overflow-x:auto;">
+      <table><thead><tr><th>Projet</th><th>Année</th><th>Disp.</th><th class="num">Engagées</th><th class="num">Valorisables</th><th class="num">CI</th><th class="num">Subv.</th><th>Avanc.</th></tr></thead>
+      <tbody>${jalons.slice().sort((a,b) => (b.annee||0)-(a.annee||0)).map(j => '<tr><td>'+j.projet+'</td><td>'+(j.annee||'—')+'</td><td>'+(j.type_ci ? '<span class="type-ci '+typeCIClass(j.type_ci)+'">'+j.type_ci+'</span>' : '—')+'</td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num"><b>'+euro(j.montant_ci)+'</b></td><td class="num subv-cell">'+(j.subvention_percue ? euro(j.subvention_percue) : '—')+'</td><td>'+pct(j.avancement)+'</td></tr>').join('') || '<tr><td colspan="8" class="empty">Aucun jalon.</td></tr>'}</tbody></table>
+    </div>
+
+    ${dossiers.length ? `<div class="section-title"><h2>Dossiers fiscaux</h2><span class="tag t1-tag">Type × Année</span></div>${dossMatrix}` : ''}
+
+    <div class="section-title"><h2>Facturation PDJ</h2><span class="tag t1-tag">honoraires</span></div>
+    ${factMatrix}
+    ${factures.length ? `<div class="card" style="padding:0; overflow-x:auto; margin-top:16px;">
+      <table><thead><tr><th>Facture</th><th>Type</th><th class="num">Montant</th><th>État</th><th>Date</th><th>Exercice</th></tr></thead>
+      <tbody>${factures.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(f => '<tr><td>'+f.nom+'</td><td>'+f.type+'</td><td class="num">'+euro(f.montant)+'</td><td>'+pillStatus(f.etat)+'</td><td>'+(f.date||'—')+'</td><td>'+(f.exercice||'—')+'</td></tr>').join('')}</tbody></table>
+    </div>` : ''}
+
+    ${livrablesFisc.length ? `<div class="section-title"><h2>Livrables fiscaux</h2><span class="tag t1-tag">${livrablesFisc.length}</span></div>
+      <div class="livrable-list">${livrablesFisc.map(renderLivrableRow).join('')}</div>` : ''}
+
+    ${documentsFisc.length ? `<div class="section-title"><h2>Documents fiscaux</h2><span class="tag t1-tag">${documentsFisc.length}</span></div>
+      <div class="doc-list">${documentsFisc.map(renderDocCard).join('')}</div>` : ''}
+
+    ${risquesFisc.length ? `<div class="section-title"><h2>Alertes fiscales</h2><span class="tag t1-tag">⚠ ${risquesFisc.length}</span></div>
+      ${risquesFisc.map(r => _risqueBloc(r)).join('')}` : ''}
+  `;
+
+  // Graphiques
   if (years.length) {
     const datasets = types.map(t => ({ label: t, data: years.map(y => byYear[y].ci[t]||0), backgroundColor: CI_COL[t] || '#8A6B1A', stack: 'ci' }));
-    datasets.unshift({ label: 'Dép. engagées', type: 'line', data: years.map(y => byYear[y].eng), borderColor: '#090B33', backgroundColor: 'transparent', tension: 0.25, pointRadius: 4 });
+    datasets.unshift({ label: 'Dép. engagées', type: 'line', data: years.map(y => byYear[y].eng), borderColor: '#090B33', backgroundColor: 'transparent', tension: 0.25, pointRadius: 4, yAxisID: 'y' });
     charts.ch1a = new Chart($('ch1a'), {
-      type: 'bar',
       data: { labels: years, datasets: datasets },
       options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => Math.round(v/1000)+' k€' } } }, plugins: { legend: { position: 'bottom' } } }
     });
@@ -568,88 +698,256 @@ function _t1(jalons, factures) {
   }
 }
 
-function _t2(projets) {
+function _risqueBloc(r) {
+  return `<div class="risque-bloc">
+    <div class="rhead">
+      <span class="rtag">${r.type_alerte || 'Alerte'}</span>
+      <span class="rsev ${(r.severite||'info').toLowerCase()}">${r.severite || 'Info'}</span>
+      <span class="rstatut">${r.statut || '—'}</span>
+    </div>
+    <h3>${r.nom}</h3>
+    <div class="rinfo-grid">
+      <div><div class="lbl">Montant exposé</div><div class="val">${shortEuro(r.montant_expose)}</div></div>
+      <div><div class="lbl">Date événement</div><div class="val">${r.date_evenement || '—'}</div></div>
+      <div><div class="lbl">Date limite action</div><div class="val">${r.date_limite || '—'}</div></div>
+    </div>
+    ${r.actions ? `<div class="ractions"><b>Actions à mener</b>${r.actions}</div>` : ''}
+    ${r.projets_lies && r.projets_lies.length ? `<div class="rprojets">Projets impactés : <b>${r.projets_lies.join(', ')}</b></div>` : ''}
+  </div>`;
+}
+
+/* ===== LECTURE II — R&D / PILOTAGE ===== */
+function _t2_client(projets, livrables, reunions, risques, jalons, name) {
+  // Portefeuille projets
   const rows = projets.slice().sort((a,b) => (b.demarrage||0) - (a.demarrage||0)).map(p => {
     const gc = {Interne:'gov-interne',Codev:'gov-codev',Presta:'gov-presta'}[p.gouvernance] || 'gov-interne';
-    return '<tr><td><b><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);text-decoration:none;">'+p.nom+'</a></b><br/><small style="color:var(--muted);">'+((p.objectif||'').substring(0,120))+'</small></td><td>'+trlBar(p.trl, p.trl_cible)+'<br/><small>'+p.trl+' → '+p.trl_cible+'</small></td><td><span class="govx '+gc+'">'+p.gouvernance+'</span></td><td><span class="strategie-pi '+typeCIClass(p.strategie_pi)+'">'+p.strategie_pi+'</span></td><td><small>'+(p.demarrage||'—')+' → '+(p.cloture||'—')+'</small></td></tr>';
+    return '<tr><td><b><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);text-decoration:none;">'+p.nom+'</a></b>'
+      + (p.objectif ? '<br/><small style="color:var(--muted);">'+p.objectif.substring(0,140)+'</small>' : '')
+      + '</td>'
+      + '<td style="text-align:center;">'+trlBar(p.trl, p.trl_cible)+'<br/><small>'+(p.trl||'—')+' → '+(p.trl_cible||'—')+'</small></td>'
+      + '<td><span class="govx '+gc+'">'+p.gouvernance+'</span></td>'
+      + '<td><span class="strategie-pi '+typeCIClass(p.strategie_pi)+'">'+(p.strategie_pi||'—')+'</span></td>'
+      + '<td>'+(p.axe_rdi||'—')+'</td>'
+      + '<td><small>'+(p.demarrage||'—')+' → '+(p.cloture||'—')+'</small></td></tr>';
   }).join('');
 
-  // Répartition par gouvernance
+  // Indicateurs
+  const ecartMoyen = projets.length ? projets.reduce((s,p) => s+((p.trl_cible||0) - (p.trl||0)), 0) / projets.length : 0;
+  const verrousOK = projets.filter(p => p.verrous && p.verrous.length > 20).length;
+  const risquesOuverts = risques.filter(r => r.statut === 'À traiter' || r.statut === 'En cours').length;
+
+  // Répartitions
   const gov = {Interne:0, Codev:0, Presta:0};
   projets.forEach(p => { if (gov[p.gouvernance] !== undefined) gov[p.gouvernance]++; });
-
-  // Répartition par axe R&D&I
+  const strat = {};
+  projets.forEach(p => { if (p.strategie_pi) strat[p.strategie_pi] = (strat[p.strategie_pi]||0) + 1; });
   const axes = {};
   projets.forEach(p => { const a = p.axe_rdi || '—'; axes[a] = (axes[a]||0) + 1; });
+
+  // Livrables R&D (exclure fiscaux)
+  const livrablesRD = livrables.filter(l => !['Calcul CI','Déclaration','Rapport technique','Analyse éligibilité','Litige fiscal','Audit'].includes(l.type));
+  const livEnRetard = livrablesRD.filter(l => l.deadline && daysUntil(l.deadline) < 0 && l.etat !== 'Terminé');
+  const livEnCours = livrablesRD.filter(l => l.etat === 'En cours' || l.etat === 'En validation' || l.etat === 'En attente').sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+
+  // Matrice livrables État × Priorité
+  const etatsLiv = ['En attente','En cours','En validation','Terminé'];
+  const priosLiv = ['Haute','Moyenne','Basse'];
+  const matriceLiv = livrablesRD.length ? '<div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>État</th>'
+    + priosLiv.map(p => '<th class="num">'+p+'</th>').join('')+'<th class="num">Total</th></tr></thead><tbody>'
+    + etatsLiv.map(e => {
+      let total = 0;
+      const cells = priosLiv.map(p => {
+        const n = livrablesRD.filter(l => l.etat===e && l.priorite===p).length;
+        total += n;
+        return '<td class="num">'+(n || '—')+'</td>';
+      }).join('');
+      return '<tr><td><b>'+e+'</b></td>'+cells+'<td class="num"><b>'+total+'</b></td></tr>';
+    }).join('')
+    + '</tbody></table></div>' : '';
+
+  // Réunions triées par date
+  const reunionsSorted = reunions.slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+  const risquesRD = risques.filter(r => ['Risque technique','Verrou scientifique','Retard projet','Ressource'].includes(r.type_alerte) && r.statut !== 'Résolu' && r.statut !== 'Classé sans suite');
 
   $('panel-t2').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Lecture II · Direction R&amp;D</div>
       <h2 class="li-title">Où en est chaque projet, et qu'est-ce qui bloque&nbsp;?</h2>
-      <p class="li-lead">Portefeuille R&amp;D par projet — TRL, verrous, gouvernance, stratégie PI. Indicateurs Notion natifs.</p>
+      <p class="li-lead">Portefeuille R&amp;D projet par projet — maturité TRL, verrous identifiés, gouvernance, stratégie PI. Indicateurs de pilotage.</p>
     </div>
+
+    <div class="section-title"><h2>Indicateurs de pilotage</h2><span class="tag t2-tag">synthèse</span></div>
+    <div class="grid c3">
+      <div class="card"><div class="muted">Écart TRL moyen</div><div style="font-size:26px;font-weight:900;">+${ecartMoyen.toFixed(1)}</div><div class="muted" style="margin-top:4px;">niveaux à franchir en moyenne</div></div>
+      <div class="card"><div class="muted">Verrous renseignés</div><div style="font-size:26px;font-weight:900;">${verrousOK} / ${projets.length}</div><div class="muted" style="margin-top:4px;">${Math.round((verrousOK/Math.max(projets.length,1))*100)}% documentés</div></div>
+      <div class="card"${risquesOuverts?' style="border-color:var(--brick);"':''}><div class="muted">Risques ouverts</div><div style="font-size:26px;font-weight:900;${risquesOuverts?'color:var(--brick);':''}">${risquesOuverts}</div><div class="muted" style="margin-top:4px;">${risquesOuverts ? 'actions à mener' : 'portefeuille serein'}</div></div>
+    </div>
+
     <div class="section-title"><h2>Portefeuille projets</h2><span class="tag t2-tag">${projets.length} projet${projets.length>1?'s':''}</span></div>
     <div class="card" style="padding:0; overflow-x:auto;">
-      <table><thead><tr><th>Projet</th><th style="text-align:center;">TRL</th><th>Gouv.</th><th>Strat. PI</th><th>Période</th></tr></thead>
-      <tbody>${rows || '<tr><td colspan="5" class="empty">Aucun projet.</td></tr>'}</tbody></table>
+      <table><thead><tr><th>Projet</th><th style="text-align:center;">TRL</th><th>Gouv.</th><th>Strat. PI</th><th>Axe RDI</th><th>Période</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="6" class="empty">Aucun projet.</td></tr>'}</tbody></table>
     </div>
-    <div class="section-title"><h2>Répartitions structurelles</h2><span class="tag t2-tag">analytique</span></div>
-    <div class="grid c2">
-      <div class="card"><h3>Gouvernance</h3><div class="chart-wrap"><canvas id="ch2a"></canvas></div></div>
-      <div class="card"><h3>Axes R&amp;D&amp;I</h3><div class="chart-wrap"><canvas id="ch2b"></canvas></div></div>
-    </div>`;
 
-  charts.ch2a = new Chart($('ch2a'), {
-    type: 'pie',
-    data: { labels: Object.keys(gov), datasets: [{ data: Object.values(gov), backgroundColor: ['#2E3AB8','#C01E60','#8A6B1A'], borderWidth: 0 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-  });
-  charts.ch2b = new Chart($('ch2b'), {
-    type: 'doughnut',
-    data: { labels: Object.keys(axes), datasets: [{ data: Object.values(axes), backgroundColor: ['#090B33','#1800FF','#00A668','#D6175E','#8A6B1A','#2E3AB8','#C01E60','#C8CED7'], borderWidth: 0 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-  });
+    <div class="section-title"><h2>Répartitions structurelles</h2><span class="tag t2-tag">analytique</span></div>
+    <div class="grid c3">
+      <div class="card"><h3>Gouvernance</h3><div class="chart-wrap"><canvas id="ch2a"></canvas></div></div>
+      <div class="card"><h3>Stratégie PI</h3><div class="chart-wrap"><canvas id="ch2b"></canvas></div></div>
+      <div class="card"><h3>Axes R&amp;D&amp;I</h3><div class="chart-wrap"><canvas id="ch2c"></canvas></div></div>
+    </div>
+
+    ${livEnRetard.length ? `<div class="section-title" style="border-bottom-color:var(--brick);"><h2>⚠ Livrables en retard</h2><span class="tag" style="background:var(--brick-bg);color:var(--brick-dark);border-color:var(--brick);">${livEnRetard.length}</span></div>
+      <div class="livrable-list">${livEnRetard.map(renderLivrableRow).join('')}</div>` : ''}
+
+    ${livEnCours.length ? `<div class="section-title"><h2>Pipeline livrables</h2><span class="tag t2-tag">${livEnCours.length} en cours</span></div>
+      <div class="livrable-list">${livEnCours.map(renderLivrableRow).join('')}</div>` : ''}
+
+    ${matriceLiv ? `<div class="section-title"><h2>Livrables État × Priorité</h2><span class="tag t2-tag">matrice</span></div>${matriceLiv}` : ''}
+
+    ${reunionsSorted.length ? `<div class="section-title"><h2>Réunions</h2><span class="tag t2-tag">${reunionsSorted.length}</span></div>
+      <div class="reunion-timeline">
+        ${reunionsSorted.slice(0,12).map(r => `<div class="reunion-item">
+          <div class="rn-head">
+            <span class="rn-type">${r.type || 'Réunion'}</span>
+            <span class="rn-date">${r.date || '—'}</span>
+          </div>
+          <div class="rn-nom">${r.nom}</div>
+          ${r.projets_lies && r.projets_lies.length ? '<div class="rn-linked">Projets : '+r.projets_lies.join(', ')+'</div>' : ''}
+        </div>`).join('')}
+      </div>` : ''}
+
+    ${risquesRD.length ? `<div class="section-title"><h2>Alertes techniques</h2><span class="tag t2-tag">${risquesRD.length}</span></div>
+      ${risquesRD.map(_risqueBloc).join('')}` : ''}
+  `;
+
+  if (projets.length) {
+    charts.ch2a = new Chart($('ch2a'), {
+      type: 'pie',
+      data: { labels: Object.keys(gov), datasets: [{ data: Object.values(gov), backgroundColor: ['#2E3AB8','#C01E60','#8A6B1A'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+    if (Object.keys(strat).length) {
+      charts.ch2b = new Chart($('ch2b'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(strat), datasets: [{ data: Object.values(strat), backgroundColor: ['#1800FF','#00A668','#C01E60','#8A6B1A','#C8CED7'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+    charts.ch2c = new Chart($('ch2c'), {
+      type: 'doughnut',
+      data: { labels: Object.keys(axes), datasets: [{ data: Object.values(axes), backgroundColor: ['#090B33','#1800FF','#00A668','#D6175E','#8A6B1A','#2E3AB8','#C01E60','#C8CED7'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
 }
 
-function _t3(jalons, projets, name) {
-  const risques = (DATA.risques || []).filter(r => r.societe === name);
+/* ===== LECTURE III — DG / STRATÉGIQUE ===== */
+function _t3_client(jalons, projets, risques, contacts, documents, name) {
   const risquesOuverts = risques.filter(r => r.statut === 'À traiter' || r.statut === 'En cours');
+  const risquesResolus = risques.filter(r => r.statut === 'Résolu' || r.statut === 'Classé sans suite');
   const ciTotal = jalons.reduce((s,j) => s+(j.montant_ci||0), 0);
+  const depValo = jalons.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
+  const expoCritique = risquesOuverts.filter(r => r.severite === 'Critique').reduce((s,r) => s+(r.montant_expose||0), 0);
+  const expoTotal = risquesOuverts.reduce((s,r) => s+(r.montant_expose||0), 0);
+
   const years = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
   const ciByYear = years.map(y => jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.montant_ci||0), 0));
+
+  // Axes RDI — CI et dépenses par axe
+  const axesData = {};
+  projets.forEach(p => {
+    const a = p.axe_rdi || '—';
+    if (!axesData[a]) axesData[a] = { count: 0, ci: 0, valo: 0, trlSum: 0, trlCibleSum: 0 };
+    axesData[a].count++;
+    axesData[a].trlSum += (p.trl||0);
+    axesData[a].trlCibleSum += (p.trl_cible||0);
+    const key = p.nom.split(' — ')[0];
+    jalons.filter(j => key.length>3 && j.projet && j.projet.includes(key)).forEach(j => {
+      axesData[a].ci += j.montant_ci || 0;
+      axesData[a].valo += j.depenses_valorisables || 0;
+    });
+  });
+  const axesRows = Object.entries(axesData).sort((a,b) => b[1].ci - a[1].ci).map(([a,d]) =>
+    '<tr><td><b>'+a+'</b></td><td class="num">'+d.count+'</td><td class="num">'+euro(d.valo)+'</td><td class="num"><b>'+euro(d.ci)+'</b></td><td class="num">TRL '+(d.count?(d.trlSum/d.count).toFixed(1):'—')+' → '+(d.count?(d.trlCibleSum/d.count).toFixed(1):'—')+'</td></tr>'
+  ).join('');
+
+  // Distribution TRL cible
+  const trlCibleDist = {};
+  for (let i=1; i<=9; i++) trlCibleDist[i] = 0;
+  projets.forEach(p => { if (p.trl_cible) trlCibleDist[p.trl_cible]++; });
+
+  // Positionnement dans le portefeuille PDJ
+  const toutesSoc = DATA.societes.filter(s => s.statut === 'Client');
+  const rang = toutesSoc.map(s => {
+    const ci = DATA.jalons.filter(j => j.societe === s.nom).reduce((sum,j) => sum+(j.montant_ci||0), 0);
+    return { nom: s.nom, ci };
+  }).sort((a,b) => b.ci - a.ci);
+  const monRang = rang.findIndex(x => x.nom === name) + 1;
 
   $('panel-t3').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Lecture III · Direction générale</div>
       <h2 class="li-title">Quel est l'équilibre du portefeuille R&amp;D&nbsp;?</h2>
-      <p class="li-lead">Vue institutionnelle — CI cumulé, trajectoire, risques critiques, positionnement dans le portefeuille PDJ.</p>
+      <p class="li-lead">Vue institutionnelle : CI cumulé, dépenses valorisées, risques, positionnement dans le portefeuille PDJ, équipe et documentation.</p>
     </div>
-    ${risquesOuverts.length ? `
-    <div class="section-title"><h2>Alertes en cours</h2><span class="tag t3-tag">${risquesOuverts.length}</span></div>
-    ${risquesOuverts.map(r => `
-      <div class="risque-bloc">
-        <div class="rhead">
-          <span class="rtag">${r.type_alerte || 'Alerte'}</span>
-          <span class="rsev ${(r.severite||'info').toLowerCase()}">${r.severite || 'Info'}</span>
-          <span class="rstatut">${r.statut || '—'}</span>
-        </div>
-        <h3>${r.nom}</h3>
-        <div class="rinfo-grid">
-          <div><div class="lbl">Montant exposé</div><div class="val">${shortEuro(r.montant_expose)}</div></div>
-          <div><div class="lbl">Date limite</div><div class="val">${r.date_limite || '—'}</div></div>
-        </div>
-        ${r.actions ? `<div class="ractions"><b>Actions à mener</b>${r.actions}</div>` : ''}
-      </div>`).join('')}` : ''}
+
+    ${risquesOuverts.length ? `<div class="section-title" style="border-bottom-color:var(--brick);"><h2>Alertes en cours</h2><span class="tag" style="background:var(--brick-bg);color:var(--brick-dark);border-color:var(--brick);">${risquesOuverts.length}</span></div>
+      ${risquesOuverts.map(_risqueBloc).join('')}` : ''}
+
     <div class="section-title"><h2>Indicateurs stratégiques</h2><span class="tag t3-tag">synthèse</span></div>
     <div class="grid c3">
-      <div class="card"><div class="muted">CI cumulé</div><div style="font-size:26px;font-weight:900;color:var(--brand);">${shortEuro(ciTotal)}</div></div>
-      <div class="card"><div class="muted">Projets actifs</div><div style="font-size:26px;font-weight:900;color:var(--brand);">${projets.filter(p => (p.cloture||0) >= 2025).length} / ${projets.length}</div></div>
-      <div class="card"${risquesOuverts.length?' style="border-color:var(--brick);"':''}><div class="muted">Risques ouverts</div><div style="font-size:26px;font-weight:900;${risquesOuverts.length?'color:var(--brick);':''}">${risquesOuverts.length}</div></div>
+      <div class="card"><div class="muted">CI cumulé total</div><div style="font-size:26px;font-weight:900;color:var(--brand);">${shortEuro(ciTotal)}</div><div class="muted" style="margin-top:4px;">${jalons.length} jalons sur ${years.length} exercices</div></div>
+      <div class="card"><div class="muted">Dép. valorisées</div><div style="font-size:26px;font-weight:900;color:var(--brand);">${shortEuro(depValo)}</div><div class="muted" style="margin-top:4px;">assiette CI cumulée</div></div>
+      <div class="card"${expoCritique?' style="border-color:var(--brick);"':''}><div class="muted">Exposition critique</div><div style="font-size:26px;font-weight:900;${expoCritique?'color:var(--brick);':''}">${shortEuro(expoCritique)}</div><div class="muted" style="margin-top:4px;">${expoTotal?'sur '+shortEuro(expoTotal)+' total':'aucune exposition'}</div></div>
     </div>
-    ${years.length > 1 ? `
-    <div class="section-title"><h2>Trajectoire du CI</h2><span class="tag t3-tag">pluriannuel</span></div>
-    <div class="card"><div class="chart-wrap"><canvas id="ch3a"></canvas></div></div>` : ''}`;
 
+    ${years.length > 1 ? `<div class="section-title"><h2>Trajectoire pluriannuelle</h2><span class="tag t3-tag">${years.length} exercices</span></div>
+      <div class="card"><div class="chart-wrap"><canvas id="ch3a"></canvas></div></div>` : ''}
+
+    ${axesRows ? `<div class="section-title"><h2>Performance par axe R&amp;D&amp;I</h2><span class="tag t3-tag">${Object.keys(axesData).length} axes</span></div>
+      <div class="grid c2">
+        <div class="card"><h3>Répartition CI par axe</h3><div class="chart-wrap"><canvas id="ch3b"></canvas></div></div>
+        <div class="card"><h3>Distribution TRL cible</h3><div class="chart-wrap"><canvas id="ch3c"></canvas></div></div>
+      </div>
+      <div class="card" style="padding:0; overflow-x:auto; margin-top:16px;">
+        <table><thead><tr><th>Axe RDI</th><th class="num">Projets</th><th class="num">Dép. valorisées</th><th class="num">CI cumulé</th><th class="num">TRL moyen</th></tr></thead>
+        <tbody>${axesRows}</tbody></table>
+      </div>` : ''}
+
+    <div class="section-title"><h2>Positionnement dans le portefeuille PDJ</h2><span class="tag t3-tag">benchmark</span></div>
+    <div class="card" style="padding:0; overflow-x:auto;">
+      <table><thead><tr><th>Rang</th><th>Client</th><th class="num">CI cumulé</th><th>Part du portefeuille</th></tr></thead>
+      <tbody>${rang.map((x,i) => {
+        const total = rang.reduce((s,r) => s+r.ci, 0) || 1;
+        const part = Math.round((x.ci/total)*100);
+        const isMe = x.nom === name;
+        return '<tr'+(isMe?' style="background:var(--brand-bg);font-weight:700;"':'')+'><td><b>#'+(i+1)+'</b></td><td>'+x.nom+(isMe?' ← vous':'')+'</td><td class="num">'+shortEuro(x.ci)+'</td><td class="num">'+part+'%</td></tr>';
+      }).join('')}</tbody></table>
+    </div>
+
+    ${contacts.length ? `<div class="section-title"><h2>Équipe cliente</h2><span class="tag t3-tag">${contacts.length} contact${contacts.length>1?'s':''}</span></div>
+      <div class="team-grid">${contacts.map(c => `<div class="team-card">
+        <div class="tc-avatar">${initials(contactFullName(c))}</div>
+        <div>
+          <div class="tc-name">${contactFullName(c)}</div>
+          <div class="tc-fn">${c.fonction || '—'}</div>
+          ${c.email ? '<div class="tc-contact"><a href="mailto:'+c.email+'">'+c.email+'</a></div>' : ''}
+          ${c.phone ? '<div class="tc-contact">'+c.phone+'</div>' : ''}
+        </div>
+      </div>`).join('')}</div>` : ''}
+
+    ${documents.length ? `<div class="section-title"><h2>Bibliothèque documentaire</h2><span class="tag t3-tag">${documents.length} document${documents.length>1?'s':''}</span></div>
+      <div class="doc-list">${documents.map(renderDocCard).join('')}</div>` : ''}
+
+    ${risquesResolus.length ? `<div class="section-title"><h2>Historique alertes résolues</h2><span class="tag t3-tag">${risquesResolus.length}</span></div>
+      <div class="card" style="padding:0; overflow-x:auto;">
+        <table><thead><tr><th>Alerte</th><th>Type</th><th>Sévérité</th><th>Statut</th><th class="num">Montant</th></tr></thead>
+        <tbody>${risquesResolus.map(r => '<tr><td>'+r.nom+'</td><td>'+r.type_alerte+'</td><td>'+r.severite+'</td><td><span class="pill green">'+r.statut+'</span></td><td class="num">'+shortEuro(r.montant_expose)+'</td></tr>').join('')}</tbody></table>
+      </div>` : ''}
+  `;
+
+  // Graphiques
   if (years.length > 1) {
     charts.ch3a = new Chart($('ch3a'), {
       type: 'bar',
@@ -657,85 +955,228 @@ function _t3(jalons, projets, name) {
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => Math.round(v/1000)+' k€' } } } }
     });
   }
+  if (axesRows) {
+    const axesLabels = Object.keys(axesData);
+    charts.ch3b = new Chart($('ch3b'), {
+      type: 'doughnut',
+      data: { labels: axesLabels, datasets: [{ data: axesLabels.map(a => axesData[a].ci), backgroundColor: ['#090B33','#1800FF','#00A668','#D6175E','#8A6B1A','#2E3AB8','#C01E60','#C8CED7'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+    charts.ch3c = new Chart($('ch3c'), {
+      type: 'bar',
+      data: { labels: Object.keys(trlCibleDist), datasets: [{ label: 'Projets', data: Object.values(trlCibleDist), backgroundColor: '#1800FF' }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'TRL cible' } } } }
+    });
+  }
 }
 
+/* ===== VUE PROJET ===== */
 function renderProjet(projetId) {
   const p = DATA.projets.find(x => x.id === projetId);
   if (!p) return;
   const key = p.nom.split(' — ')[0];
-  const jalons = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && (key.length>3 && j.projet && j.projet.includes(key)));
+  const jalons = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && key.length>3 && j.projet && j.projet.includes(key));
+  const livrables = getLivrables(CURRENT_SOCIETE).filter(l => (l.projets_lies||[]).some(pn => pn.includes(key)));
+  const risques = (DATA.risques||[]).filter(r => r.societe === CURRENT_SOCIETE && (r.projets_lies||[]).some(pn => pn.includes(key)));
+  const reunions = getReunions(CURRENT_SOCIETE).filter(r => (r.projets_lies||[]).some(pn => pn.includes(key)));
+
   $('modeTag').textContent = 'PROJET R&D';
   $('entityName').textContent = p.nom;
   $('breadcrumb').innerHTML = '<a onclick="goHome()">Accueil</a> › <a onclick="setView(\'overview\')">'+CURRENT_SOCIETE+'</a> › <b>'+p.nom+'</b>';
-  $('entitySub').textContent = [p.gouvernance, 'TRL '+p.trl+' → '+p.trl_cible, p.demarrage+' → '+p.cloture].join(' · ');
+  $('entitySub').textContent = [p.gouvernance, 'TRL '+p.trl+' → '+p.trl_cible, p.demarrage+' → '+p.cloture, p.axe_rdi].filter(Boolean).join(' · ');
   $('topRight').innerHTML = '<span class="pill purple">R&D</span>';
+
   const ciT = jalons.reduce((s,j) => s+(j.montant_ci||0), 0);
   const engT = jalons.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+  const valoT = jalons.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
   renderKPIs([
     { label: 'CI cumulé', value: shortEuro(ciT), footer: jalons.length+' jalons' },
-    { label: 'Dép. engagées', value: shortEuro(engT), footer: '' },
-    { label: 'TRL', value: p.trl+' → '+p.trl_cible, footer: (p.trl_cible - p.trl)+' niveaux' },
-    { label: 'Période', value: (p.demarrage||'—')+'→'+(p.cloture||'—'), footer: '' }
+    { label: 'Dép. engagées', value: shortEuro(engT), footer: shortEuro(valoT)+' valorisables' },
+    { label: 'TRL', value: (p.trl||'—')+' → '+(p.trl_cible||'—'), footer: p.trl && p.trl_cible ? (p.trl_cible - p.trl)+' niveaux à franchir' : '' },
+    { label: 'Période', value: (p.demarrage||'—')+' → '+(p.cloture||'—'), footer: p.strategie_pi || '' }
   ]);
-  const rows = jalons.sort((a,b) => (a.annee||0)-(b.annee||0)).map(j => '<tr><td>'+(j.annee||'—')+'</td><td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+(j.type_ci||'—')+'</span></td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num"><b>'+euro(j.montant_ci)+'</b></td></tr>').join('');
-  $('panel-t1').innerHTML = '<div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Année</th><th>Disp.</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">CI</th></tr></thead><tbody>'+(rows || '<tr><td colspan="5" class="empty">Aucun jalon.</td></tr>')+'</tbody></table></div>';
-  $('panel-t2').innerHTML = '<div class="card"><div class="objectif-block"><div class="lbl">Objectif</div><p>'+(p.objectif||'—')+'</p></div><div class="objectif-block" style="border-left-color:var(--brick);"><div class="lbl" style="color:var(--brick);">Verrou</div><p>'+(p.verrous||'—')+'</p></div><div style="margin-top:18px;">'+trlBar(p.trl, p.trl_cible, true)+'</div></div>';
-  $('panel-t3').innerHTML = '<div class="card"><p>Pour la lecture stratégique, consultez la vue d\'ensemble du client.</p></div>';
+
+  // T1 - Fiscal
+  const rowsJ = jalons.sort((a,b) => (a.annee||0)-(b.annee||0)).map(j => '<tr><td>'+(j.annee||'—')+'</td><td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+(j.type_ci||'—')+'</span></td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num"><b>'+euro(j.montant_ci)+'</b></td><td class="num subv-cell">'+(j.subvention_percue?euro(j.subvention_percue):'—')+'</td><td>'+pct(j.avancement)+'</td></tr>').join('');
+  $('panel-t1').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Projet · Lecture financière</div>
+      <h2 class="li-title">Chaîne fiscale du projet</h2>
+      <p class="li-lead">Jalons année par année avec CI, subventions et avancement.</p>
+    </div>
+    <div class="card" style="padding:0; overflow-x:auto;">
+      <table><thead><tr><th>Année</th><th>Disp.</th><th class="num">Engagées</th><th class="num">Valorisables</th><th class="num">CI</th><th class="num">Subv.</th><th>Avanc.</th></tr></thead>
+      <tbody>${rowsJ || '<tr><td colspan="7" class="empty">Aucun jalon.</td></tr>'}</tbody></table>
+    </div>`;
+
+  // T2 - Pilotage R&D
+  $('panel-t2').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Projet · Pilotage R&amp;D</div>
+      <h2 class="li-title">${p.nom}</h2>
+      <p class="li-lead">Objectif, verrou scientifique, maturité TRL, livrables, réunions et alertes techniques.</p>
+    </div>
+    <div class="card">
+      <div class="objectif-block"><div class="lbl">Objectif scientifique</div><p>${p.objectif||'—'}</p></div>
+      <div class="objectif-block" style="border-left-color:var(--brick);"><div class="lbl" style="color:var(--brick);">Verrou à lever</div><p>${p.verrous||'—'}</p></div>
+      <div style="margin-top:24px; display:flex; justify-content:space-around; align-items:center; padding:20px 0; background:var(--paper-2); border-radius:4px;">
+        ${trlBar(p.trl, p.trl_cible, true)}
+      </div>
+      <div style="margin-top:16px; text-align:center; font-size:11px; color:var(--muted);">TRL actuel : <b style="color:var(--ink);">${p.trl||'—'}</b> · Cible : <b style="color:var(--ink);">${p.trl_cible||'—'}</b> · Axe : <b style="color:var(--ink);">${p.axe_rdi||'—'}</b></div>
+    </div>
+
+    ${livrables.length ? `<div class="section-title"><h2>Livrables du projet</h2><span class="tag t2-tag">${livrables.length}</span></div>
+      <div class="livrable-list">${livrables.map(renderLivrableRow).join('')}</div>` : ''}
+
+    ${reunions.length ? `<div class="section-title"><h2>Réunions liées</h2><span class="tag t2-tag">${reunions.length}</span></div>
+      <div class="reunion-timeline">${reunions.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,8).map(r => `<div class="reunion-item">
+        <div class="rn-head"><span class="rn-type">${r.type||'Réunion'}</span><span class="rn-date">${r.date||'—'}</span></div>
+        <div class="rn-nom">${r.nom}</div>
+      </div>`).join('')}</div>` : ''}
+
+    ${risques.length ? `<div class="section-title"><h2>Alertes projet</h2><span class="tag t2-tag">${risques.length}</span></div>
+      ${risques.map(_risqueBloc).join('')}` : ''}
+  `;
+
+  // T3 - Stratégique
+  const scoreR = p.score_r || 0, scoreI = p.score_i || 0, scoreD = p.score_d || 0;
+  $('panel-t3').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Projet · Stratégie</div>
+      <h2 class="li-title">Positionnement du projet dans le portefeuille</h2>
+      <p class="li-lead">Scores RDI, stratégie PI, gouvernance, contribution à la trajectoire société.</p>
+    </div>
+    <div class="grid c3">
+      <div class="card"><div class="muted">Score R (Recherche)</div><div style="font-size:26px;font-weight:900;">${scoreR}</div></div>
+      <div class="card"><div class="muted">Score I (Innovation)</div><div style="font-size:26px;font-weight:900;">${scoreI}</div></div>
+      <div class="card"><div class="muted">Score D (Développement)</div><div style="font-size:26px;font-weight:900;">${scoreD}</div></div>
+    </div>
+    <div class="grid c2" style="margin-top:16px;">
+      <div class="card"><h3>Gouvernance</h3><div style="font-size:18px;font-weight:700;">${p.gouvernance||'—'}</div></div>
+      <div class="card"><h3>Stratégie PI</h3><div style="font-size:18px;font-weight:700;"><span class="strategie-pi ${typeCIClass(p.strategie_pi)}">${p.strategie_pi||'—'}</span></div></div>
+    </div>`;
 }
 
+/* ===== VUE ANNÉE ===== */
 function renderYear(year) {
   const jalons = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && j.annee === year);
   const factures = DATA.factures.filter(f => f.societe === CURRENT_SOCIETE && f.exercice === year);
+  const dossiers = DATA.dossiers.filter(d => d.societe === CURRENT_SOCIETE && d.annee === year);
+  const projetsActifs = DATA.projets.filter(p => p.societe === CURRENT_SOCIETE && (p.demarrage||0) <= year && (p.cloture||9999) >= year);
+
   $('modeTag').textContent = 'EXERCICE';
   $('entityName').textContent = 'Exercice ' + year;
   $('breadcrumb').innerHTML = '<a onclick="goHome()">Accueil</a> › <a onclick="setView(\'overview\')">'+CURRENT_SOCIETE+'</a> › <b>'+year+'</b>';
-  $('entitySub').textContent = jalons.length+' jalons · '+factures.length+' factures';
+  $('entitySub').textContent = jalons.length+' jalons · '+factures.length+' factures · '+projetsActifs.length+' projets actifs · '+dossiers.length+' dossiers';
   $('topRight').innerHTML = '<span class="pill blue">Exercice '+year+'</span>';
+
   const ci = jalons.reduce((s,j) => s+(j.montant_ci||0), 0);
   const eng = jalons.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+  const valo = jalons.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
+  const subv = jalons.reduce((s,j) => s+(j.subvention_percue||0), 0);
   renderKPIs([
     { label: 'CI '+year, value: shortEuro(ci), footer: jalons.length+' jalons' },
-    { label: 'Engagées', value: shortEuro(eng), footer: '' },
-    { label: 'Factures', value: factures.length, footer: shortEuro(factures.reduce((s,f)=>s+(f.montant||0),0)) },
-    { label: 'Valorisables', value: shortEuro(jalons.reduce((s,j)=>s+(j.depenses_valorisables||0),0)), footer: '' }
+    { label: 'Dép. engagées', value: shortEuro(eng), footer: shortEuro(valo)+' valorisables' },
+    { label: 'Subventions', value: shortEuro(subv), footer: subv?'aides perçues':'aucune' },
+    { label: 'Factures PDJ', value: factures.length, footer: shortEuro(factures.reduce((s,f)=>s+(f.montant||0),0)) }
   ]);
-  $('panel-t1').innerHTML = '<div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Projet</th><th>Disp.</th><th class="num">Engagées</th><th class="num">CI</th></tr></thead><tbody>'+jalons.map(j => '<tr><td>'+j.projet+'</td><td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+j.type_ci+'</span></td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num"><b>'+euro(j.montant_ci)+'</b></td></tr>').join('')+'</tbody></table></div>';
-  $('panel-t2').innerHTML = '<div class="card"><p>Projets actifs en '+year+'.</p></div>';
-  $('panel-t3').innerHTML = '<div class="card"><p>Synthèse stratégique exercice '+year+'.</p></div>';
+
+  // T1
+  const rowsJ = jalons.map(j => '<tr><td>'+j.projet+'</td><td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+(j.type_ci||'—')+'</span></td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num"><b>'+euro(j.montant_ci)+'</b></td><td class="num subv-cell">'+(j.subvention_percue?euro(j.subvention_percue):'—')+'</td></tr>').join('');
+  $('panel-t1').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Exercice ${year} · Financier</div>
+      <h2 class="li-title">Bilan financier de l'exercice ${year}</h2>
+      <p class="li-lead">Jalons par projet, factures PDJ, dossiers fiscaux de l'exercice.</p>
+    </div>
+    <div class="section-title"><h2>Jalons de l'exercice</h2><span class="tag t1-tag">${jalons.length}</span></div>
+    <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Projet</th><th>Disp.</th><th class="num">Engagées</th><th class="num">Valorisables</th><th class="num">CI</th><th class="num">Subv.</th></tr></thead><tbody>${rowsJ || '<tr><td colspan="6" class="empty">Aucun jalon.</td></tr>'}</tbody></table></div>
+    ${factures.length ? `<div class="section-title"><h2>Factures ${year}</h2><span class="tag t1-tag">${factures.length}</span></div>
+      <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Facture</th><th>Type</th><th class="num">Montant</th><th>État</th><th>Date</th></tr></thead><tbody>${factures.map(f => '<tr><td>'+f.nom+'</td><td>'+f.type+'</td><td class="num">'+euro(f.montant)+'</td><td>'+pillStatus(f.etat)+'</td><td>'+(f.date||'—')+'</td></tr>').join('')}</tbody></table></div>` : ''}
+    ${dossiers.length ? `<div class="section-title"><h2>Dossiers ${year}</h2><span class="tag t1-tag">${dossiers.length}</span></div>
+      <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Dossier</th><th>Type</th></tr></thead><tbody>${dossiers.map(d => '<tr><td>'+d.nom+'</td><td><span class="type-ci '+typeCIClass(d.type)+'">'+d.type+'</span></td></tr>').join('')}</tbody></table></div>` : ''}
+  `;
+
+  // T2
+  const rowsP = projetsActifs.map(p => '<tr><td><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);">'+p.nom+'</a></td><td>'+trlBar(p.trl, p.trl_cible)+'</td><td><span class="govx gov-'+(p.gouvernance||'interne').toLowerCase()+'">'+p.gouvernance+'</span></td><td>'+(p.axe_rdi||'—')+'</td></tr>').join('');
+  $('panel-t2').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Exercice ${year} · R&amp;D</div>
+      <h2 class="li-title">Projets actifs en ${year}</h2>
+      <p class="li-lead">Portefeuille des projets R&amp;D en cours durant l'exercice.</p>
+    </div>
+    <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Projet</th><th style="text-align:center;">TRL</th><th>Gouv.</th><th>Axe</th></tr></thead><tbody>${rowsP || '<tr><td colspan="4" class="empty">Aucun projet actif.</td></tr>'}</tbody></table></div>
+  `;
+
+  // T3
+  $('panel-t3').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Exercice ${year} · Stratégie</div>
+      <h2 class="li-title">Synthèse stratégique ${year}</h2>
+      <p class="li-lead">Indicateurs clés de l'exercice dans la trajectoire pluriannuelle.</p>
+    </div>
+    <div class="grid c3">
+      <div class="card"><div class="muted">CI ${year}</div><div style="font-size:26px;font-weight:900;">${shortEuro(ci)}</div></div>
+      <div class="card"><div class="muted">Projets actifs</div><div style="font-size:26px;font-weight:900;">${projetsActifs.length}</div></div>
+      <div class="card"><div class="muted">Subventions perçues</div><div style="font-size:26px;font-weight:900;">${shortEuro(subv)}</div></div>
+    </div>`;
 }
 
+/* ===== VUE DOSSIER ===== */
 function renderDossier(dossierId) {
   const d = DATA.dossiers.find(x => x.id === dossierId);
   if (!d) return;
+  const jalonsDossier = DATA.jalons.filter(j => j.societe === d.societe && j.annee === d.annee && (d.type === j.type_ci || ['AGR','Audit','Autre'].includes(d.type)));
+  const livrablesDossier = getLivrables(d.societe).filter(l => (l.dossiers_ids||[]).includes(dossierId));
+  const documentsDossier = getDocuments(d.societe).filter(doc => (doc.dossiers_ids||[]).includes(dossierId));
+
   $('modeTag').textContent = 'DOSSIER';
   $('entityName').textContent = d.nom;
   $('breadcrumb').innerHTML = '<a onclick="goHome()">Accueil</a> › <a onclick="setView(\'overview\')">'+CURRENT_SOCIETE+'</a> › <b>'+d.nom+'</b>';
-  $('entitySub').textContent = 'Type '+d.type+' · Année '+d.annee;
+  $('entitySub').textContent = 'Dossier '+d.type+' · Exercice '+d.annee;
   $('topRight').innerHTML = '<span class="type-ci '+typeCIClass(d.type)+'" style="padding:4px 10px;">'+d.type+'</span>';
+
+  const ci = jalonsDossier.reduce((s,j) => s+(j.montant_ci||0), 0);
+  const valo = jalonsDossier.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
   renderKPIs([
     { label: 'Type', value: d.type, footer: '' },
     { label: 'Année', value: d.annee, footer: '' },
-    { label: 'Société', value: d.societe, footer: '' },
-    { label: 'Statut', value: 'Actif', footer: '' }
+    { label: 'CI du dossier', value: shortEuro(ci), footer: jalonsDossier.length+' jalons' },
+    { label: 'Assiette valorisée', value: shortEuro(valo), footer: '' }
   ]);
-  $('panel-t1').innerHTML = '<div class="card"><p>Dossier '+d.type+' — exercice '+d.annee+'</p></div>';
-  $('panel-t2').innerHTML = '<div class="card"><p>Projets rattachés au dossier.</p></div>';
-  $('panel-t3').innerHTML = '<div class="card"><p>Contexte stratégique du dossier.</p></div>';
+
+  const rowsJ = jalonsDossier.map(j => '<tr><td>'+j.projet+'</td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num"><b>'+euro(j.montant_ci)+'</b></td></tr>').join('');
+  $('panel-t1').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Dossier ${d.type} · ${d.annee}</div>
+      <h2 class="li-title">${d.nom}</h2>
+      <p class="li-lead">Contenu fiscal du dossier — jalons et livrables rattachés.</p>
+    </div>
+    <div class="section-title"><h2>Jalons du dossier</h2><span class="tag t1-tag">${jalonsDossier.length}</span></div>
+    <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Projet</th><th class="num">Engagées</th><th class="num">Valorisables</th><th class="num">CI</th></tr></thead><tbody>${rowsJ || '<tr><td colspan="4" class="empty">Aucun jalon.</td></tr>'}</tbody></table></div>
+    ${documentsDossier.length ? `<div class="section-title"><h2>Documents du dossier</h2><span class="tag t1-tag">${documentsDossier.length}</span></div>
+      <div class="doc-list">${documentsDossier.map(renderDocCard).join('')}</div>` : ''}
+  `;
+
+  $('panel-t2').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Dossier · Livrables</div>
+      <h2 class="li-title">Production du dossier</h2>
+      <p class="li-lead">Livrables techniques et opérationnels liés au dossier.</p>
+    </div>
+    ${livrablesDossier.length ? '<div class="livrable-list">'+livrablesDossier.map(renderLivrableRow).join('')+'</div>' : '<div class="card empty">Aucun livrable rattaché.</div>'}
+  `;
+
+  $('panel-t3').innerHTML = `
+    <div class="lecture-intro">
+      <div class="li-eyebrow">Dossier · Campagne ${d.annee}</div>
+      <h2 class="li-title">Positionnement dans la campagne</h2>
+      <p class="li-lead">Contexte stratégique du dossier dans la campagne fiscale ${d.annee}.</p>
+    </div>
+    <div class="card"><p>Ce dossier ${d.type} couvre l'exercice ${d.annee} de <b>${d.societe}</b>. Il agrège ${jalonsDossier.length} jalon(s) pour un montant CI de ${shortEuro(ci)}.</p></div>`;
 }
 
 init();
 </script>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-  
