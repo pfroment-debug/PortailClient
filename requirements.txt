@@ -1,2 +1,1 @@
-# Aucune dépendance externe — le serveur n'utilise que la stdlib Python.
-# Ce fichier est présent pour indiquer à Vercel qu'il s'agit d'un projet Python.
+setuptools
