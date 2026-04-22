@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""GET /api/status → diagnostic rapide (utilisé par le front pour détecter
-le mode LIVE)."""
+"""GET /api/status → diagnostic rapide."""
+
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from http.server import BaseHTTPRequestHandler
-import os
 from _common import (cache_age_s, cache_get, handle_options, json_response,
                      portal_password)
 
@@ -13,8 +14,6 @@ class handler(BaseHTTPRequestHandler):
         handle_options(self)
 
     def do_GET(self):
-        # /api/status est public même si un mot de passe est défini
-        # (le front appelle cet endpoint avant d'afficher l'écran de login)
         data, ts, err = cache_get()
         json_response(self, 200, {
             "ok": True,
