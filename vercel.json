@@ -5,7 +5,10 @@
     { "source": "/", "destination": "/portail.html" }
   ],
   "functions": {
-    "api/*.py": { "maxDuration": 30 }
+    "api/*.py": {
+      "runtime": "@vercel/python@4.3.0",
+      "maxDuration": 30
+    }
   },
   "headers": [
     {
@@ -19,4 +22,3 @@
     }
   ]
 }
-
