@@ -4,3 +4,4 @@
     { "source": "/((?!api/).*)", "destination": "/portail.html" }
   ]
 }
+
