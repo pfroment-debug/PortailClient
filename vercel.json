@@ -5,10 +5,7 @@
     { "source": "/", "destination": "/portail.html" }
   ],
   "functions": {
-    "api/data.py":    { "maxDuration": 30 },
-    "api/refresh.py": { "maxDuration": 30 },
-    "api/analyze.py": { "maxDuration": 60 },
-    "api/inspect.py": { "maxDuration": 30 }
+    "api/*.py": { "maxDuration": 30 }
   },
   "headers": [
     {
