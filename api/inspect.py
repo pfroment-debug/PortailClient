@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """GET /api/inspect → liste les propriétés réelles de chaque base Notion.
-Utile pour adapter les noms dans _notion_sync.NAMES si votre workspace en
-utilise d'autres."""
+Utile pour adapter les noms dans _notion_sync.NAMES si votre workspace
+utilise d'autres libellés."""
+
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from http.server import BaseHTTPRequestHandler
 from _common import check_auth, handle_options, json_error, json_response
