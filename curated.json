@@ -1,0 +1,82 @@
+{
+  "interpretations": {
+    "Terravox": {
+      "trajectoire_rd": "Terravox a construit en sept ans une montée en gamme remarquable : d'une société de porte-à-porte outillée (2019 : CII sur Parcours de sensibilisation, TRL 6→8) vers un acteur de recherche appliquée sur le comportement de tri (2021+ : thèse CIFRE, TCP élargie, modèles d'équation structurelle). La gouvernance reflète cette maturation — projets Interne (Parcours, Datavox, Datalake) pour les outils, Codev (LoopLab, Marketing social, FICHA) pour la recherche avec partenaires universitaires. Point d'inflexion en 2024 avec le Datalake + concept Éco-animateur 2.0, qui marque le passage d'une logique mission vers une logique plateforme.",
+      "strategique_dg": "Terravox construit un capital immatériel différenciant autour du couple « lieu de vie + comportement de tri » — peu d'acteurs en France mobilisent cette profondeur théorique (thèse UBS) couplée à une pratique terrain éprouvée. Le CI cumulé depuis 2019 (~360k€) a financé cette montée en R&D. Deux points d'attention DG : (1) la stratégie PI n'est pas formalisée (tous projets en « N.A ») alors que plusieurs projets (Marketing social, Datalake, Éco-animateur 2.0) pourraient fonder un brevet de méthode ou une marque propriétaire — enjeu avant cession ou ouverture de capital ; (2) l'axe Datalake & Éco-animateur 2.0 est le pari industriel de 2024-2026 : sa réussite conditionne le passage d'une PME de sensibilisation à un acteur de service récurrent à forte valeur.",
+      "axes_rd": [
+        {"nom": "Outillage de terrain pour la sensibilisation", "periode": "2019-2021", "dispositif": "CII dominant", "projets": ["Parcours de sensibilisation et d'éducation (CII)", "Parcours phygital (CII)", "Datavox — Exploitation des données de sensibilisation"], "observation": "Phase d'industrialisation d'un savoir-faire porte-à-porte historique, avec premier volet numérique (Phygital)."},
+        {"nom": "Méthodologies de mesure et diagnostic", "periode": "2019-2023", "dispositif": "CIR", "projets": ["Datavox", "Méthode de diagnostic et mesure de la performance du tri"], "observation": "Structuration progressive d'une capacité à transformer des observations terrain en indicateurs statistiquement exploitables."},
+        {"nom": "Innovation comportementale & théorique", "periode": "2021-2026", "dispositif": "CIR / Codev", "projets": ["LoopLab — Gamification du geste de tri", "Marketing social & Rôle du lieu", "Digitalisation & Marketing individualisé FICHA"], "observation": "Axe le plus structurant : thèse CIFRE Grassias (UBS), expérimentations Trappes/Bobigny, passage d'un savoir-faire opérationnel à une capacité de recherche appliquée."},
+        {"nom": "Plateformisation et nouveau métier", "periode": "2024-2026", "dispositif": "CIR + CII", "projets": ["Datalake PowerBI & Éco-animateur 2.0"], "observation": "Bascule industrielle : de missions ponctuelles vers une plateforme data pérenne + concept de métier (« éco-animateur 2.0 ») qui pourrait devenir le produit stratégique."}
+      ]
+    },
+    "Sayse": {
+      "trajectoire_rd": "Sayse a suivi une trajectoire R&D en quatre temps caractéristique d'un acteur qui passe de fournisseur à plateforme puis à acteur souverain. Phase 1 (2021-2023) : industrialisation du SD-WAN managé. Phase 2 (2022-2024) : ajout d'une couche d'observabilité (QoS, Traffic Data). Phase 3 (2023+) : élargissement SASE — convergence réseau/sécurité avec positionnement souveraineté. Phase 4 (2025-2026) : saut vers l'IA critique pour infrastructures sensibles, via candidature Leader PIA.",
+      "strategique_dg": "Sayse est en transformation de positionnement : d'un acteur SD-WAN français de taille moyenne vers un candidat au rang d'acteur souverain de la cybersécurité critique. La candidature Leader PIA Bpifrance est le signal stratégique le plus fort — si elle est retenue, Sayse change de catégorie (financement public structurel, cible OIV, visibilité institutionnelle).",
+      "axes_rd": [
+        {"nom": "Plateforme SD-WAN managée — cœur de métier", "periode": "2021-2025", "dispositif": "CII dominant", "projets": ["SD-WAN managé — Plateforme clef en main", "Maquettage & scénarios SD-WAN multi-sites", "Architecture Micro-Services SD-WAN", "Wan'Up Maillé & Étoilé — Topologie SD-WAN hybride"], "observation": "Quatre projets successifs d'industrialisation et refonte de l'offre SD-WAN, avec évolutions architecturales majeures."},
+        {"nom": "Observabilité & QoS réseau", "periode": "2022-2024", "dispositif": "CII", "projets": ["QoS — Gestion avancée des flux de données", "Traffic Data — Analyse et visualisation des flux réseau"], "observation": "Capacité d'instrumentation réseau développée en support du SD-WAN managé."},
+        {"nom": "Sécurité souveraine SASE", "periode": "2023-2026", "dispositif": "CII", "projets": ["SASE (Secure Access Service Edge) — Plateforme 100% française"], "observation": "Pivot stratégique 2023 vers la convergence réseau + cybersécurité, avec positionnement explicite « 100% français »."},
+        {"nom": "Cyber-Résilience IA — ambition régalienne", "periode": "2025-2026", "dispositif": "Leader PIA (BPI)", "projets": ["Cyber-Résilience Avancée par l'IA (Leader PIA)"], "observation": "Candidature Leader PIA Bpifrance. Cible OIV et infrastructures critiques, 85% composants français, IA native en architecture ZTNA."}
+      ]
+    },
+    "Cniel": {
+      "trajectoire_rd": "Client entré dans le portefeuille PDJ en 2025 avec un dossier CIR sur l'exercice 2025. La structuration du portefeuille projets R&D est à réaliser — c'est le chantier du lot 1 de la mission.",
+      "strategique_dg": "Interprofession laitière — enjeu PDJ : accompagner la structuration R&D d'un acteur institutionnel où la R&D se diffuse dans de multiples pôles.",
+      "axes_rd": [{"nom": "Dossier en construction 2025", "periode": "2025", "dispositif": "CIR", "projets": [], "observation": "Premier exercice en cours — portefeuille projets non encore renseigné dans les bases."}]
+    },
+    "Black Foundry": {
+      "trajectoire_rd": "Studio de typographie, première mission PDJ sur l'exercice 2025 via un dossier CII. Le périmètre R&D / innovation reste à structurer.",
+      "strategique_dg": "Black Foundry évolue sur un marché où l'innovation (polices variables, rendu temps réel, intelligence typographique) est un facteur de différenciation clé. Le CII est le bon dispositif pour capter cette innovation.",
+      "axes_rd": [{"nom": "Innovation typographique 2025", "periode": "2025", "dispositif": "CII", "projets": [], "observation": "Dossier CII 2025 en cours — projets R&D non encore documentés."}]
+    },
+    "Jetdev": {
+      "trajectoire_rd": "Jetdev a connu une expansion R&D rapide ces deux dernières années, avec 6 nouveaux projets démarrés entre 2023 et 2025, couvrant 5 axes métiers distincts. Le pivot 2025 vers l'IA (MLOps ADEO, Raga) a rencontré un échec : l'expert DGRI a requalifié ces opérations en ingénierie, pas en R&D.",
+      "strategique_dg": "ALERTE FISCALE CRITIQUE : le refus d'agrément CIR du 01/04/2026 expose Jetdev à 157 k€ et menace la crédibilité fiscale globale du portefeuille. Trois lectures DG : (1) court terme — exécuter les 5 actions recommandées avant le 15/05/2026 ; (2) moyen terme — reconstituer un dossier d'agrément solide sur Distract ou Scanzee ; (3) long terme — clarifier la doctrine interne CIR vs CII.",
+      "axes_rd": [
+        {"nom": "Référencement & ERP B2B retail", "periode": "2020-2026", "dispositif": "CII", "projets": ["EasyRef — Référencement produit Leroy Merlin", "Papa Ours — ERP et apps pour CFA"], "observation": "Axe historique : développement d'applications métier complexes pour grands comptes."},
+        {"nom": "Outils RH & apprentissage gamifié", "periode": "2024-2026", "dispositif": "CII", "projets": ["Carrier Pass — Outil RH gamifié compétences & parcours"], "observation": "Axe interne autour des parcours de compétences et de la gamification RH."},
+        {"nom": "Innovation matérielle & environnements contraints", "periode": "2024-2026", "dispositif": "CII", "projets": ["Distract — Diffusion video en salle IRM / cage de Faraday"], "observation": "Axe rare et différenciant : traitement video en environnement IRM."},
+        {"nom": "Applications événementielles & configurateurs 3D", "periode": "2023-2026", "dispositif": "CII", "projets": ["Scanzee — Application événementielle QR codes & GPS", "Studio Exotec — Configurateur 3D entrepôts robotisés"], "observation": "Axe créatif/visuel : applications mobiles SaaS géolocalisées et configurateurs 3D WebGL."},
+        {"nom": "🚨 IA & MLOps — AXE FISCALEMENT VULNÉRABLE", "periode": "2024-2026", "dispositif": "CIR (à requalifier)", "projets": ["🚨 MLOps ADEO — ALERTE FISCALE (refus agrément CIR)", "🚨 Raga / RAG-as-a-Service ADO — ALERTE FISCALE (CIR à requalifier)"], "observation": "Axe déclaré au CIR mais jugé « opération d'ingénierie » par la DGRI. 157 k€ exposés, action avant 15/05/2026."}
+      ]
+    },
+    "AFZ": {
+      "trajectoire_rd": "AFZ présente une trajectoire R&D singulière structurée autour d'un actif pivot, la BDAA, qui traverse toute la période (2018→2027). Autour, trois cercles se sont ajoutés : outillage nutritionnel (Optim'Al, 2021-2023), autonomie protéique (2023+) et modernisation IA (2025+).",
+      "strategique_dg": "La BDAA est le véritable actif stratégique d'AFZ : référentiel scientifique utilisé au-delà de l'association, valorisé au CIR depuis 2018. Cette position est menacée par la modernisation nécessaire — si AFZ ne réussit pas le pivot BDAA-IA (2025-2027), d'autres acteurs capteront cette couche d'intelligence.",
+      "axes_rd": [
+        {"nom": "BDAA — Base socle pluridécennale", "periode": "2018-2027", "dispositif": "CIR récurrent", "projets": ["BDAA — Banque de données de l'alimentation animale"], "observation": "Projet historique, réf. INRA, valorisé au CIR de façon continue depuis 2021."},
+        {"nom": "Optim'Al v2 — Outillage nutritionnel", "periode": "2021-2023", "dispositif": "CIR puis CII", "projets": ["Optim'Al v2 — R&D (calculateur de rations VL)", "Optim'Al v2 — Application web (innovation)"], "observation": "Modèle classique en deux temps."},
+        {"nom": "Autonomie protéique & filière", "periode": "2023-2027", "dispositif": "CIR Codev", "projets": ["Sources de protéines UE — Étude DG Agri", "COPR'OR-FERM — Autonomie protéique & économie circulaire"], "observation": "Axe émergent qui reflète l'agenda institutionnel européen."},
+        {"nom": "Modernisation IA & outils réglementaires", "periode": "2024-2027", "dispositif": "CIR", "projets": ["Oriflaam / ALIM 3000 — Base Access pour CEREOPA", "BDAA-IA — IA pour la nutrition animale"], "observation": "Pivot technologique 2025 : intégration ML/DL + RAG/LLM dans l'écosystème BDAA."}
+      ]
+    },
+    "Carbookr": {
+      "trajectoire_rd": "Carbookr a construit une trajectoire R&D structurée autour de la plateforme de location B2B multi-loueurs, avec 12 projets actifs répartis sur 3 axes. Le pivot 2025 vers l'IA rencontre des vents contraires fiscaux.",
+      "strategique_dg": "ALERTE FISCALE MAJEURE : contrôle fiscal CIR 2024 en cours (218 k€ exposés), précédé du refus d'agrément CIR 2023 sur Calculateur CO2. La stratégie R&D de Carbookr est techniquement solide mais son positionnement fiscal est fragile.",
+      "axes_rd": [
+        {"nom": "Plateforme location & connecteurs loueurs", "periode": "2022-2026", "dispositif": "CII dominant", "projets": ["Onboarding véhicule libre service", "The Treep API MaaS", "Gestion cartes logées virtuelles"], "observation": "Cœur de métier — industrialisation des connecteurs multi-loueurs."},
+        {"nom": "Intelligence données & ML", "periode": "2022-2026", "dispositif": "CIR + CII", "projets": ["🚨 Calculateur CO2 (refus agrément CIR 2023)", "Clustering conducteurs V2", "OCR ML factures loueurs"], "observation": "Axe à fort potentiel de rupture, mais exposé fiscalement."},
+        {"nom": "Innovation produit 2025", "periode": "2025-2026", "dispositif": "CII", "projets": ["Automatisation prolongation", "Outil contrôle tarifaire", "Notation agences", "Optimisation requêtes", "Résumé offres"], "observation": "Vague d'innovations démarrées en 2025, majoritairement CII."}
+      ]
+    },
+    "Resan": {
+      "trajectoire_rd": "Resan concentre toute son activité R&D sur un projet phare : des micro-unités de transformation agroalimentaire décentralisées en containers maritimes. Concentration forte sur un seul axe — à la fois force (lisibilité) et fragilité (dépendance).",
+      "strategique_dg": "CONTRÔLE FISCAL EN COURS sur CII 2024 (65 569 € exposés). Le dossier Industrie Modulaire est particulièrement exposé car fortement subventionné : Leader PIA 3 + Innovup Bpifrance 2025.",
+      "axes_rd": [
+        {"nom": "Industrie Modulaire agroalimentaire", "periode": "2020-2026", "dispositif": "CII historique", "projets": ["Industrie Modulaire — Micro-unités agroalimentaires"], "observation": "Projet socle unique : micro-usines containerisées installées en ferme."},
+        {"nom": "Financement public (subventions)", "periode": "2020-2025", "dispositif": "Leader PIA 3 + Innovup", "projets": ["Industrie Modulaire"], "observation": "643 584 € de subventions perçues cumulées."}
+      ]
+    }
+  },
+  "eligibilites": {
+    "Terravox":      {"type_entite": "Société", "CIR": true, "CII": true, "JEI": false, "CICo": null, "raison_jei": "Société de plus de 8 ans d'ancienneté (projets depuis 2019)"},
+    "AFZ":           {"type_entite": "Association", "CIR": true, "CII": false, "JEI": false, "CICo": null, "raison_cii": "Statut associatif — CII réservé aux PME", "raison_jei": "Statut associatif — JEI réservé aux PME", "note": "CIR éligible via activité R&D qualifiée"},
+    "Sayse":         {"type_entite": "Société", "CIR": true, "CII": true, "JEI": null, "CICo": null, "raison_jei": "À qualifier : âge de la société, effectif, structure capitalistique"},
+    "Jetdev":        {"type_entite": "Société", "CIR": null, "CII": true, "JEI": null, "CICo": null, "raison_cir": "Agrément CIR refusé 01/04/2026 — revoir périmètre avant dépôt", "raison_jei": "À qualifier"},
+    "Cniel":         {"type_entite": "Interprofession", "CIR": null, "CII": null, "JEI": false, "CICo": null, "raison_cii": "Interprofession : éligibilité CII à qualifier cas par cas", "raison_jei": "Interprofession — forme juridique incompatible JEI"},
+    "Black Foundry": {"type_entite": "Société", "CIR": null, "CII": true, "JEI": null, "CICo": null},
+    "Carbookr":      {"type_entite": "Société", "CIR": true, "CII": true, "JEI": null, "CICo": null, "note": "Contrôle fiscal CIR 2024 en cours"},
+    "Resan":         {"type_entite": "Société", "CIR": null, "CII": true, "JEI": null, "CICo": null, "note": "Contrôle fiscal CII 2024 en cours"}
+  }
+}
