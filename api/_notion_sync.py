@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
-"""_notion_sync.py — Client Notion + transformation adaptée au workspace PDJ."""
+"""_notion_sync.py — Client Notion + transformation adaptée au workspace PDJ.
+
+Logique métier clé : un jalon peut être rattaché à PLUSIEURS dossiers
+(ex. un même jalon CIR figure dans le dossier CIR pour le calcul CI, ET
+dans un dossier Subvention pour tracer l'aide perçue à déduire).
+La relation jalon → dossiers est donc exposée en liste (dossiers_ids).
+"""
 
 from __future__ import annotations
 
@@ -9,7 +15,7 @@ import os
 import re
 import time
 from datetime import datetime, timezone
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 from urllib import error, request
 
 NOTION_VERSION = "2022-06-28"
@@ -141,6 +147,14 @@ def _x_number(p):
     if t == "rollup":
         r = p.get("rollup") or {}
         if r.get("type") == "number": return r.get("number")
+        # Certains rollups renvoient une array de nombres — on somme
+        if r.get("type") == "array":
+            total = 0
+            has_val = False
+            for item in (r.get("array") or []):
+                if item.get("type") == "number" and item.get("number") is not None:
+                    total += item["number"]; has_val = True
+            return total if has_val else None
     return None
 
 def _x_date(p):
@@ -156,7 +170,6 @@ def _x_relation_ids(p):
     return [r["id"] for r in (p.get("relation") or []) if r.get("id")]
 
 def _x_place(p):
-    """Type 'place' de Notion (lieu géographique)."""
     if not p: return None
     t = p.get("type")
     if t == "place":
@@ -166,8 +179,24 @@ def _x_place(p):
         return _plain(p.get("rich_text") or []) or None
     return None
 
+def _x_people(p):
+    """Retourne une liste de noms (fallback: id tronqué). Liste vide si champ absent.
+    Nécessite que l'intégration Notion ait la permission 'user information'
+    pour que .name soit disponible, sinon on se rabat sur l'id."""
+    if not p or p.get("type") != "people":
+        return []
+    out = []
+    for u in (p.get("people") or []):
+        name = u.get("name")
+        if name:
+            out.append(name)
+        else:
+            # fallback : affiche les 6 premiers caractères de l'id
+            uid = u.get("id", "")
+            out.append("User " + uid[:6] if uid else "—")
+    return out
+
 def _x_year(p):
-    """Extrait une année depuis un select ('2024', '2025'…) ou un number."""
     if not p: return None
     t = p.get("type")
     if t == "number":
@@ -185,7 +214,6 @@ def _x_year(p):
     return None
 
 def _x_trl(p):
-    """Extrait un TRL depuis un select ('TRL 6', '6', 'Niveau 6')."""
     if not p: return 0
     t = p.get("type")
     if t == "number":
@@ -217,22 +245,25 @@ def _try_relation(page, names):
         if v: return v
     return []
 
+def _norm(i):
+    return i.replace("-", "") if i else i
+
 def _resolve_name(page, name_by_id, names_candidates):
     ids = _try_relation(page, names_candidates)
     for i in ids:
-        k = i.replace("-", "")
+        k = _norm(i)
         if k in name_by_id: return name_by_id[k]
     return _try(page, names_candidates, _x_text) or ""
 
 def _resolve_names_for_ids(ids, name_by_id):
-    return [name_by_id[i.replace("-", "")] for i in ids if i.replace("-", "") in name_by_id]
+    return [name_by_id[_norm(i)] for i in ids if _norm(i) in name_by_id]
 
 
-# ======== TRANSFORMERS (ADAPTÉS AU WORKSPACE PDJ) ========
+# ======== TRANSFORMERS ========
 
 def transform_societe(page):
     return {
-        "id":     page["id"].replace("-", ""),
+        "id":     _norm(page["id"]),
         "nom":    _try(page, ["Nom"], _x_title) or "",
         "statut": _try(page, ["Statut"], _x_select) or "Client",
         "lieu":   _try(page, ["Lieu"], _x_place) or "",
@@ -251,8 +282,14 @@ def transform_projet(page, societe_by_id):
         if score_d: parts.append("D")
         if score_i: parts.append("I")
         axe = "&".join(parts) or "—"
+
+    # Rollups (totaux calculés par Notion, tous jalons confondus)
+    tot_ci       = _try(page, ["Tot CI obtenu"], _x_number) or 0
+    tot_engagees = _try(page, ["Tot Dépenses Engagées"], _x_number) or 0
+    tot_valo     = _try(page, ["Tot dépenses valorisées"], _x_number) or 0
+
     return {
-        "id":           page["id"].replace("-", ""),
+        "id":           _norm(page["id"]),
         "societe":      _resolve_name(page, societe_by_id, ["Société 2026"]),
         "nom":          _try(page, ["Nom"], _x_title) or "",
         "objectif":     _try(page, ["Objectif"], _x_text) or "",
@@ -267,24 +304,36 @@ def transform_projet(page, societe_by_id):
         "score_i":      int(score_i),
         "score_d":      int(score_d),
         "axe_rdi":      axe,
+        "tot_ci_rollup":       tot_ci,
+        "tot_engagees_rollup": tot_engagees,
+        "tot_valo_rollup":     tot_valo,
     }
 
 
 def transform_dossier(page, societe_by_id):
+    """Chaque dossier porte des rollups (totaux sur ses jalons) + responsable PDJ."""
     return {
-        "id":      page["id"].replace("-", ""),
+        "id":      _norm(page["id"]),
         "nom":     _try(page, ["Nom"], _x_title) or "",
         "societe": _resolve_name(page, societe_by_id, ["Société 2026"]),
         "type":    _try(page, ["Type"], _x_select) or "CIR",
         "annee":   _x_year(_prop(page, "Année")),
+        # Responsable PDJ (people)
+        "assigne": _x_people(_prop(page, "Personne")),
+        # Rollups
+        "depenses_engagees_rollup":     _try(page, ["Dépenses engagées"], _x_number) or 0,
+        "depenses_valorisables_rollup": _try(page, ["Dépenses valorisables"], _x_number) or 0,
+        "montant_ci_rollup":            _try(page, ["Montant CI"], _x_number) or 0,
+        "subvention_percue_rollup":     _try(page, ["Subvention perçue"], _x_number) or 0,
     }
 
 
 def transform_jalon(page, societe_by_id, projet_by_id):
+    """Un jalon peut être relié à PLUSIEURS dossiers → on expose dossiers_ids."""
     proj_ids = _try_relation(page, ["Projets 2026"])
     projet_nom = ""
     for i in proj_ids:
-        k = i.replace("-", "")
+        k = _norm(i)
         if k in projet_by_id:
             projet_nom = projet_by_id[k]; break
     if not projet_nom:
@@ -294,37 +343,43 @@ def transform_jalon(page, societe_by_id, projet_by_id):
     if av is not None and av > 1.5:
         av = av / 100.0
 
-    out = {
+    doss_ids = _try_relation(page, ["Dossiers 2026"])
+
+    return {
+        "id":                    _norm(page["id"]),
         "projet":                projet_nom,
+        "projets_ids":           [_norm(i) for i in proj_ids],
         "societe":               _resolve_name(page, societe_by_id, ["Société 2026"]),
         "annee":                 _x_year(_prop(page, "Année")),
         "type_ci":               _try(page, ["type CI"], _x_select) or "",
         "depenses_engagees":     _try(page, ["Dépenses engagées"], _x_number) or 0,
         "depenses_valorisables": _try(page, ["Dépenses Valorisable", "Dépenses valorisables"], _x_number) or 0,
         "montant_ci":            _try(page, ["Montant CI"], _x_number) or 0,
+        "subvention_percue":     _try(page, ["Subvention perçue"], _x_number) or 0,
         "avancement":            av,
+        "dossiers_ids":          [_norm(i) for i in doss_ids],
     }
-    sv = _try(page, ["Subvention perçue"], _x_number)
-    if sv: out["subvention_percue"] = sv
-    return out
 
 
 def transform_facture(page, societe_by_id):
+    doss_ids = _try_relation(page, ["Dossiers 2026"])
     return {
-        "nom":      _try(page, ["Nom"], _x_title) or "",
-        "societe":  _resolve_name(page, societe_by_id, ["Société 2026"]),
-        "type":     _try(page, ["Type"], _x_select) or "Autre",
-        "etat":     _try(page, ["État"], _x_select) or "A facturer",
-        "montant":  _try(page, ["Montant"], _x_number) or 0,
-        "exercice": _x_year(_prop(page, "Exercice")),
-        "date":     _try(page, ["Date de facturation"], _x_date),
+        "id":           _norm(page["id"]),
+        "nom":          _try(page, ["Nom"], _x_title) or "",
+        "societe":      _resolve_name(page, societe_by_id, ["Société 2026"]),
+        "type":         _try(page, ["Type"], _x_select) or "Autre",
+        "etat":         _try(page, ["État"], _x_select) or "A facturer",
+        "montant":      _try(page, ["Montant"], _x_number) or 0,
+        "exercice":     _x_year(_prop(page, "Exercice")),
+        "date":         _try(page, ["Date de facturation"], _x_date),
+        "dossiers_ids": [_norm(i) for i in doss_ids],
     }
 
 
 def transform_risque(page, societe_by_id, projet_by_id):
     proj_ids = _try_relation(page, ["Projets 2026"])
     return {
-        "id":             page["id"].replace("-", ""),
+        "id":             _norm(page["id"]),
         "nom":            _try(page, ["Nom"], _x_title) or "",
         "societe":        _resolve_name(page, societe_by_id, ["Société 2026"]),
         "type_alerte":    _try(page, ["Type d'alerte"], _x_select) or "",
@@ -335,12 +390,13 @@ def transform_risque(page, societe_by_id, projet_by_id):
         "date_limite":    _try(page, ["Date limite action"], _x_date),
         "actions":        _try(page, ["Actions à mener"], _x_text) or "",
         "projets_lies":   _resolve_names_for_ids(proj_ids, projet_by_id),
+        "projets_ids":    [_norm(i) for i in proj_ids],
     }
 
 
 def transform_contact(page, societe_by_id):
     return {
-        "id":          page["id"].replace("-", ""),
+        "id":          _norm(page["id"]),
         "prenom":      _try(page, ["Prénom"], _x_title) or "",
         "nom_famille": _try(page, ["N. Famille"], _x_text) or "",
         "email":       _try(page, ["Email Address"], _x_text) or "",
@@ -350,47 +406,59 @@ def transform_contact(page, societe_by_id):
     }
 
 
-def transform_livrable(page, societe_by_id, projet_by_id, dossier_by_id):
+def transform_livrable(page, societe_by_id, projet_by_id):
     proj_ids = _try_relation(page, ["Projets 2026"])
     doss_ids = _try_relation(page, ["Dossiers 2026"])
     return {
-        "id":           page["id"].replace("-", ""),
+        "id":           _norm(page["id"]),
         "nom":          _try(page, ["Nom"], _x_title) or "",
         "societe":      _resolve_name(page, societe_by_id, ["Société 2026"]),
         "type":         _try(page, ["Type"], _x_select) or "",
         "etat":         _try(page, ["Etat"], _x_select) or "En cours",
         "priorite":     _try(page, ["Priorité"], _x_select) or "Moyenne",
         "deadline":     _try(page, ["Deadline"], _x_date),
+        "assigne":      _x_people(_prop(page, "Assigned To")),
         "projets_lies": _resolve_names_for_ids(proj_ids, projet_by_id),
-        "dossiers_ids": [i.replace("-", "") for i in doss_ids],
+        "projets_ids":  [_norm(i) for i in proj_ids],
+        "dossiers_ids": [_norm(i) for i in doss_ids],
     }
 
 
-def transform_document(page, societe_by_id, dossier_by_id, livrable_by_id):
+def transform_document(page, societe_by_id):
+    proj_ids = _try_relation(page, ["Projets 2026"])
     doss_ids = _try_relation(page, ["Dossiers 2026"])
     liv_ids  = _try_relation(page, ["Livrables 2026"])
     return {
-        "id":            page["id"].replace("-", ""),
+        "id":            _norm(page["id"]),
         "nom":           _try(page, ["Nom"], _x_title) or "",
         "societe":       _resolve_name(page, societe_by_id, ["Société 2026"]),
         "type":          _try(page, ["Type"], _x_select) or "Autre",
         "url":           _try(page, ["URL"], _x_text) or "",
-        "dossiers_ids":  [i.replace("-", "") for i in doss_ids],
-        "livrables_ids": [i.replace("-", "") for i in liv_ids],
+        "projets_ids":   [_norm(i) for i in proj_ids],
+        "dossiers_ids":  [_norm(i) for i in doss_ids],
+        "livrables_ids": [_norm(i) for i in liv_ids],
     }
 
 
-def transform_reunion(page, societe_by_id, projet_by_id, livrable_by_id):
+def transform_reunion(page, societe_by_id, projet_by_id, contact_by_id=None):
     proj_ids = _try_relation(page, ["Projets 2026"])
     liv_ids  = _try_relation(page, ["Livrables 2026"])
+    cont_ids = _try_relation(page, ["Contacts 2026"])
+    doss_ids = _try_relation(page, ["Dossiers 2026"])
+    contacts_lies = _resolve_names_for_ids(cont_ids, contact_by_id) if contact_by_id else []
     return {
-        "id":            page["id"].replace("-", ""),
-        "nom":           _try(page, ["Nom"], _x_title) or "",
-        "societe":       _resolve_name(page, societe_by_id, ["Société 2026"]),
-        "type":          _try(page, ["Type"], _x_select) or "Autre",
-        "date":          _try(page, ["Date"], _x_date),
-        "projets_lies":  _resolve_names_for_ids(proj_ids, projet_by_id),
-        "livrables_ids": [i.replace("-", "") for i in liv_ids],
+        "id":             _norm(page["id"]),
+        "nom":            _try(page, ["Nom"], _x_title) or "",
+        "societe":        _resolve_name(page, societe_by_id, ["Société 2026"]),
+        "type":           _try(page, ["Type"], _x_select) or "Autre",
+        "date":           _try(page, ["Date"], _x_date),
+        "participants":   _x_people(_prop(page, "Participants")),
+        "contacts_lies":  contacts_lies,
+        "projets_lies":   _resolve_names_for_ids(proj_ids, projet_by_id),
+        "projets_ids":    [_norm(i) for i in proj_ids],
+        "livrables_ids":  [_norm(i) for i in liv_ids],
+        "contacts_ids":   [_norm(i) for i in cont_ids],
+        "dossiers_ids":   [_norm(i) for i in doss_ids],
     }
 
 
@@ -420,18 +488,15 @@ def sync_all(curated=None):
     projet_by_id = {p["id"]: p["nom"] for p in projets}
 
     dossiers = [transform_dossier(p, societe_by_id) for p in raw.get("dossiers", [])]
-    dossier_by_id = {d["id"]: d["nom"] for d in dossiers}
-
     jalons = [transform_jalon(p, societe_by_id, projet_by_id) for p in raw.get("jalons", [])]
     factures = [transform_facture(p, societe_by_id) for p in raw.get("factures", [])]
     risques = [transform_risque(p, societe_by_id, projet_by_id) for p in raw.get("risques", [])]
     contacts = [transform_contact(p, societe_by_id) for p in raw.get("contacts", [])]
-
-    livrables = [transform_livrable(p, societe_by_id, projet_by_id, dossier_by_id) for p in raw.get("livrables", [])]
-    livrable_by_id = {l["id"]: l["nom"] for l in livrables}
-
-    documents = [transform_document(p, societe_by_id, dossier_by_id, livrable_by_id) for p in raw.get("documents", [])]
-    reunions = [transform_reunion(p, societe_by_id, projet_by_id, livrable_by_id) for p in raw.get("reunions", [])]
+    # Pour résoudre les noms des contacts dans les réunions
+    contact_by_id = {c["id"]: (c["prenom"] + " " + c["nom_famille"]).strip() or c.get("email", "—") for c in contacts}
+    livrables = [transform_livrable(p, societe_by_id, projet_by_id) for p in raw.get("livrables", [])]
+    documents = [transform_document(p, societe_by_id) for p in raw.get("documents", [])]
+    reunions = [transform_reunion(p, societe_by_id, projet_by_id, contact_by_id) for p in raw.get("reunions", [])]
 
     result = {
         "_meta": {
