@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-"""GET /api/data → JSON complet du portail (Notion + curated).
-Utilise le cache in-memory (TTL 5 min par défaut)."""
+"""GET /api/data → JSON complet du portail (Notion + curated)."""
+
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from http.server import BaseHTTPRequestHandler
 from _common import (cache_get, cache_is_fresh, cache_set, check_auth,
@@ -17,13 +19,11 @@ class handler(BaseHTTPRequestHandler):
         if not ok:
             return json_error(self, 401, "Mot de passe portail requis.")
 
-        # Cache hit ?
         if cache_is_fresh():
             data, _, _ = cache_get()
             return json_response(self, 200, data,
                                  cache_control="public, s-maxage=60")
 
-        # Sync complet
         try:
             curated = load_curated()
             data = sync_all(curated=curated)
