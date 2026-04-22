@@ -1,24 +1,5 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "version": 2,
   "rewrites": [
     { "source": "/", "destination": "/portail.html" }
-  ],
-  "functions": {
-    "api/*.py": {
-      "runtime": "@vercel/python@4.3.0",
-      "maxDuration": 30
-    }
-  },
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, X-Portal-Password" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" }
-      ]
-    }
   ]
 }
