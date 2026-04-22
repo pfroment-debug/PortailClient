@@ -1,4 +1,4 @@
-/* portal-auth.js — Overlay d'authentification pour le portail PDJ */
+/* portal-auth.js — Overlay d'authentification PDJ */
 
 (function () {
   "use strict";
@@ -19,14 +19,29 @@
         }
       }
     } catch (e) {}
-    return originalFetch(input, init);
+    return originalFetch(input, init).then(function (r) {
+      try {
+        var u = typeof input === "string" ? input : (input.url || "");
+        if (u.indexOf("/api/") === 0 && r.status === 401) {
+          sessionStorage.removeItem(STORAGE_KEY);
+          showLogin("Session expirée ou mot de passe incorrect.");
+        }
+      } catch (e) {}
+      return r;
+    });
   };
 
   function showLogin(errorMsg) {
-    if (document.getElementById("pdj-login-overlay")) return;
+    if (document.getElementById("pdj-login-overlay")) {
+      if (errorMsg) {
+        var e = document.getElementById("pdj-login-err");
+        if (e) { e.textContent = errorMsg; e.classList.add("show"); }
+      }
+      return;
+    }
 
     var css = ''
-      + '#pdj-login-overlay { position: fixed; inset: 0; z-index: 99999;'
+      + '#pdj-login-overlay { position: fixed; inset: 0; z-index: 2147483647;'
       + '  background: #090B33; display: flex; align-items: center;'
       + '  justify-content: center; padding: 24px;'
       + '  font-family: "Montserrat", -apple-system, sans-serif; }'
@@ -81,85 +96,62 @@
       + '      <div id="pdj-login-sub">Portail client</div>'
       + '    </div>'
       + '  </div>'
-      + '  <label id="pdj-login-label" for="pdj-login-input">Mot de passe d\'accès</label>'
+      + '  <label id="pdj-login-label">Mot de passe d\'accès</label>'
       + '  <input id="pdj-login-input" type="password" placeholder="••••••••" autofocus />'
       + '  <button id="pdj-login-btn" type="button">Accéder au portail</button>'
       + '  <div id="pdj-login-err"></div>'
       + '  <div id="pdj-login-note">Le mot de passe vous a été transmis par Point du Jour Conseil.</div>'
       + '</div>';
-    document.body.appendChild(overlay);
 
-    var input = document.getElementById("pdj-login-input");
-    var btn = document.getElementById("pdj-login-btn");
-    var err = document.getElementById("pdj-login-err");
+    function attach() {
+      document.body.appendChild(overlay);
+      var input = document.getElementById("pdj-login-input");
+      var btn = document.getElementById("pdj-login-btn");
+      var err = document.getElementById("pdj-login-err");
+      if (errorMsg) { err.textContent = errorMsg; err.classList.add("show"); }
 
-    if (errorMsg) {
-      err.textContent = errorMsg;
-      err.classList.add("show");
-    }
-
-    function tryLogin() {
-      var pwd = (input.value || "").trim();
-      if (!pwd) {
-        err.textContent = "Veuillez saisir le mot de passe.";
-        err.classList.add("show");
-        return;
-      }
-      btn.disabled = true;
-      btn.textContent = "Vérification…";
-      err.classList.remove("show");
-
-      var headers = {};
-      headers[HEADER_NAME] = pwd;
-      originalFetch("/api/data", { method: "GET", headers: headers, cache: "no-store" })
-        .then(function (r) {
-          if (r.status === 401) throw new Error("Mot de passe incorrect.");
-          if (!r.ok) throw new Error("Erreur serveur : " + r.status);
-          sessionStorage.setItem(STORAGE_KEY, pwd);
-          overlay.remove();
-          location.reload();
-        })
-        .catch(function (e) {
-          err.textContent = e.message || "Échec";
+      function tryLogin() {
+        var pwd = (input.value || "").trim();
+        if (!pwd) {
+          err.textContent = "Veuillez saisir le mot de passe.";
           err.classList.add("show");
-          btn.disabled = false;
-          btn.textContent = "Accéder au portail";
-        });
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = "Vérification…";
+        err.classList.remove("show");
+        var headers = {};
+        headers[HEADER_NAME] = pwd;
+        originalFetch("/api/data", { method: "GET", headers: headers, cache: "no-store" })
+          .then(function (r) {
+            if (r.status === 401) throw new Error("Mot de passe incorrect.");
+            if (!r.ok) throw new Error("Erreur serveur : " + r.status);
+            sessionStorage.setItem(STORAGE_KEY, pwd);
+            location.reload();
+          })
+          .catch(function (e) {
+            err.textContent = e.message || "Échec";
+            err.classList.add("show");
+            btn.disabled = false;
+            btn.textContent = "Accéder au portail";
+          });
+      }
+      btn.addEventListener("click", tryLogin);
+      input.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter") tryLogin();
+      });
+      input.focus();
     }
 
-    btn.addEventListener("click", tryLogin);
-    input.addEventListener("keydown", function (ev) {
-      if (ev.key === "Enter") tryLogin();
-    });
+    if (document.body) attach();
+    else document.addEventListener("DOMContentLoaded", attach);
   }
 
-  function bootstrap() {
-    originalFetch("/api/status", { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (status) {
-        if (!status) return;
-        if (!status.auth_required) return;
-        var stored = sessionStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          var headers = {};
-          headers[HEADER_NAME] = stored;
-          originalFetch("/api/data", { headers: headers, cache: "no-store" })
-            .then(function (r) {
-              if (r.status === 401) {
-                sessionStorage.removeItem(STORAGE_KEY);
-                showLogin("Votre session a expiré.");
-              }
-            });
-        } else {
-          showLogin();
-        }
-      })
-      .catch(function () {});
-  }
+  window.pdjShowLogin = showLogin;
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bootstrap);
-  } else {
-    bootstrap();
+  // Affichage immédiat si pas de mot de passe stocké
+  if (!sessionStorage.getItem(STORAGE_KEY)) {
+    if (document.body) showLogin();
+    else document.addEventListener("DOMContentLoaded", function () { showLogin(); });
   }
 })();
