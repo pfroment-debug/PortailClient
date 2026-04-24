@@ -265,9 +265,33 @@
     font-weight: 700;
     border-left: 1px solid var(--border);
     font-size: 11px;
+    transition: background 0.15s;
   }
+  .frise-year.clickable { cursor: pointer; }
+  .frise-year.clickable:hover { background: var(--brand-bg); color: var(--brand); }
   .frise-year.current { background: var(--brand-bg); color: var(--brand); }
   .frise-year.future { background: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.03) 4px, rgba(0,0,0,0.03) 8px); color: var(--muted); }
+  .frise-year.sorting {
+    background: var(--brand) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(9,11,51,0.2);
+  }
+  .fr-cell.fr-sort-col {
+    box-shadow: inset 2px 0 0 var(--brand), inset -2px 0 0 var(--brand);
+  }
+  .frise-sort-hint {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    margin-left: 8px;
+    border-radius: 10px;
+    background: var(--brand);
+    color: #fff;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+  .lg-hint { color: var(--muted); font-style: italic; }
   .fr-proj-lbl { font-size: 8px; color: var(--muted); font-weight: 500; margin-top: 1px; text-transform: none; letter-spacing: 0; }
   .fr-cell {
     border-left: 1px solid var(--border);
@@ -556,6 +580,7 @@ function renderHome() {
 
 function openSociete(name) {
   CURRENT_SOCIETE = name;
+  FRISE_SORT_YEAR = null; // reset du tri de la frise
   $('pageTitle').textContent = 'Portail ' + name;
   $('homeScreen').style.display = 'none';
   $('appScreen').style.display = 'grid';
@@ -663,6 +688,23 @@ function renderOverview() {
 }
 
 /* ===== FRISE CHRONOLOGIQUE DES PROJETS ===== */
+let FRISE_SORT_YEAR = null; // null = tri par défaut (axe + démarrage) ; sinon année = tri décroissant par dépenses de cette année
+
+function sortFriseBy(year, societeName) {
+  // Toggle : re-clic sur la même année = enlève le tri
+  if (FRISE_SORT_YEAR === year) {
+    FRISE_SORT_YEAR = null;
+  } else {
+    FRISE_SORT_YEAR = year;
+  }
+  const container = document.getElementById('frise-container');
+  if (container) {
+    const jalonsAll = DATA.jalons.filter(j => j.societe === societeName);
+    const yearsJalons = [...new Set(jalonsAll.map(j => j.annee).filter(Boolean))].sort();
+    container.innerHTML = _t1_projets_frise(societeName, jalonsAll, yearsJalons);
+  }
+}
+
 function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   const projets = DATA.projets.filter(p => p.societe === societeName);
   if (!projets.length) return '<div class="card empty">Aucun projet.</div>';
@@ -709,7 +751,6 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   if (!friseYears.length) return '<div class="card empty">Aucune année à afficher.</div>';
 
   // Palette RGB par axe
-  // R (Recherche) = bleu profond, D (Développement) = vert, I (Innovation) = rose
   function axeRGB(axe) {
     const a = (axe||'').charAt(0).toUpperCase();
     if (a === 'R') return '46,58,184';   // #2E3AB8
@@ -719,16 +760,27 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   }
 
   const colW = 100 / friseYears.length;
-  const header = '<div class="frise-header"><div class="frise-name">Projet</div><div class="frise-years">'
+  const safeSoc = societeName.replace(/'/g, "\\'");
+  const header = '<div class="frise-header"><div class="frise-name">Projet'
+    + (FRISE_SORT_YEAR ? ' <span class="frise-sort-hint">tri : ' + FRISE_SORT_YEAR + ' ↓</span>' : '')
+    + '</div><div class="frise-years">'
     + friseYears.map(y => {
         const isFuture = y > currentYear;
         const isCurrent = y === currentYear;
-        return '<div class="frise-year'+(isFuture?' future':'')+(isCurrent?' current':'')+'" style="width:'+colW+'%;">'+y+(isFuture?'<div class="fr-proj-lbl">projection</div>':'')+'</div>';
+        const isSortCol = FRISE_SORT_YEAR === y;
+        const cls = 'frise-year clickable' + (isFuture?' future':'') + (isCurrent?' current':'') + (isSortCol?' sorting':'');
+        return '<div class="'+cls+'" style="width:'+colW+'%;" onclick="sortFriseBy('+y+",'"+safeSoc+"')\" title=\"Trier par dépenses de "+y+"\">"+y
+             + (isSortCol?'<div class="fr-proj-lbl">↓ tri actif</div>':(isFuture?'<div class="fr-proj-lbl">projection</div>':''))
+             + '</div>';
       }).join('')
     + '</div></div>';
 
-  // Tri : par axe puis par date de démarrage
-  projRows.sort((a,b) => (a.p.axe_rdi||'').localeCompare(b.p.axe_rdi||'') || (a.p.demarrage||9999) - (b.p.demarrage||9999));
+  // Tri : selon FRISE_SORT_YEAR ou par défaut (axe + démarrage)
+  if (FRISE_SORT_YEAR !== null) {
+    projRows.sort((a,b) => (b.engByY[FRISE_SORT_YEAR]||0) - (a.engByY[FRISE_SORT_YEAR]||0));
+  } else {
+    projRows.sort((a,b) => (a.p.axe_rdi||'').localeCompare(b.p.axe_rdi||'') || (a.p.demarrage||9999) - (b.p.demarrage||9999));
+  }
 
   const rows = projRows.map(r => {
     const rgb = axeRGB(r.p.axe_rdi);
@@ -741,17 +793,16 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
       const avgAvanc = jY.length ? (jY.reduce((s,j)=>s+(j.avancement||0),0) / jY.length) : 0;
 
       let cls = 'fr-cell';
+      if (FRISE_SORT_YEAR === y) cls += ' fr-sort-col';
       let inner = '';
       let tooltip = r.p.nom+' · '+y;
       let styleAttr = 'width:'+colW+'%;';
 
       if (hasJalon) {
         cls += ' fr-filled';
-        // Intensité = 0.15 + 0.75 × (engY / maxEng) → [0.15, 0.90]
         const intensity = maxEng > 0 ? (0.15 + 0.75 * (engY / maxEng)) : 0.5;
         const bg = 'rgba('+rgb+','+intensity.toFixed(3)+')';
         styleAttr += 'background:'+bg+';';
-        // Couleur du texte selon intensité (seuil ~0.55)
         const textColor = intensity > 0.55 ? '#fff' : 'var(--ink)';
         const textShadow = intensity > 0.55 ? 'text-shadow: 0 1px 2px rgba(0,0,0,0.35);' : '';
 
@@ -772,11 +823,12 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
     const axeBorderColor = 'rgb('+rgb+')';
     const certifCount = r.jp.filter(j => j.certifie).length;
     const engTotal = Object.values(r.engByY).reduce((s,v)=>s+v, 0);
+    const engHighlight = FRISE_SORT_YEAR !== null ? ' · <b style="color:var(--brand);">'+shortEuro(r.engByY[FRISE_SORT_YEAR]||0)+' en '+FRISE_SORT_YEAR+'</b>' : '';
 
     return '<div class="frise-row">'
       + '<div class="frise-name" style="border-left-color:'+axeBorderColor+';">'
         + '<a onclick="setView(\'projet:'+r.p.id+'\')" style="cursor:pointer; color:var(--ink); font-weight:700; text-decoration:none;">'+r.p.nom+'</a>'
-        + '<div class="frise-sub">'+(r.p.axe_rdi||'—')+' · TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(engTotal)+' engagés · '+shortEuro(r.fpTotal)+' fin. public'+(certifCount?' · '+certifCount+'✓':'')+'</div>'
+        + '<div class="frise-sub">'+(r.p.axe_rdi||'—')+' · TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(engTotal)+' engagés · '+shortEuro(r.fpTotal)+' fin. public'+(certifCount?' · '+certifCount+'✓':'')+engHighlight+'</div>'
       + '</div>'
       + '<div class="frise-years">'+segments+'</div>'
       + '</div>';
@@ -792,10 +844,12 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
     + '<span>Intensité = dépenses engagées (plus foncé = plus de dépenses)</span>'
     + '<span class="lg-sep">·</span>'
     + '<span><span class="lg-dot fr-projected"></span> Projection N+1 (jalon en cours)</span>'
+    + '<span class="lg-sep">·</span>'
+    + '<span class="lg-hint">💡 Cliquez sur une année pour trier les projets par dépenses de cet exercice</span>'
     + (nbProjected?'<span class="lg-note">'+nbProjected+' projet'+(nbProjected>1?'s':'')+' en continuité anticipée</span>':'')
     + '</div>';
 
-  return '<div class="card frise-card"><div class="frise">'+header+rows+'</div>'+legend+'</div>';
+  return '<div class="card frise-card" id="frise-container-inner"><div class="frise">'+header+rows+'</div>'+legend+'</div>';
 }
 
 /* ===== LECTURE I — DAF / FINANCIÈRE ===== */
@@ -893,7 +947,7 @@ function _t1_client(jalons, factures, dossiers, livrables, documents, risques, n
     ${nbJalons > 0 ? '<div class="subv-equation" style="background:var(--green-bg); border-color:var(--green); border-left-color:var(--green-dark); margin-top:14px;"><b>Certification :</b> '+nbCertifies+' jalon'+(nbCertifies>1?'s':'')+' certifié'+(nbCertifies>1?'s':'')+' sur '+nbJalons+' ('+Math.round((nbCertifies/nbJalons)*100)+'%) — les jalons certifiés sont validés pour déclaration fiscale.</div>' : ''}
 
     <div class="section-title"><h2>Projets détaillés</h2><span class="tag t1-tag">frise &amp; continuité</span></div>
-    ${_t1_projets_frise(name, jalons, years)}
+    <div id="frise-container">${_t1_projets_frise(name, jalons, years)}</div>
 
     ${dossiers.length ? `<div class="section-title"><h2>Dossiers fiscaux</h2><span class="tag t1-tag">Type × Année</span></div>${dossMatrix}` : ''}
 
