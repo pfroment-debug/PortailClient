@@ -273,21 +273,26 @@
     border-left: 1px solid var(--border);
     position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     font-size: 10px;
     overflow: hidden;
     min-height: 44px;
+    background: #FAFAFC;
   }
-  .fr-cell.fr-filled { background: #E8EAF7; }
+  .fr-cell.fr-filled {
+    /* background-color défini inline en rgba selon axe + intensité */
+    transition: filter 0.15s;
+  }
+  .fr-cell.fr-filled:hover { filter: brightness(0.92); }
   .fr-cell.fr-projected {
     background: repeating-linear-gradient(45deg, #FFF4D6, #FFF4D6 4px, #FFE89E 4px, #FFE89E 8px);
     color: var(--amber-dark);
     font-weight: 700;
   }
-  .fr-avanc { position: absolute; left: 0; top: 0; bottom: 0; background: #090B33; opacity: 0.85; z-index: 1; }
-  .fr-fp { position: relative; z-index: 2; color: white; font-weight: 700; font-size: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); padding: 0 4px; }
-  .fr-cell.fr-filled:not(:has(.fr-avanc[style*="0%"])) .fr-fp { color: white; }
+  .fr-eng { font-weight: 800; font-size: 11px; line-height: 1.1; }
+  .fr-fp-sub { font-size: 9px; opacity: 0.92; margin-top: 1px; font-weight: 600; }
   .fr-arrow { font-size: 20px; font-weight: 900; }
   .frise-legend {
     display: flex;
@@ -308,6 +313,7 @@
     vertical-align: middle;
     margin-right: 6px;
   }
+  .frise-legend .lg-sep { color: var(--border); margin: 0 2px; }
   .frise-legend .lg-note { color: var(--amber-dark); font-weight: 700; }
 
 </style>
@@ -661,26 +667,23 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   const projets = DATA.projets.filter(p => p.societe === societeName);
   if (!projets.length) return '<div class="card empty">Aucun projet.</div>';
 
-  // Pour chaque projet : calcule les années couvertes et l'année de prolongation éventuelle
   const currentYear = new Date().getFullYear();
+
+  // Pré-calcul : pour chaque projet, jalons + années + projection N+1
   const projRows = projets.map(p => {
-    // jalons du projet (via projets_ids en priorité, sinon via nom)
     const key = p.nom.split(' — ')[0];
     const jp = jalonsAll.filter(j => (j.projets_ids||[]).includes(p.id) || (key.length>3 && j.projet && j.projet.includes(key)));
     const anneesJalons = [...new Set(jp.map(j => j.annee).filter(Boolean))].sort();
-
-    // Année la plus récente avec jalons
     const latestYear = anneesJalons.length ? anneesJalons[anneesJalons.length - 1] : null;
-    // Au moins un jalon de l'année la plus récente non terminé ?
     const hasOpen = latestYear ? jp.some(j => j.annee === latestYear && (j.avancement === null || j.avancement === undefined || j.avancement < 1)) : false;
     const projectedYear = (hasOpen && latestYear) ? latestYear + 1 : null;
 
+    // Dépenses engagées par année pour ce projet
+    const engByY = {};
+    jp.forEach(j => { if (j.annee) engByY[j.annee] = (engByY[j.annee]||0) + (j.depenses_engagees||0); });
+
     return {
-      p,
-      jp,
-      anneesJalons,
-      projectedYear,
-      hasOpen,
+      p, jp, anneesJalons, projectedYear, hasOpen, engByY,
       cirTotal: jp.reduce((s,j)=>s+(j.montant_cir||0),0),
       ciiTotal: jp.reduce((s,j)=>s+(j.montant_cii||0),0),
       cicoTotal: jp.reduce((s,j)=>s+(j.montant_cico||0),0),
@@ -689,7 +692,11 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
     };
   });
 
-  // Fenêtre de la frise : min(années jalons, démarrages projets) → max(années jalons, clôtures, prolongations)
+  // Max des dépenses engagées (une année × un projet) pour normaliser l'intensité
+  let maxEng = 0;
+  projRows.forEach(r => { Object.values(r.engByY).forEach(v => { if (v > maxEng) maxEng = v; }); });
+
+  // Fenêtre de la frise
   const allYearsSet = new Set();
   yearsJalons.forEach(y => allYearsSet.add(y));
   projRows.forEach(r => {
@@ -701,7 +708,16 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   const friseYears = [...allYearsSet].sort();
   if (!friseYears.length) return '<div class="card empty">Aucune année à afficher.</div>';
 
-  // Rendu HTML de la frise
+  // Palette RGB par axe
+  // R (Recherche) = bleu profond, D (Développement) = vert, I (Innovation) = rose
+  function axeRGB(axe) {
+    const a = (axe||'').charAt(0).toUpperCase();
+    if (a === 'R') return '46,58,184';   // #2E3AB8
+    if (a === 'D') return '0,166,104';   // #00A668
+    if (a === 'I') return '192,30,96';   // #C01E60
+    return '9,11,51';                     // #090B33
+  }
+
   const colW = 100 / friseYears.length;
   const header = '<div class="frise-header"><div class="frise-name">Projet</div><div class="frise-years">'
     + friseYears.map(y => {
@@ -715,51 +731,69 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   projRows.sort((a,b) => (a.p.axe_rdi||'').localeCompare(b.p.axe_rdi||'') || (a.p.demarrage||9999) - (b.p.demarrage||9999));
 
   const rows = projRows.map(r => {
+    const rgb = axeRGB(r.p.axe_rdi);
     const segments = friseYears.map(y => {
       const hasJalon = r.anneesJalons.includes(y);
       const isProjected = r.projectedYear === y;
-      // Jalons de cette année pour ce projet
       const jY = r.jp.filter(j => j.annee === y);
+      const engY = r.engByY[y] || 0;
       const fpY = jY.reduce((s,j)=>s+(j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0),0);
       const avgAvanc = jY.length ? (jY.reduce((s,j)=>s+(j.avancement||0),0) / jY.length) : 0;
 
       let cls = 'fr-cell';
       let inner = '';
       let tooltip = r.p.nom+' · '+y;
+      let styleAttr = 'width:'+colW+'%;';
 
       if (hasJalon) {
         cls += ' fr-filled';
-        if (fpY > 0) {
-          inner = '<div class="fr-fp">'+shortEuro(fpY)+'</div>';
-          tooltip += ' · Fin. public : '+shortEuro(fpY)+' · Avancement : '+Math.round(avgAvanc*100)+'%';
-        } else {
-          tooltip += ' · Avancement : '+Math.round(avgAvanc*100)+'%';
-        }
-        // Barre d'avancement en arrière-plan
-        const bgW = Math.max(4, Math.round(avgAvanc*100));
-        inner = '<div class="fr-avanc" style="width:'+bgW+'%;"></div>' + inner;
+        // Intensité = 0.15 + 0.75 × (engY / maxEng) → [0.15, 0.90]
+        const intensity = maxEng > 0 ? (0.15 + 0.75 * (engY / maxEng)) : 0.5;
+        const bg = 'rgba('+rgb+','+intensity.toFixed(3)+')';
+        styleAttr += 'background:'+bg+';';
+        // Couleur du texte selon intensité (seuil ~0.55)
+        const textColor = intensity > 0.55 ? '#fff' : 'var(--ink)';
+        const textShadow = intensity > 0.55 ? 'text-shadow: 0 1px 2px rgba(0,0,0,0.35);' : '';
+
+        const parts = [];
+        parts.push('<div class="fr-eng" style="color:'+textColor+'; '+textShadow+'">'+shortEuro(engY)+'</div>');
+        if (fpY > 0) parts.push('<div class="fr-fp-sub" style="color:'+textColor+'; '+textShadow+'">fp '+shortEuro(fpY)+'</div>');
+        inner = parts.join('');
+
+        tooltip += ' · Dép. engagées : '+shortEuro(engY)+(fpY?' · Fin. public : '+shortEuro(fpY):'')+' · Avancement : '+Math.round(avgAvanc*100)+'%';
       } else if (isProjected) {
         cls += ' fr-projected';
         inner = '<div class="fr-arrow">→</div>';
         tooltip += ' · prolongation anticipée (jalon N-1 non terminé)';
       }
-      return '<div class="'+cls+'" style="width:'+colW+'%;" title="'+tooltip.replace(/"/g,'&quot;')+'">'+inner+'</div>';
+      return '<div class="'+cls+'" style="'+styleAttr+'" title="'+tooltip.replace(/"/g,'&quot;')+'">'+inner+'</div>';
     }).join('');
 
-    const axeColor = {R:'#2E3AB8', D:'#00A668', I:'#C01E60'}[(r.p.axe_rdi||'').charAt(0)] || '#090B33';
+    const axeBorderColor = 'rgb('+rgb+')';
     const certifCount = r.jp.filter(j => j.certifie).length;
+    const engTotal = Object.values(r.engByY).reduce((s,v)=>s+v, 0);
 
     return '<div class="frise-row">'
-      + '<div class="frise-name" style="border-left-color:'+axeColor+';">'
+      + '<div class="frise-name" style="border-left-color:'+axeBorderColor+';">'
         + '<a onclick="setView(\'projet:'+r.p.id+'\')" style="cursor:pointer; color:var(--ink); font-weight:700; text-decoration:none;">'+r.p.nom+'</a>'
-        + '<div class="frise-sub">'+(r.p.axe_rdi||'—')+' · TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(r.fpTotal)+(certifCount?' · '+certifCount+'✓':'')+'</div>'
+        + '<div class="frise-sub">'+(r.p.axe_rdi||'—')+' · TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(engTotal)+' engagés · '+shortEuro(r.fpTotal)+' fin. public'+(certifCount?' · '+certifCount+'✓':'')+'</div>'
       + '</div>'
       + '<div class="frise-years">'+segments+'</div>'
       + '</div>';
   }).join('');
 
   const nbProjected = projRows.filter(r => r.projectedYear).length;
-  const legend = '<div class="frise-legend"><span><span class="lg-dot fr-filled"></span> Année avec jalons (barre = avancement moyen)</span><span><span class="lg-dot fr-projected"></span> Projection N+1 (jalon en cours)</span>'+(nbProjected?'<span class="lg-note">'+nbProjected+' projet'+(nbProjected>1?'s':'')+' en continuité anticipée</span>':'')+'</div>';
+  const legend = '<div class="frise-legend">'
+    + '<span><b>Axes</b> :</span>'
+    + '<span><span class="lg-dot" style="background:rgb(46,58,184);"></span> R (Recherche)</span>'
+    + '<span><span class="lg-dot" style="background:rgb(0,166,104);"></span> D (Développement)</span>'
+    + '<span><span class="lg-dot" style="background:rgb(192,30,96);"></span> I (Innovation)</span>'
+    + '<span class="lg-sep">·</span>'
+    + '<span>Intensité = dépenses engagées (plus foncé = plus de dépenses)</span>'
+    + '<span class="lg-sep">·</span>'
+    + '<span><span class="lg-dot fr-projected"></span> Projection N+1 (jalon en cours)</span>'
+    + (nbProjected?'<span class="lg-note">'+nbProjected+' projet'+(nbProjected>1?'s':'')+' en continuité anticipée</span>':'')
+    + '</div>';
 
   return '<div class="card frise-card"><div class="frise">'+header+rows+'</div>'+legend+'</div>';
 }
