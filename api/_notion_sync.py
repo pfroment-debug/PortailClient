@@ -366,6 +366,13 @@ def transform_jalon(page, societe_by_id, projet_by_id):
     montant_cir_cii = _try(page, ["Montant CIR/CII"], _x_number) or 0
     montant_cico    = _try(page, ["Montant CICO"], _x_number) or 0
     subvention      = _try(page, ["Subvention perçue"], _x_number) or 0
+    type_ci         = _try(page, ["type CI"], _x_select) or ""
+
+    # Décomposition CIR vs CII selon le type_ci du jalon
+    # Règle : si type_ci contient "CII" → bucket CII ; sinon (CIR, CIR/CICO, autres) → bucket CIR
+    is_cii = "cii" in type_ci.lower()
+    montant_cir = 0 if is_cii else montant_cir_cii
+    montant_cii = montant_cir_cii if is_cii else 0
 
     return {
         "id":                    _norm(page["id"]),
@@ -373,14 +380,16 @@ def transform_jalon(page, societe_by_id, projet_by_id):
         "projets_ids":           [_norm(i) for i in proj_ids],
         "societe":               _resolve_name(page, societe_by_id, ["Société 2026"]),
         "annee":                 _x_year(_prop(page, "Année")),
-        "type_ci":               _try(page, ["type CI"], _x_select) or "",
+        "type_ci":               type_ci,
         "depenses_engagees":     _try(page, ["Dépenses engagées"], _x_number) or 0,
         "depenses_valorisables": _try(page, ["Dépenses Valorisable", "Dépenses valorisables"], _x_number) or 0,
         # Dispositifs potentiellement cumulés sur un même jalon
-        "montant_cir_cii":       montant_cir_cii,
+        "montant_cir":           montant_cir,
+        "montant_cii":           montant_cii,
+        "montant_cir_cii":       montant_cir_cii,  # somme brute (compat)
         "montant_cico":          montant_cico,
         "subvention_percue":     subvention,
-        # Total du financement public du jalon (utile partout)
+        # Totaux agrégés
         "montant_ci":            montant_cir_cii + montant_cico,
         "financement_public":    montant_cir_cii + montant_cico + subvention,
         "avancement":            av,
