@@ -227,6 +227,12 @@ def _x_trl(p):
     return 0
 
 
+def _x_checkbox(p):
+    if not p or p.get("type") != "checkbox":
+        return False
+    return bool(p.get("checkbox", False))
+
+
 # ======== HELPERS ========
 
 def _try(page, names, extractor):
@@ -283,8 +289,10 @@ def transform_projet(page, societe_by_id):
         if score_i: parts.append("I")
         axe = "&".join(parts) or "—"
 
-    # Rollups (totaux calculés par Notion, tous jalons confondus)
-    tot_ci       = _try(page, ["Tot CI obtenu"], _x_number) or 0
+    # Rollups projets : les 3 dispositifs sont désormais remontés séparément
+    tot_cir_cii  = _try(page, ["Tot CIR/CII obtenu"], _x_number) or 0
+    tot_cico     = _try(page, ["Tot CICO obtenu"], _x_number) or 0
+    tot_subv     = _try(page, ["Tot Sub obtenu"], _x_number) or 0
     tot_engagees = _try(page, ["Tot Dépenses Engagées"], _x_number) or 0
     tot_valo     = _try(page, ["Tot dépenses valorisées"], _x_number) or 0
 
@@ -304,14 +312,21 @@ def transform_projet(page, societe_by_id):
         "score_i":      int(score_i),
         "score_d":      int(score_d),
         "axe_rdi":      axe,
-        "tot_ci_rollup":       tot_ci,
-        "tot_engagees_rollup": tot_engagees,
-        "tot_valo_rollup":     tot_valo,
+        "tot_cir_cii_rollup":         tot_cir_cii,
+        "tot_cico_rollup":            tot_cico,
+        "tot_subv_rollup":            tot_subv,
+        "tot_ci_rollup":              tot_cir_cii + tot_cico,  # agrégat CI
+        "tot_financement_public":     tot_cir_cii + tot_cico + tot_subv,
+        "tot_engagees_rollup":        tot_engagees,
+        "tot_valo_rollup":            tot_valo,
     }
 
 
 def transform_dossier(page, societe_by_id):
-    """Chaque dossier porte des rollups (totaux sur ses jalons) + responsable PDJ."""
+    """Chaque dossier porte des rollups (totaux sur ses jalons) + responsable PDJ.
+    Les 2 dispositifs CIR/CII et CICO sont désormais remontés séparément."""
+    mt_cir_cii = _try(page, ["Montant CIR/CII"], _x_number) or 0
+    mt_cico    = _try(page, ["Montant CICO"], _x_number) or 0
     return {
         "id":      _norm(page["id"]),
         "nom":     _try(page, ["Nom"], _x_title) or "",
@@ -320,16 +335,19 @@ def transform_dossier(page, societe_by_id):
         "annee":   _x_year(_prop(page, "Année")),
         # Responsable PDJ (people)
         "assigne": _x_people(_prop(page, "Personne")),
-        # Rollups
+        # Rollups sur les jalons du dossier
         "depenses_engagees_rollup":     _try(page, ["Dépenses engagées"], _x_number) or 0,
         "depenses_valorisables_rollup": _try(page, ["Dépenses valorisables"], _x_number) or 0,
-        "montant_ci_rollup":            _try(page, ["Montant CI"], _x_number) or 0,
+        "montant_cir_cii_rollup":       mt_cir_cii,
+        "montant_cico_rollup":          mt_cico,
+        "montant_ci_rollup":            mt_cir_cii + mt_cico,  # agrégat pour compat
         "subvention_percue_rollup":     _try(page, ["Subvention perçue"], _x_number) or 0,
     }
 
 
 def transform_jalon(page, societe_by_id, projet_by_id):
-    """Un jalon peut être relié à PLUSIEURS dossiers → on expose dossiers_ids."""
+    """Un jalon peut être relié à PLUSIEURS dossiers → on expose dossiers_ids.
+    Un jalon peut cumuler CIR/CII + CICO + subvention sur les mêmes dépenses."""
     proj_ids = _try_relation(page, ["Projets 2026"])
     projet_nom = ""
     for i in proj_ids:
@@ -345,6 +363,10 @@ def transform_jalon(page, societe_by_id, projet_by_id):
 
     doss_ids = _try_relation(page, ["Dossiers 2026"])
 
+    montant_cir_cii = _try(page, ["Montant CIR/CII"], _x_number) or 0
+    montant_cico    = _try(page, ["Montant CICO"], _x_number) or 0
+    subvention      = _try(page, ["Subvention perçue"], _x_number) or 0
+
     return {
         "id":                    _norm(page["id"]),
         "projet":                projet_nom,
@@ -354,9 +376,15 @@ def transform_jalon(page, societe_by_id, projet_by_id):
         "type_ci":               _try(page, ["type CI"], _x_select) or "",
         "depenses_engagees":     _try(page, ["Dépenses engagées"], _x_number) or 0,
         "depenses_valorisables": _try(page, ["Dépenses Valorisable", "Dépenses valorisables"], _x_number) or 0,
-        "montant_ci":            _try(page, ["Montant CI"], _x_number) or 0,
-        "subvention_percue":     _try(page, ["Subvention perçue"], _x_number) or 0,
+        # Dispositifs potentiellement cumulés sur un même jalon
+        "montant_cir_cii":       montant_cir_cii,
+        "montant_cico":          montant_cico,
+        "subvention_percue":     subvention,
+        # Total du financement public du jalon (utile partout)
+        "montant_ci":            montant_cir_cii + montant_cico,
+        "financement_public":    montant_cir_cii + montant_cico + subvention,
         "avancement":            av,
+        "certifie":              _x_checkbox(_prop(page, "certifié")),
         "dossiers_ids":          [_norm(i) for i in doss_ids],
     }
 
@@ -452,6 +480,8 @@ def transform_reunion(page, societe_by_id, projet_by_id, contact_by_id=None):
         "societe":        _resolve_name(page, societe_by_id, ["Société 2026"]),
         "type":           _try(page, ["Type"], _x_select) or "Autre",
         "date":           _try(page, ["Date"], _x_date),
+        "priorite":       _try(page, ["Priorité"], _x_select) or "",
+        "statut":         _try(page, ["Statut"], _x_select) or "",
         "participants":   _x_people(_prop(page, "Participants")),
         "contacts_lies":  contacts_lies,
         "projets_lies":   _resolve_names_for_ids(proj_ids, projet_by_id),
