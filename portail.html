@@ -237,6 +237,15 @@
   @media (max-width: 1100px) { .app { grid-template-columns: 1fr; } .kpi-row { grid-template-columns: repeat(2, 1fr); } }
   /* ===== FRISE CHRONOLOGIQUE ===== */
   .frise-card { padding: 18px 20px; }
+  /* Blocs par axe RDI (pilotage R&D) */
+  .axe-block { margin: 0 0 var(--sp-6); padding-left: var(--sp-4); border-left: 4px solid #ccc; }
+  .axe-block + .axe-block { margin-top: var(--sp-7); }
+  .axe-header { display: flex; justify-content: space-between; align-items: center; margin: 0 0 var(--sp-3); flex-wrap: wrap; gap: var(--sp-4); }
+  .axe-title { display: flex; align-items: center; gap: var(--sp-3); }
+  .axe-pill { color: #fff; font-weight: 700; padding: 5px 11px; border-radius: 4px; font-size: 13px; letter-spacing: 0.5px; min-width: 32px; text-align: center; }
+  .axe-stats { display: flex; gap: var(--sp-5); font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+  .axe-stats b { color: var(--ink); font-weight: 700; }
+  .axe-stats small { color: var(--muted); font-weight: normal; }
   .frise { display: block; }
   .frise-header, .frise-row {
     display: flex;
@@ -970,22 +979,26 @@ function _t1_client(jalons, factures, dossiers, livrables, documents, risques, n
 
   // Graphiques
   if (years.length) {
-    charts.ch1a = new Chart($('ch1a'), {
-      type: 'bar',
-      data: { labels: years, datasets: [
-        { label: 'CIR', data: years.map(y => byYear[y].cir), backgroundColor: '#2E3AB8', stack: 'fp' },
-        { label: 'CII', data: years.map(y => byYear[y].cii), backgroundColor: '#C01E60', stack: 'fp' },
-        { label: 'CICO', data: years.map(y => byYear[y].cico), backgroundColor: '#00A668', stack: 'fp' },
-        { label: 'Subventions', data: years.map(y => byYear[y].subv), backgroundColor: '#8A6B1A', stack: 'fp' },
-        { label: 'Dép. engagées', type: 'line', data: years.map(y => byYear[y].eng), borderColor: '#090B33', backgroundColor: 'transparent', tension: 0.25, pointRadius: 4, pointBackgroundColor: '#090B33', borderWidth: 2 }
-      ]},
-      options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => Math.round(v/1000)+' k€' } } }, plugins: { legend: { position: 'bottom' } } }
-    });
-    charts.ch1b = new Chart($('ch1b'), {
-      type: 'doughnut',
-      data: { labels: ['CIR','CII','CICO','Subventions'], datasets: [{ data: [totCIR, totCII, totCICO, totS], backgroundColor: ['#2E3AB8','#C01E60','#00A668','#8A6B1A'], borderWidth: 0 }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-    });
+    try {
+      charts.ch1a = new Chart($('ch1a'), {
+        type: 'bar',
+        data: { labels: years, datasets: [
+          { label: 'CIR', data: years.map(y => byYear[y].cir), backgroundColor: '#2E3AB8', stack: 'fp' },
+          { label: 'CII', data: years.map(y => byYear[y].cii), backgroundColor: '#C01E60', stack: 'fp' },
+          { label: 'CICO', data: years.map(y => byYear[y].cico), backgroundColor: '#00A668', stack: 'fp' },
+          { label: 'Subventions', data: years.map(y => byYear[y].subv), backgroundColor: '#8A6B1A', stack: 'fp' },
+          { label: 'Dép. engagées', type: 'line', data: years.map(y => byYear[y].eng), borderColor: '#090B33', backgroundColor: 'transparent', tension: 0.25, pointRadius: 4, pointBackgroundColor: '#090B33', borderWidth: 2 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => Math.round(v/1000)+' k€' } } }, plugins: { legend: { position: 'bottom' } } }
+      });
+    } catch(e) { console.error('[chart ch1a]', e); }
+    try {
+      charts.ch1b = new Chart($('ch1b'), {
+        type: 'doughnut',
+        data: { labels: ['CIR','CII','CICO','Subventions'], datasets: [{ data: [totCIR, totCII, totCICO, totS], backgroundColor: ['#2E3AB8','#C01E60','#00A668','#8A6B1A'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      });
+    } catch(e) { console.error('[chart ch1b]', e); }
   }
 }
 
@@ -1048,18 +1061,26 @@ function _t2_client(projets, livrables, reunions, risques, jalons, name) {
     if (p.trl_cible) trlDist[p.trl_cible].cible++;
   });
 
-  // Portefeuille projets (table)
-  const rows = projets.slice().sort((a,b) => (b.demarrage||0) - (a.demarrage||0)).map(p => {
-    const gc = {Interne:'gov-interne',Codev:'gov-codev',Presta:'gov-presta'}[p.gouvernance] || 'gov-interne';
-    return '<tr><td><b><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);text-decoration:none;">'+p.nom+'</a></b>'
-      + (p.objectif ? '<br/><small style="color:var(--muted);">'+p.objectif.substring(0,140)+'</small>' : '')
-      + '</td>'
-      + '<td style="text-align:center;">'+trlBar(p.trl, p.trl_cible)+'<br/><small>'+(p.trl||'—')+' → '+(p.trl_cible||'—')+'</small></td>'
-      + '<td><span class="govx '+gc+'">'+p.gouvernance+'</span></td>'
-      + '<td><span class="strategie-pi '+typeCIClass(p.strategie_pi)+'">'+(p.strategie_pi||'—')+'</span></td>'
-      + '<td>'+(p.axe_rdi||'—')+'</td>'
-      + '<td><small>'+(p.demarrage||'—')+' → '+(p.cloture||'—')+'</small></td></tr>';
-  }).join('');
+  // Portefeuille projets — groupement par axe R&DI
+  const axeOrder = ['Recherche', 'R&D', 'Développement', 'D&I', 'Innovation'];
+  const axeMeta = {
+    'Recherche':     { rgb: '46,58,184',  code: 'R',   desc: 'Production de connaissances nouvelles' },
+    'R&D':           { rgb: '23,112,144', code: 'R&D', desc: 'Continuum recherche → développement' },
+    'Développement': { rgb: '0,166,104',  code: 'D',   desc: 'Mise au point technique et industrielle' },
+    'D&I':           { rgb: '96,98,82',   code: 'D&I', desc: 'Continuum développement → innovation' },
+    'Innovation':    { rgb: '192,30,96',  code: 'I',   desc: 'Nouveauté commerciale ou d\'usage' },
+  };
+  const getAxeMeta = (axe) => axeMeta[axe] || { rgb: '120,120,120', code: axe || '—', desc: 'Axe non renseigné' };
+
+  const projetsByAxe = {};
+  projets.forEach(p => {
+    const axe = p.axe_rdi || '—';
+    (projetsByAxe[axe] = projetsByAxe[axe] || []).push(p);
+  });
+  const knownAxes = axeOrder.filter(a => projetsByAxe[a]);
+  const otherAxes = Object.keys(projetsByAxe).filter(a => !axeOrder.includes(a) && a !== '—').sort();
+  const sortedAxes = [...knownAxes, ...otherAxes];
+  if (projetsByAxe['—']) sortedAxes.push('—');
 
   // Répartitions pour charts
   const gov = {Interne:0, Codev:0, Presta:0};
@@ -1131,11 +1152,52 @@ function _t2_client(projets, livrables, reunions, risques, jalons, name) {
       <div class="card"><h3>Cadence des réunions (12 mois)</h3><div class="chart-wrap"><canvas id="ch2cad"></canvas></div></div>
     </div>
 
-    <div class="section-title"><h2>Portefeuille projets</h2><span class="tag t2-tag">${projets.length} projet${projets.length>1?'s':''}</span></div>
-    <div class="card" style="padding:0; overflow-x:auto;">
-      <table><thead><tr><th>Projet</th><th style="text-align:center;">TRL</th><th>Gouv.</th><th>Strat. PI</th><th>Axe RDI</th><th>Période</th></tr></thead>
-      <tbody>${rows || '<tr><td colspan="6" class="empty">Aucun projet.</td></tr>'}</tbody></table>
-    </div>
+    <div class="section-title"><h2>Projets détaillés par axe R&amp;DI</h2><span class="tag t2-tag">${projets.length} projet${projets.length>1?'s':''} · ${sortedAxes.length} axe${sortedAxes.length>1?'s':''}</span></div>
+    ${sortedAxes.length === 0 ? '<div class="card empty">Aucun projet.</div>' : sortedAxes.map(axe => {
+      const projs = projetsByAxe[axe];
+      const meta = getAxeMeta(axe);
+      const totEng = projs.reduce((s,p) => s + (p.tot_engagees_rollup||0), 0);
+      const totFP = projs.reduce((s,p) => s + (p.tot_financement_public||0), 0);
+      const tauxFP = totEng > 0 ? Math.round((totFP/totEng)*100) : null;
+      const trlMoyen = projs.filter(p => p.trl).length ? (projs.reduce((s,p)=>s+(p.trl||0),0) / projs.filter(p=>p.trl).length).toFixed(1) : '—';
+      const projsTable = projs.slice().sort((a,b) => (b.demarrage||0) - (a.demarrage||0)).map(p => {
+        const gc = {Interne:'gov-interne',Codev:'gov-codev',Presta:'gov-presta'}[p.gouvernance] || 'gov-interne';
+        return '<tr>'
+          + '<td><b><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);text-decoration:none;">'+p.nom+'</a></b>'
+          + (p.objectif ? '<br/><small style="color:var(--muted);">'+p.objectif.substring(0,160)+(p.objectif.length>160?'…':'')+'</small>' : '')
+          + '</td>'
+          + '<td style="text-align:center;">'+trlBar(p.trl, p.trl_cible)+'<br/><small>'+(p.trl||'—')+' → '+(p.trl_cible||'—')+'</small></td>'
+          + '<td><span class="govx '+gc+'">'+p.gouvernance+'</span></td>'
+          + '<td><span class="strategie-pi '+typeCIClass(p.strategie_pi)+'">'+(p.strategie_pi||'—')+'</span></td>'
+          + '<td><small>'+(p.demarrage||'—')+' → '+(p.cloture||'—')+'</small></td>'
+          + '<td class="num">'+shortEuro(p.tot_engagees_rollup||0)+'</td>'
+          + '<td class="num"><b>'+shortEuro(p.tot_financement_public||0)+'</b></td>'
+          + '</tr>';
+      }).join('');
+      return `<div class="axe-block" style="border-left-color: rgb(${meta.rgb});">
+        <div class="axe-header">
+          <div class="axe-title">
+            <span class="axe-pill" style="background:rgb(${meta.rgb});">${meta.code}</span>
+            <div>
+              <h3 style="margin:0;">${axe === '—' ? 'Axe non renseigné' : axe}</h3>
+              <small style="color:var(--muted);">${meta.desc}</small>
+            </div>
+          </div>
+          <div class="axe-stats">
+            <span><b>${projs.length}</b> projet${projs.length>1?'s':''}</span>
+            <span>TRL moyen <b>${trlMoyen}</b></span>
+            <span><b>${shortEuro(totEng)}</b> engagés</span>
+            <span><b>${shortEuro(totFP)}</b> fin. public${tauxFP !== null ? ' <small>('+tauxFP+'%)</small>' : ''}</span>
+          </div>
+        </div>
+        <div class="card" style="padding:0; overflow-x:auto;">
+          <table>
+            <thead><tr><th>Projet</th><th style="text-align:center;">TRL</th><th>Gouv.</th><th>Strat. PI</th><th>Période</th><th class="num">Engagées</th><th class="num">Fin. public</th></tr></thead>
+            <tbody>${projsTable}</tbody>
+          </table>
+        </div>
+      </div>`;
+    }).join('')}
 
     <div class="section-title"><h2>Répartitions structurelles</h2><span class="tag t2-tag">analytique</span></div>
     <div class="grid c2">
