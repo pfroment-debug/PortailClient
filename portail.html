@@ -304,6 +304,59 @@
   table.dossiers-table tr.dossier-body-row table.dossier-jalons tr:hover { background: rgba(255,255,255,0.7); }
   /* Action bar dédiée à la table dossiers T1 (T2 garde son propre .t2-actions) */
   .dossiers-actions { display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding: 12px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+
+  /* ===== Badges synthétiques (TRL gap, Gouvernance, PI, axe RDI) ===== */
+  .badge-soft { display: inline-flex; align-items: center; padding: 4px 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.2px; border-radius: 12px; border: 1px solid; line-height: 1.4; white-space: nowrap; cursor: help; }
+  .badge-soft.green { color: var(--green-dark); background: var(--green-bg); border-color: var(--green); }
+  .badge-soft.amber { color: var(--amber-dark); background: var(--amber-bg); border-color: var(--amber); }
+  .badge-soft.brick { color: var(--brick-dark); background: var(--brick-bg); border-color: var(--brick); }
+  .badge-soft.cyan { color: var(--cyan-dark); background: var(--cyan-bg); border-color: var(--cyan); }
+  .badge-soft.purple { color: var(--purple-dark); background: var(--purple-bg); border-color: var(--purple); }
+  .badge-soft.gray, .badge-soft.muted { color: var(--muted); background: #f5f5f5; border-color: var(--border); }
+  /* Variantes dédiées aux axes R&D&I */
+  .badge-soft.rdi-r { color: rgb(46,58,184); background: rgba(46,58,184,0.10); border-color: rgba(46,58,184,0.4); }
+  .badge-soft.rdi-rd { color: rgb(0,107,138); background: rgba(0,107,138,0.10); border-color: rgba(0,107,138,0.4); }
+  .badge-soft.rdi-d { color: rgb(0,138,72); background: rgba(0,138,72,0.10); border-color: rgba(0,138,72,0.4); }
+  .badge-soft.rdi-di { color: rgb(120,140,40); background: rgba(120,140,40,0.10); border-color: rgba(120,140,40,0.4); }
+  .badge-soft.rdi-i { color: rgb(192,30,96); background: rgba(192,30,96,0.10); border-color: rgba(192,30,96,0.4); }
+  .badge-soft.rdi-rdi { color: rgb(108,40,180); background: rgba(108,40,180,0.10); border-color: rgba(108,40,180,0.4); }
+  .badge-soft.rdi-x { color: var(--ink); background: #eee; border-color: var(--border); }
+
+  /* ===== Mini-bar scores R / I / D ===== */
+  .rdi-bar { display: flex; height: 28px; border-radius: 4px; overflow: hidden; font-size: 11px; font-weight: 700; color: #fff; }
+  .rdi-bar.empty { background: #f5f5f5; align-items: center; justify-content: center; color: var(--muted); font-style: italic; padding: 0 12px; }
+  .rdi-bar > div { display: flex; align-items: center; justify-content: center; min-width: 0; padding: 0 6px; transition: filter 0.12s; }
+  .rdi-bar > div:hover { filter: brightness(1.08); }
+  .rdi-bar .rdi-r { background: rgb(46,58,184); }
+  .rdi-bar .rdi-i { background: rgb(192,30,96); }
+  .rdi-bar .rdi-d { background: rgb(0,138,72); }
+
+  /* ===== Indicateur de variation N vs N-1 ===== */
+  .dl-good { color: var(--green-dark); font-size: 11px; font-weight: 700; }
+  .dl-bad { color: var(--brick-dark); font-size: 11px; font-weight: 700; }
+  .dl-eq { color: var(--muted); font-size: 11px; font-weight: 600; }
+  .dl-empty { color: var(--muted); font-size: 11px; font-style: italic; }
+
+  /* ===== Mini-frise verticale (3 dernières années etc) ===== */
+  .mini-spark { display: flex; gap: 6px; align-items: flex-end; padding: 4px 0; height: 60px; }
+  .mini-spark .msp-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+  .mini-spark .msp-bar { width: 18px; background: var(--border); border-radius: 2px 2px 0 0; min-height: 2px; transition: background 0.12s; }
+  .mini-spark .msp-bar.cur { background: var(--brand); }
+  .mini-spark .msp-lbl { font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; letter-spacing: -0.3px; }
+
+  /* ===== Synthèse badges en tête de fiche projet ===== */
+  .projet-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  /* Bandeau d'alerte pour les risques rattachés au sommet d'un panel */
+  .alert-strip { background: linear-gradient(90deg, var(--brick-bg) 0%, var(--brick-bg) 100%); border: 1px solid var(--brick); border-left: 4px solid var(--brick-dark); border-radius: 4px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+  .alert-strip .as-icon { font-size: 18px; color: var(--brick-dark); }
+  .alert-strip .as-msg { flex: 1; font-size: 13px; color: var(--brick-dark); }
+  .alert-strip .as-msg b { color: var(--brick-dark); }
+  .alert-strip .as-link { font-size: 11px; padding: 4px 10px; background: var(--brick-dark); color: #fff; border-radius: 3px; cursor: pointer; font-weight: 700; text-decoration: none; }
+  .alert-strip .as-link:hover { filter: brightness(1.1); }
+
+  /* Verrou alerte (vide = problème) */
+  .verrou-alert { background: var(--brick-bg); border: 1px solid var(--brick); border-left: 3px solid var(--brick); border-radius: 4px; padding: 10px 14px; color: var(--brick-dark); font-size: 12px; }
+  .verrou-alert b { font-weight: 700; }
   /* Toggle de mode dans le titre de section T2 */
   .t2-toggle { display: inline-flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
   .t2-toggle-btn { background: transparent; border: 0; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: background 0.15s, color 0.15s; }
@@ -536,6 +589,81 @@ const trlBar = (trl, cible, large) => {
   }
   return h+'</span>';
 };
+
+/* ===== Helpers visuels réutilisables (badges, deltas, mini-graphiques) ===== */
+
+// Badge écart TRL → TRL cible. Plus le gap est large, plus le risque technique est élevé.
+function trlGapBadge(trl, trlCible) {
+  if (!trl || !trlCible) return '<span class="badge-soft muted" title="TRL non renseigné">TRL —</span>';
+  const gap = trlCible - trl;
+  let cls = 'green', label = 'risque maîtrisé';
+  if (gap >= 5) { cls = 'brick'; label = 'risque élevé'; }
+  else if (gap >= 3) { cls = 'amber'; label = 'risque modéré'; }
+  return '<span class="badge-soft '+cls+'" title="Écart TRL actuel → cible : '+label+'">TRL '+trl+'→'+trlCible+' · gap '+gap+'</span>';
+}
+
+// Indicateur de variation N vs N-1 (▲▼ avec couleur). pos="up_good" : bleu si haussier ; pos="down_good" : pour les indicateurs où baisser est bon.
+function deltaBadge(curr, prev, pos) {
+  if (curr === null || curr === undefined || prev === null || prev === undefined || prev === 0) return '<span class="dl-empty">—</span>';
+  const delta = curr - prev;
+  if (Math.abs(delta) < 1e-9) return '<span class="dl-eq">= N-1</span>';
+  const pctVal = Math.round(100 * delta / prev);
+  const isUp = delta > 0;
+  const isGood = pos === 'down_good' ? !isUp : isUp;
+  const cls = isGood ? 'dl-good' : 'dl-bad';
+  const arrow = isUp ? '▲' : '▼';
+  return '<span class="'+cls+'">'+arrow+' '+(isUp?'+':'')+pctVal+'% N-1</span>';
+}
+
+// Mini-barre horizontale des scores R / I / D (formules Notion). Donne la justification numérique de l'axe.
+function scoresRDIBar(scoreR, scoreI, scoreD) {
+  const r = scoreR || 0, i = scoreI || 0, d = scoreD || 0;
+  const tot = r + i + d;
+  if (!tot) return '<div class="rdi-bar empty"><span class="muted">scores R/D/I non calculés</span></div>';
+  const pR = Math.round(100*r/tot), pI = Math.round(100*i/tot), pD = 100 - pR - pI;
+  return '<div class="rdi-bar" title="Recherche '+r+' · Innovation '+i+' · Développement '+d+'">'
+    + (pR>0 ? '<div class="rdi-r" style="flex:'+pR+';" title="Recherche : '+r+' ('+pR+'%)">R '+pR+'%</div>' : '')
+    + (pI>0 ? '<div class="rdi-i" style="flex:'+pI+';" title="Innovation : '+i+' ('+pI+'%)">I '+pI+'%</div>' : '')
+    + (pD>0 ? '<div class="rdi-d" style="flex:'+pD+';" title="Développement : '+d+' ('+pD+'%)">D '+pD+'%</div>' : '')
+    + '</div>';
+}
+
+// Badge Gouvernance — pertinent pour la lecture du risque CIR
+function gouvernanceBadge(g) {
+  if (!g) return '<span class="badge-soft muted">Gouv. —</span>';
+  const cls = ({'Interne':'green','Codev':'cyan','Presta':'brick'})[g] || 'gray';
+  const tip = ({'Interne':'Travaux internes — profil de risque le plus sûr','Codev':'Codéveloppement — exige une convention claire','Presta':'Prestation externe — exige rescrit/agrément, profil de risque le plus exposé'})[g] || '';
+  return '<span class="badge-soft '+cls+'" title="'+tip+'">'+g+'</span>';
+}
+
+// Badge Stratégie PI — signal de maturité du projet
+function strategiePIBadge(pi) {
+  const v = pi || 'N.A';
+  const formal = v && v !== 'N.A' && v !== '—';
+  const cls = formal ? 'green' : 'amber';
+  const tip = formal ? 'Stratégie PI formalisée' : 'Stratégie PI non formalisée — actif intangible non sécurisé';
+  return '<span class="badge-soft '+cls+'" title="'+tip+'">PI : '+v+'</span>';
+}
+
+// Badge axe R&DI (formule sortie de Notion)
+function axeRDIBadge(axe) {
+  if (!axe) return '<span class="badge-soft muted">Axe —</span>';
+  const palette = {
+    'Recherche': 'rdi-r', 'R&D': 'rdi-rd', 'Développement': 'rdi-d',
+    'D&I': 'rdi-di', 'Innovation': 'rdi-i', 'R&DI': 'rdi-rdi', 'R&D&I': 'rdi-rdi'
+  };
+  return '<span class="badge-soft '+(palette[axe]||'rdi-x')+'" title="Axe R&D&I (formule Notion sur scores R/D/I)">'+axe+'</span>';
+}
+
+// Mini-frise des dépenses engagées sur N dernières années (pour mise en contexte)
+function miniSparkBars(values, labels, currentIdx) {
+  const max = Math.max.apply(null, values.concat([1]));
+  return '<div class="mini-spark">' + values.map((v,i) => {
+    const h = max ? Math.max(2, Math.round(36*v/max)) : 2;
+    const isCur = i === currentIdx;
+    return '<div class="msp-col"><div class="msp-bar'+(isCur?' cur':'')+'" style="height:'+h+'px;" title="'+labels[i]+' : '+shortEuro(v)+'"></div><div class="msp-lbl">'+labels[i]+'</div></div>';
+  }).join('') + '</div>';
+}
 
 function renderLivrableRow(l) {
   const prio = l.priorite ? '<span class="lvr-pri '+priClass(l.priorite)+'">'+l.priorite+'</span>' : '';
@@ -2065,12 +2193,13 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
 function renderProjet(projetId) {
   const p = DATA.projets.find(x => x.id === projetId);
   if (!p) return;
-  // Tous les filtres utilisent la relation Notion `projets_ids` (fiable). Le match par préfixe
-  // de nom causait des faux positifs sur les familles à préfixe commun (BDAA / BDAA-IA, MICO / LIFESPANMICO).
+  // Filtrage strict via projets_ids (relation Notion fiable)
   const jalons = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && (j.projets_ids||[]).includes(projetId));
   const livrables = getLivrables(CURRENT_SOCIETE).filter(l => (l.projets_ids||[]).includes(projetId));
   const risques = (DATA.risques||[]).filter(r => r.societe === CURRENT_SOCIETE && (r.projets_ids||[]).includes(projetId));
   const reunions = getReunions(CURRENT_SOCIETE).filter(r => (r.projets_ids||[]).includes(projetId));
+  // Risques actifs (à traiter ou en cours) — seront remontés en bandeau d'alerte
+  const risquesActifs = risques.filter(r => r.statut === 'À traiter' || r.statut === 'En cours');
 
   $('modeTag').textContent = 'PROJET R&D';
   $('entityName').textContent = p.nom;
@@ -2078,21 +2207,46 @@ function renderProjet(projetId) {
   $('entitySub').textContent = [p.gouvernance, 'TRL '+p.trl+' → '+p.trl_cible, p.demarrage+' → '+p.cloture, p.axe_rdi].filter(Boolean).join(' · ');
   $('topRight').innerHTML = '<span class="pill purple">R&D</span>';
 
-  const ciT = jalons.reduce((s,j) => s+(j.montant_ci||0), 0);
+  // ===== Données financières du projet =====
   const engT = jalons.reduce((s,j) => s+(j.depenses_engagees||0), 0);
   const valoT = jalons.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
-  // Velocity TRL : niveaux franchis par an (sur la période prévue)
-  const duree = (p.cloture||0) - (p.demarrage||0);
-  const velocity = (duree > 0 && p.trl && p.trl_cible) ? ((p.trl_cible - p.trl) / duree) : 0;
+  const cirT = jalons.reduce((s,j) => s+(j.montant_cir||0), 0);
+  const ciiT = jalons.reduce((s,j) => s+(j.montant_cii||0), 0);
+  const cicoT = jalons.reduce((s,j) => s+(j.montant_cico||0), 0);
+  const subvT = jalons.reduce((s,j) => s+(j.subvention_percue||0), 0);
+  const ciT = cirT + ciiT + cicoT;
+  const fpT = ciT + subvT;
+  const tauxValo = engT > 0 ? Math.round(100 * valoT / engT) : null;
+  const rendement = engT > 0 ? Math.round(100 * fpT / engT) : null;
+
+  // Dossiers où ce projet a au moins un jalon (lien fiscal explicite)
+  const dossierIds = new Set();
+  jalons.forEach(j => (j.dossiers_ids||[]).forEach(id => dossierIds.add(id)));
+  const dossiersPro = [...dossierIds].map(id => DATA.dossiers.find(x => x.id === id)).filter(Boolean);
+
   renderKPIs([
-    { label: 'CI cumulé', value: shortEuro(ciT), footer: jalons.length+' jalons' },
-    { label: 'Dép. engagées', value: shortEuro(engT), footer: shortEuro(valoT)+' valorisables' },
-    { label: 'TRL', value: (p.trl||'—')+' → '+(p.trl_cible||'—'), footer: p.trl && p.trl_cible ? (p.trl_cible - p.trl)+' niveaux à franchir' : '' },
-    { label: 'Velocity TRL', value: velocity ? velocity.toFixed(2)+'/an' : '—', footer: duree ? 'sur '+duree+' an'+(duree>1?'s':'') : (p.strategie_pi || '—') }
+    { label: 'Dépenses engagées', value: shortEuro(engT), footer: jalons.length+' jalon'+(jalons.length>1?'s':'') },
+    { label: 'Taux de valorisation', value: tauxValo!==null ? tauxValo+'%' : '—', footer: shortEuro(valoT)+' valorisables' },
+    { label: 'CI obtenu', value: shortEuro(ciT), footer: cirT?'CIR '+shortEuro(cirT):(ciiT?'CII '+shortEuro(ciiT):(cicoT?'CICO '+shortEuro(cicoT):'')) },
+    { label: 'Rendement fiscal', value: rendement!==null ? rendement+'%' : '—', footer: '(CI + sub) / engagées · '+shortEuro(fpT) }
   ]);
 
-  // T1 - Fiscal
-  const rowsJ = jalons.sort((a,b) => (a.annee||0)-(b.annee||0)).map(j =>
+  // ============ T1 : Lecture financière ============
+  const yearsP = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
+  const engByYearP  = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.depenses_engagees||0), 0));
+  const cirByYearP  = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.montant_cir||0), 0));
+  const ciiByYearP  = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.montant_cii||0), 0));
+  const cicoByYearP = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.montant_cico||0), 0));
+  const subvByYearP = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.subvention_percue||0), 0));
+  const nbCertP = jalons.filter(j => j.certifie).length;
+
+  // Bandeau alerte si risques fiscaux en cours
+  const risquesFiscaux = risquesActifs.filter(r => ['Risque fiscal','Prescription','Risque contrôle','Requalification'].includes(r.type_alerte));
+  const alertStripT1 = risquesFiscaux.length
+    ? '<div class="alert-strip"><span class="as-icon">⚠</span><span class="as-msg"><b>'+risquesFiscaux.length+' alerte'+(risquesFiscaux.length>1?'s':'')+' fiscale'+(risquesFiscaux.length>1?'s':'')+' en cours</b> sur ce projet — à examiner avant déclaration. Voir détails dans la lecture R&D ci-après.</span></div>'
+    : '';
+
+  const rowsJ = jalons.slice().sort((a,b) => (a.annee||0)-(b.annee||0)).map(j =>
     '<tr>'
     + '<td>'+(j.annee||'—')+'</td>'
     + '<td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+(j.type_ci||'—')+'</span></td>'
@@ -2102,61 +2256,42 @@ function renderProjet(projetId) {
     + '<td class="num">'+(j.montant_cii?euro(j.montant_cii):'—')+'</td>'
     + '<td class="num">'+(j.montant_cico?euro(j.montant_cico):'—')+'</td>'
     + '<td class="num subv-cell">'+(j.subvention_percue?euro(j.subvention_percue):'—')+'</td>'
-    + '<td>'+pct(j.avancement)+'</td>'
+    + '<td class="num">'+pct(j.avancement)+'</td>'
     + '<td style="text-align:center;">'+(j.certifie?'<span style="color:var(--green-dark); font-weight:700;">✓</span>':'<span style="color:var(--muted);">—</span>')+'</td>'
     + '</tr>'
   ).join('');
 
-  // Calculs depuis les jalons
-  const engCalcP  = jalons.reduce((s,j)=>s+(j.depenses_engagees||0), 0);
-  const valoCalcP = jalons.reduce((s,j)=>s+(j.depenses_valorisables||0), 0);
-  const cirCalcP  = jalons.reduce((s,j)=>s+(j.montant_cir||0), 0);
-  const ciiCalcP  = jalons.reduce((s,j)=>s+(j.montant_cii||0), 0);
-  const cicoCalcP = jalons.reduce((s,j)=>s+(j.montant_cico||0), 0);
-  const subvCalcP = jalons.reduce((s,j)=>s+(j.subvention_percue||0), 0);
-  const fpCalcP   = cirCalcP + ciiCalcP + cicoCalcP + subvCalcP;
-  const nbCertP   = jalons.filter(j => j.certifie).length;
-
-  const yearsP = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
-  const engByYearP  = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.depenses_engagees||0), 0));
-  const cirByYearP  = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.montant_cir||0), 0));
-  const ciiByYearP  = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.montant_cii||0), 0));
-  const cicoByYearP = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.montant_cico||0), 0));
-  const subvByYearP = yearsP.map(y => jalons.filter(j => j.annee === y).reduce((s,j)=>s+(j.subvention_percue||0), 0));
+  // Liste des dossiers où le projet apparaît (synthèse rapide)
+  const dossiersBlock = dossiersPro.length ? '<div class="section-title"><h2>Rattachement aux dossiers fiscaux</h2><span class="tag t1-tag">'+dossiersPro.length+'</span></div>'
+    + '<div class="card" style="padding:0; overflow:hidden;"><table style="width:100%;"><thead><tr><th>Dossier</th><th>Type</th><th>Année</th><th class="num">Jalons rattachés</th><th></th></tr></thead><tbody>'
+    + dossiersPro.slice().sort((a,b) => (b.annee||0)-(a.annee||0)).map(d => {
+        const nbJDoss = jalons.filter(j => (j.dossiers_ids||[]).includes(d.id)).length;
+        return '<tr><td><a onclick="setView(\'dossier:'+d.id+'\')" style="cursor:pointer;color:var(--brand);text-decoration:none;font-weight:600;">'+d.nom+'</a></td>'
+          + '<td><span class="type-ci '+typeCIClass(d.type)+'">'+d.type+'</span></td>'
+          + '<td>'+(d.annee||'—')+'</td>'
+          + '<td class="num">'+nbJDoss+'</td>'
+          + '<td><a onclick="setView(\'dossier:'+d.id+'\')" style="cursor:pointer;color:var(--muted);font-size:11px;">→ ouvrir</a></td></tr>';
+      }).join('')
+    + '</tbody></table></div>' : '';
 
   $('panel-t1').innerHTML = `
+    ${alertStripT1}
     <div class="lecture-intro">
       <div class="li-eyebrow">Projet · Lecture financière</div>
       <h2 class="li-title">Chaîne financière du projet</h2>
-      <p class="li-lead">Jalons année par année avec CIR, CII, CICO, subventions, certification et avancement. La répartition CIR vs CII est dérivée du champ <b>type CI</b> du jalon.</p>
+      <p class="li-lead">Effort engagé année par année, dispositifs mobilisés (CIR, CII, CICO, subventions), niveau de certification et rattachement aux dossiers fiscaux.</p>
     </div>
 
     ${yearsP.length ? `<div class="section-title"><h2>Trajectoire du financement public</h2><span class="tag t1-tag">${yearsP.length} exercice${yearsP.length>1?'s':''}</span></div>
-    <div class="grid c2">
-      <div class="card"><h3>Dépenses engagées vs financement public</h3><div class="chart-wrap"><canvas id="chpj1"></canvas></div></div>
-      <div class="card"><h3>Cohérence calcul jalons / rollup Notion</h3>
-        <table style="width:100%;font-size:12px;">
-          <tr><td>Dép. engagées (jalons)</td><td class="num"><b>${euro(engCalcP)}</b></td></tr>
-          <tr><td class="muted">Rollup Notion</td><td class="num muted">${euro(p.tot_engagees_rollup)}</td></tr>
-          <tr><td>Valorisables (jalons)</td><td class="num"><b>${euro(valoCalcP)}</b></td></tr>
-          <tr><td class="muted">Rollup Notion</td><td class="num muted">${euro(p.tot_valo_rollup)}</td></tr>
-          <tr><td>CIR + CII (jalons)</td><td class="num"><b>${euro(cirCalcP + ciiCalcP)}</b></td></tr>
-          <tr><td class="muted">Rollup CIR/CII Notion</td><td class="num muted">${euro(p.tot_cir_cii_rollup)}</td></tr>
-          <tr><td>CICO (jalons)</td><td class="num"><b>${euro(cicoCalcP)}</b></td></tr>
-          <tr><td class="muted">Rollup Notion</td><td class="num muted">${euro(p.tot_cico_rollup)}</td></tr>
-          <tr><td>Subventions (jalons)</td><td class="num subv-cell"><b>${euro(subvCalcP)}</b></td></tr>
-          <tr><td class="muted">Rollup Notion</td><td class="num muted">${euro(p.tot_subv_rollup)}</td></tr>
-          <tr style="border-top:2px solid var(--border);"><td><b>Fin. public total</b></td><td class="num"><b>${euro(fpCalcP)}</b></td></tr>
-        </table>
-      </div>
-    </div>` : ''}
+    <div class="card"><h3>Dépenses engagées vs financement public</h3><div class="chart-wrap"><canvas id="chpj1"></canvas></div></div>` : ''}
 
-    <div class="section-title"><h2>Jalons détaillés</h2><span class="tag t1-tag">${jalons.length} jalon${jalons.length>1?'s':''}</span></div>
-    ${jalons.length ? '<div class="subv-equation" style="background:var(--green-bg); border-color:var(--green); border-left-color:var(--green-dark);"><b>Certification :</b> '+nbCertP+'/'+jalons.length+' jalon'+(jalons.length>1?'s':'')+' certifié'+(nbCertP>1?'s':'')+' ('+Math.round((nbCertP/jalons.length)*100)+'%).</div>' : ''}
+    <div class="section-title"><h2>Jalons détaillés</h2><span class="tag t1-tag">${jalons.length} jalon${jalons.length>1?'s':''}${nbCertP?' · '+nbCertP+' certifié'+(nbCertP>1?'s':''):''}</span></div>
     <div class="card" style="padding:0; overflow-x:auto;">
-      <table><thead><tr><th>Année</th><th>Type</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">CIR</th><th class="num">CII</th><th class="num">CICO</th><th class="num">Subv.</th><th>Avanc.</th><th>Cert.</th></tr></thead>
+      <table><thead><tr><th>Année</th><th>Type</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">CIR</th><th class="num">CII</th><th class="num">CICO</th><th class="num">Subv.</th><th class="num">Avanc.</th><th>Cert.</th></tr></thead>
       <tbody>${rowsJ || '<tr><td colspan="10" class="empty">Aucun jalon.</td></tr>'}</tbody></table>
-    </div>`;
+    </div>
+
+    ${dossiersBlock}`;
 
   if (yearsP.length) {
     charts.chpj1 = new Chart($('chpj1'), {
@@ -2172,23 +2307,50 @@ function renderProjet(projetId) {
     });
   }
 
-  // T2 - Pilotage R&D
+  // ============ T2 : Pilotage R&D — la lecture forte du projet ============
+  // En tête : badges synthétiques (TRL gap, gouvernance, stratégie PI, axe RDI)
+  const headerBadges = '<div class="projet-badges">'
+    + trlGapBadge(p.trl, p.trl_cible)
+    + gouvernanceBadge(p.gouvernance)
+    + strategiePIBadge(p.strategie_pi)
+    + axeRDIBadge(p.axe_rdi)
+    + '</div>';
+
+  // Verrou : alerte si vide (un projet sans verrou n'est pas du R&D au sens FRASCATI)
+  const verrouBlock = p.verrous
+    ? '<div class="objectif-block" style="border-left-color:var(--brick);"><div class="lbl" style="color:var(--brick);">Verrou scientifique à lever</div><p>'+p.verrous+'</p></div>'
+    : '<div class="verrou-alert">⚠ <b>Verrou non formalisé</b> — un projet sans verrou explicite est fragile à défendre en cas de contrôle (critère FRASCATI).</div>';
+
+  // Bandeau alerte si risques actifs sur le projet
+  const alertStripT2 = risquesActifs.length
+    ? '<div class="alert-strip"><span class="as-icon">⚠</span><span class="as-msg"><b>'+risquesActifs.length+' alerte'+(risquesActifs.length>1?'s':'')+' active'+(risquesActifs.length>1?'s':'')+'</b> — voir section dédiée plus bas</span></div>'
+    : '';
+
+  const livrablesActifs = livrables.filter(l => l.etat !== 'Terminé' && l.etat !== 'Annulé').length;
+
   $('panel-t2').innerHTML = `
+    ${alertStripT2}
     <div class="lecture-intro">
       <div class="li-eyebrow">Projet · Pilotage R&amp;D</div>
       <h2 class="li-title">${p.nom}</h2>
-      <p class="li-lead">Objectif, verrou scientifique, maturité TRL, livrables, réunions et alertes techniques.</p>
+      <p class="li-lead">Objectif scientifique, verrou, maturité TRL, justification de l'axe R&amp;D&amp;I, livrables et alertes techniques.</p>
     </div>
+
     <div class="card">
-      <div class="objectif-block"><div class="lbl">Objectif scientifique</div><p>${p.objectif||'—'}</p></div>
-      <div class="objectif-block" style="border-left-color:var(--brick);"><div class="lbl" style="color:var(--brick);">Verrou à lever</div><p>${p.verrous||'—'}</p></div>
+      ${headerBadges}
+      <div class="objectif-block"><div class="lbl">Objectif scientifique</div><p>${p.objectif||'<span class="muted" style="font-style:italic;">non renseigné</span>'}</p></div>
+      ${verrouBlock}
       <div style="margin-top:24px; display:flex; justify-content:space-around; align-items:center; padding:20px 0; background:var(--paper-2); border-radius:4px;">
         ${trlBar(p.trl, p.trl_cible, true)}
       </div>
-      <div style="margin-top:16px; text-align:center; font-size:11px; color:var(--muted);">TRL actuel : <b style="color:var(--ink);">${p.trl||'—'}</b> · Cible : <b style="color:var(--ink);">${p.trl_cible||'—'}</b> · Axe : <b style="color:var(--ink);">${p.axe_rdi||'—'}</b></div>
+      <div style="margin-top:18px;">
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:700; margin-bottom:6px;">Justification de l'axe — scores R/I/D (formules Notion)</div>
+        ${scoresRDIBar(p.score_r, p.score_i, p.score_d)}
+        <div style="font-size:11px; color:var(--muted); margin-top:6px;">L'axe affiché est calculé automatiquement à partir des trois scores. Cette répartition est la pièce de défense numérique en cas de contrôle.</div>
+      </div>
     </div>
 
-    ${livrables.length ? `<div class="section-title"><h2>Livrables du projet</h2><span class="tag t2-tag">${livrables.length}</span></div>
+    ${livrables.length ? `<div class="section-title"><h2>Livrables du projet</h2><span class="tag t2-tag">${livrables.length}${livrablesActifs?' · '+livrablesActifs+' actif'+(livrablesActifs>1?'s':''):''}</span></div>
       <div class="livrable-list">${livrables.map(renderLivrableRow).join('')}</div>` : ''}
 
     ${reunions.length ? `<div class="section-title"><h2>Réunions liées</h2><span class="tag t2-tag">${reunions.length}</span></div>
@@ -2197,34 +2359,41 @@ function renderProjet(projetId) {
         <div class="rn-nom">${r.nom}</div>
       </div>`).join('')}</div>` : ''}
 
-    ${risques.length ? `<div class="section-title"><h2>Alertes projet</h2><span class="tag t2-tag">${risques.length}</span></div>
+    ${risques.length ? `<div class="section-title" style="border-bottom-color:var(--brick);"><h2>Alertes projet</h2><span class="tag" style="background:var(--brick-bg);color:var(--brick-dark);border-color:var(--brick);">${risques.length}</span></div>
       ${risques.map(_risqueBloc).join('')}` : ''}
   `;
 
-  // T3 - Stratégique
+  // ============ T3 : Stratégique — épuré, sans doublon avec T2 ============
   const scoreR = p.score_r || 0, scoreI = p.score_i || 0, scoreD = p.score_d || 0;
+  const tot = scoreR + scoreI + scoreD;
+  // Poids du projet dans la trajectoire société
+  const totSocFP = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE).reduce((s,j) => s + (j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0);
+  const partSoc = totSocFP ? Math.round(100*fpT/totSocFP) : 0;
+  const totSocEng = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE).reduce((s,j) => s + (j.depenses_engagees||0), 0);
+  const partEng = totSocEng ? Math.round(100*engT/totSocEng) : 0;
+  const dureeP = (p.cloture||0) - (p.demarrage||0);
+  const velocityP = (dureeP > 0 && p.trl && p.trl_cible) ? ((p.trl_cible - p.trl) / dureeP).toFixed(2)+' niv/an' : '—';
+
   $('panel-t3').innerHTML = `
     <div class="lecture-intro">
-      <div class="li-eyebrow">Projet · Stratégie</div>
-      <h2 class="li-title">Positionnement du projet dans le portefeuille</h2>
-      <p class="li-lead">Scores RDI, stratégie PI, gouvernance, contribution à la trajectoire société.</p>
+      <div class="li-eyebrow">Projet · Lecture stratégique</div>
+      <h2 class="li-title">Positionnement du projet dans la trajectoire</h2>
+      <p class="li-lead">Poids du projet dans le portefeuille R&amp;D de la société, dynamique de progression technique, axe d'inscription stratégique.</p>
     </div>
-    <div class="grid c3">
-      <div class="card"><div class="muted">Score R (Recherche)</div><div style="font-size:26px;font-weight:900;">${scoreR}</div></div>
-      <div class="card"><div class="muted">Score I (Innovation)</div><div style="font-size:26px;font-weight:900;">${scoreI}</div></div>
-      <div class="card"><div class="muted">Score D (Développement)</div><div style="font-size:26px;font-weight:900;">${scoreD}</div></div>
-    </div>
-    ${(scoreR + scoreI + scoreD) > 0 ? `<div class="section-title"><h2>Répartition des scores RDI</h2><span class="tag t3-tag">axes</span></div>
-      <div class="grid c2">
-        <div class="card"><h3>Scores R·I·D</h3><div class="chart-wrap"><canvas id="chpj3"></canvas></div></div>
-        <div class="card"><h3>Axe principal</h3><div style="padding:24px;text-align:center;"><div style="font-size:42px;font-weight:900;color:var(--brand);letter-spacing:2px;">${p.axe_rdi||'—'}</div><div class="muted" style="margin-top:10px;">axe R&amp;D&amp;I dominant</div></div></div>
-      </div>` : ''}
-    <div class="grid c2" style="margin-top:16px;">
-      <div class="card"><h3>Gouvernance</h3><div style="font-size:18px;font-weight:700;">${p.gouvernance||'—'}</div></div>
-      <div class="card"><h3>Stratégie PI</h3><div style="font-size:18px;font-weight:700;"><span class="strategie-pi ${typeCIClass(p.strategie_pi)}">${p.strategie_pi||'—'}</span></div></div>
-    </div>`;
 
-  if ((scoreR + scoreI + scoreD) > 0) {
+    <div class="grid c3">
+      <div class="card"><div class="muted">Part dans dépenses R&amp;D société</div><div style="font-size:28px;font-weight:900;color:var(--brand);">${partEng}%</div><div class="muted" style="margin-top:4px;">${shortEuro(engT)} sur ${shortEuro(totSocEng)} cumulés</div></div>
+      <div class="card"><div class="muted">Part dans financement public société</div><div style="font-size:28px;font-weight:900;">${partSoc}%</div><div class="muted" style="margin-top:4px;">${shortEuro(fpT)} sur ${shortEuro(totSocFP)} cumulés</div></div>
+      <div class="card"><div class="muted">Vélocité TRL prévue</div><div style="font-size:28px;font-weight:900;">${velocityP}</div><div class="muted" style="margin-top:4px;">${dureeP?dureeP+' an'+(dureeP>1?'s':'')+' déclarés':'—'}</div></div>
+    </div>
+
+    ${tot > 0 ? `<div class="section-title"><h2>Pondération R / I / D</h2><span class="tag t3-tag">qualification de l'axe</span></div>
+      <div class="grid c2">
+        <div class="card"><h3>Distribution des scores</h3><div class="chart-wrap"><canvas id="chpj3"></canvas></div></div>
+        <div class="card"><h3>Axe dominant</h3><div style="padding:24px;text-align:center;"><div style="font-size:42px;font-weight:900;color:var(--brand);letter-spacing:2px;">${p.axe_rdi||'—'}</div><div class="muted" style="margin-top:10px;">axe R&amp;D&amp;I déterminé par les scores</div><div style="margin-top:14px;">${scoresRDIBar(scoreR, scoreI, scoreD)}</div></div></div>
+      </div>` : ''}`;
+
+  if (tot > 0) {
     charts.chpj3 = new Chart($('chpj3'), {
       type: 'doughnut',
       data: { labels: ['Recherche','Innovation','Développement'], datasets: [{ data: [scoreR, scoreI, scoreD], backgroundColor: ['#2E3AB8','#C01E60','#00A668'], borderWidth: 0 }] },
@@ -2246,43 +2415,87 @@ function renderYear(year) {
   $('entitySub').textContent = jalons.length+' jalons · '+factures.length+' factures · '+projetsActifs.length+' projets actifs · '+dossiers.length+' dossiers';
   $('topRight').innerHTML = '<span class="pill blue">Exercice '+year+'</span>';
 
-  const ci = jalons.reduce((s,j) => s+(j.montant_ci||0), 0);
+  // ========== Données année courante ==========
   const eng = jalons.reduce((s,j) => s+(j.depenses_engagees||0), 0);
   const valo = jalons.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
-  const subv = jalons.reduce((s,j) => s+(j.subvention_percue||0), 0);
-  renderKPIs([
-    { label: 'CI '+year, value: shortEuro(ci), footer: jalons.length+' jalons' },
-    { label: 'Dép. engagées', value: shortEuro(eng), footer: shortEuro(valo)+' valorisables' },
-    { label: 'Subventions', value: shortEuro(subv), footer: subv?'aides perçues':'aucune' },
-    { label: 'Factures PDJ', value: factures.length, footer: shortEuro(factures.reduce((s,f)=>s+(f.montant||0),0)) }
-  ]);
-
-  // T1
-  const rowsJ = jalons.map(j => '<tr><td>'+j.projet+'</td><td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+(j.type_ci||'—')+'</span></td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num">'+(j.montant_cir?euro(j.montant_cir):'—')+'</td><td class="num">'+(j.montant_cii?euro(j.montant_cii):'—')+'</td><td class="num">'+(j.montant_cico?euro(j.montant_cico):'—')+'</td><td class="num subv-cell">'+(j.subvention_percue?euro(j.subvention_percue):'—')+'</td></tr>').join('');
-
-  // Répartition financement par dispositif et par projet
   const cirY  = jalons.reduce((s,j)=>s+(j.montant_cir||0), 0);
   const ciiY  = jalons.reduce((s,j)=>s+(j.montant_cii||0), 0);
   const cicoY = jalons.reduce((s,j)=>s+(j.montant_cico||0), 0);
-  const subvY = jalons.reduce((s,j)=>s+(j.subvention_percue||0), 0);
+  const subv  = jalons.reduce((s,j)=>s+(j.subvention_percue||0), 0);
+  const ci = cirY + ciiY + cicoY;
+  const fp = ci + subv;
+  const tauxValo = eng > 0 ? Math.round(100 * valo / eng) : null;
+  const nbCertY = jalons.filter(j => j.certifie).length;
+  const tauxCertY = jalons.length ? Math.round(100*nbCertY/jalons.length) : null;
+
+  // ========== Données année N-1 (pour les deltas) ==========
+  const jalonsPrev = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && j.annee === year - 1);
+  const engPrev = jalonsPrev.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+  const valoPrev = jalonsPrev.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
+  const ciPrev = jalonsPrev.reduce((s,j) => s+(j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0), 0);
+  const subvPrev = jalonsPrev.reduce((s,j) => s+(j.subvention_percue||0), 0);
+  const tauxValoPrev = engPrev > 0 ? Math.round(100 * valoPrev / engPrev) : null;
+  const hasPrev = jalonsPrev.length > 0;
+
+  // KPIs avec deltas N/N-1
+  renderKPIs([
+    { label: 'Dépenses engagées', value: shortEuro(eng), footer: hasPrev ? deltaBadge(eng, engPrev, 'up_good') : jalons.length+' jalons' },
+    { label: 'Taux de valorisation', value: tauxValo!==null ? tauxValo+'%' : '—', footer: hasPrev && tauxValoPrev!==null ? deltaBadge(tauxValo, tauxValoPrev, 'up_good') : shortEuro(valo)+' valorisables' },
+    { label: 'CI obtenu', value: shortEuro(ci), footer: hasPrev ? deltaBadge(ci, ciPrev, 'up_good') : (ci?'CIR/CII/CICO cumulés':'—') },
+    { label: 'Certification jalons', value: tauxCertY!==null ? nbCertY+'/'+jalons.length : '—', footer: tauxCertY!==null ? tauxCertY+'% sécurisé' : '' }
+  ]);
+
+  // ========== T1 — Lecture financière ==========
+  // Taux d'effet par dispositif (à comparer aux taux théoriques 30% CIR / 20% CII / 50% CICO)
+  const valoCIR = jalons.filter(j => (j.type_ci||'').toUpperCase()==='CIR').reduce((s,j)=>s+(j.depenses_valorisables||0), 0);
+  const valoCII = jalons.filter(j => (j.type_ci||'').toUpperCase()==='CII').reduce((s,j)=>s+(j.depenses_valorisables||0), 0);
+  const tauxEffetCIR = valoCIR > 0 ? Math.round(100*cirY/valoCIR) : null;
+  const tauxEffetCII = valoCII > 0 ? Math.round(100*ciiY/valoCII) : null;
+  // CICO : assiette = jalons type_ci CICO ou jalons avec montant_cico > 0
+  const valoCICO = jalons.filter(j => (j.montant_cico||0) > 0).reduce((s,j)=>s+(j.depenses_valorisables||0), 0);
+  const tauxEffetCICO = valoCICO > 0 ? Math.round(100*cicoY/valoCICO) : null;
+  const effetRow = (label, taux, theorique, color) => {
+    if (taux === null) return '';
+    const ecart = taux - theorique;
+    const cls = Math.abs(ecart) <= 3 ? 'green' : (Math.abs(ecart) <= 7 ? 'amber' : 'brick');
+    return '<tr><td><b>'+label+'</b></td><td class="num"><b>'+taux+'%</b></td><td class="num muted">'+theorique+'%</td><td><span class="badge-soft '+cls+'">'+(ecart>0?'+':'')+ecart+' pts</span></td></tr>';
+  };
+  const effetTable = (tauxEffetCIR!==null || tauxEffetCII!==null || tauxEffetCICO!==null) ? `
+    <div class="card">
+      <h3>Taux d'effet par dispositif</h3>
+      <table style="width:100%;font-size:12px;">
+        <thead><tr><th>Dispositif</th><th class="num">Taux réel</th><th class="num">Théorique</th><th>Écart</th></tr></thead>
+        <tbody>
+          ${effetRow('CIR', tauxEffetCIR, 30, 'blue')}
+          ${effetRow('CII', tauxEffetCII, 20, 'pink')}
+          ${effetRow('CICO', tauxEffetCICO, 50, 'green')}
+        </tbody>
+      </table>
+      <div style="margin-top:8px; font-size:11px; color:var(--muted);">Le taux d'effet est le rapport CI obtenu / dépenses valorisables du dispositif. Un écart fort signale un plafond, une déduction de subvention sur l'assiette ou une saisie à vérifier.</div>
+    </div>
+  ` : '';
+
   const fpByProjetY = {};
   jalons.forEach(j => {
-    const fp = (j.montant_cir||0) + (j.montant_cii||0) + (j.montant_cico||0) + (j.subvention_percue||0);
-    fpByProjetY[j.projet||'—'] = (fpByProjetY[j.projet||'—']||0) + fp;
+    const fpJ = (j.montant_cir||0) + (j.montant_cii||0) + (j.montant_cico||0) + (j.subvention_percue||0);
+    fpByProjetY[j.projet||'—'] = (fpByProjetY[j.projet||'—']||0) + fpJ;
   });
-  const hasDispositifs = (cirY + ciiY + cicoY + subvY) > 0;
+  const hasDispositifs = (cirY + ciiY + cicoY + subv) > 0;
+
+  const rowsJ = jalons.map(j => '<tr><td>'+j.projet+'</td><td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+(j.type_ci||'—')+'</span></td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num">'+(j.montant_cir?euro(j.montant_cir):'—')+'</td><td class="num">'+(j.montant_cii?euro(j.montant_cii):'—')+'</td><td class="num">'+(j.montant_cico?euro(j.montant_cico):'—')+'</td><td class="num subv-cell">'+(j.subvention_percue?euro(j.subvention_percue):'—')+'</td></tr>').join('');
 
   $('panel-t1').innerHTML = `
     <div class="lecture-intro">
-      <div class="li-eyebrow">Exercice ${year} · Financier</div>
+      <div class="li-eyebrow">Exercice ${year} · Lecture comptable</div>
       <h2 class="li-title">Bilan financier de l'exercice ${year}</h2>
-      <p class="li-lead">Jalons par projet, factures PDJ, dossiers fiscaux de l'exercice.</p>
+      <p class="li-lead">Assiette consolidée, structure de financement public, taux d'effet par dispositif et écart aux taux théoriques. ${hasPrev?'Comparaison à l\'exercice '+(year-1)+' dans les KPIs.':''}</p>
     </div>
-    ${hasDispositifs ? `<div class="section-title"><h2>Répartition du financement public ${year}</h2><span class="tag t1-tag">par dispositif</span></div>
+    ${hasDispositifs ? `<div class="section-title"><h2>Répartition du financement public ${year}</h2><span class="tag t1-tag">par dispositif et par projet</span></div>
       <div class="grid c2">
-        <div class="card"><h3>Par dispositif</h3><div class="chart-wrap"><canvas id="chy1"></canvas></div></div>
-        <div class="card"><h3>Par projet</h3><div class="chart-wrap"><canvas id="chy2"></canvas></div></div>
+        <div class="card"><h3>Mix par dispositif</h3><div class="chart-wrap"><canvas id="chy1"></canvas></div></div>
+        <div class="card"><h3>Concentration par projet</h3><div class="chart-wrap"><canvas id="chy2"></canvas></div></div>
       </div>` : ''}
+    ${effetTable ? `<div class="section-title"><h2>Performance des dispositifs</h2><span class="tag t1-tag">vs taux théoriques</span></div>${effetTable}` : ''}
     <div class="section-title"><h2>Jalons de l'exercice</h2><span class="tag t1-tag">${jalons.length}</span></div>
     <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Projet</th><th>Type</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">CIR</th><th class="num">CII</th><th class="num">CICO</th><th class="num">Subv.</th></tr></thead><tbody>${rowsJ || '<tr><td colspan="8" class="empty">Aucun jalon.</td></tr>'}</tbody></table></div>
     ${factures.length ? `<div class="section-title"><h2>Factures ${year}</h2><span class="tag t1-tag">${factures.length}</span></div>
@@ -2294,7 +2507,7 @@ function renderYear(year) {
   if (hasDispositifs) {
     charts.chy1 = new Chart($('chy1'), {
       type: 'doughnut',
-      data: { labels: ['CIR','CII','CICO','Subventions'], datasets: [{ data: [cirY, ciiY, cicoY, subvY], backgroundColor: ['#2E3AB8','#C01E60','#00A668','#8A6B1A'], borderWidth: 0 }] },
+      data: { labels: ['CIR','CII','CICO','Subventions'], datasets: [{ data: [cirY, ciiY, cicoY, subv], backgroundColor: ['#2E3AB8','#C01E60','#00A668','#8A6B1A'], borderWidth: 0 }] },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
     });
     charts.chy2 = new Chart($('chy2'), {
@@ -2304,41 +2517,136 @@ function renderYear(year) {
     });
   }
 
-  // T2
-  const rowsP = projetsActifs.map(p => '<tr><td><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);">'+p.nom+'</a></td><td>'+trlBar(p.trl, p.trl_cible)+'</td><td><span class="govx gov-'+(p.gouvernance||'interne').toLowerCase()+'">'+p.gouvernance+'</span></td><td>'+(p.axe_rdi||'—')+'</td></tr>').join('');
+  // ========== T2 — Pilotage R&D : photo de l'effort ==========
+  // Index projets pour récupérer axe et pôle depuis les jalons (un jalon ne porte pas l'axe lui-même)
+  const projetById = {};
+  DATA.projets.filter(pr => pr.societe === CURRENT_SOCIETE).forEach(pr => { projetById[pr.id] = pr; });
+  const engByAxe = {}, engByPole = {}, trlsWeighted = []; // [{trl, weight}]
+  const govShare = { 'Interne': 0, 'Codev': 0, 'Presta': 0, 'Inconnu': 0 };
+  jalons.forEach(j => {
+    const e = j.depenses_engagees || 0;
+    if (!e) return;
+    const pid = (j.projets_ids||[])[0];
+    const pr = pid ? projetById[pid] : null;
+    const axe = pr ? (pr.axe_rdi || 'Non qualifié') : 'Non qualifié';
+    const pole = pr ? (pr.pole || 'Sans pôle') : 'Sans pôle';
+    engByAxe[axe] = (engByAxe[axe]||0) + e;
+    engByPole[pole] = (engByPole[pole]||0) + e;
+    if (pr && pr.trl) trlsWeighted.push({ trl: pr.trl, weight: e });
+    const g = pr ? (pr.gouvernance || 'Inconnu') : 'Inconnu';
+    govShare[g] = (govShare[g]||0) + e;
+  });
+  const trlMoyen = trlsWeighted.length
+    ? (trlsWeighted.reduce((s,x) => s + x.trl*x.weight, 0) / trlsWeighted.reduce((s,x) => s+x.weight, 0)).toFixed(1)
+    : null;
+  const trlMin = trlsWeighted.length ? Math.min.apply(null, trlsWeighted.map(x => x.trl)) : null;
+  const trlMax = trlsWeighted.length ? Math.max.apply(null, trlsWeighted.map(x => x.trl)) : null;
+
+  const rowsP = projetsActifs.map(p => {
+    const engP = jalons.filter(j => (j.projets_ids||[]).includes(p.id)).reduce((s,j) => s + (j.depenses_engagees||0), 0);
+    return '<tr><td><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);">'+p.nom+'</a></td><td>'+trlBar(p.trl, p.trl_cible)+'</td><td>'+gouvernanceBadge(p.gouvernance)+'</td><td>'+axeRDIBadge(p.axe_rdi)+'</td><td class="num">'+(engP?shortEuro(engP):'—')+'</td></tr>';
+  }).join('');
+
   $('panel-t2').innerHTML = `
     <div class="lecture-intro">
-      <div class="li-eyebrow">Exercice ${year} · R&amp;D</div>
-      <h2 class="li-title">Projets actifs en ${year}</h2>
-      <p class="li-lead">Portefeuille des projets R&amp;D en cours durant l'exercice.</p>
+      <div class="li-eyebrow">Exercice ${year} · Pilotage R&amp;D</div>
+      <h2 class="li-title">Photo de l'effort R&amp;D en ${year}</h2>
+      <p class="li-lead">Répartition de l'investissement par axe FRASCATI et par pôle métier, maturité technique pondérée, mode de gouvernance.</p>
     </div>
-    <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Projet</th><th style="text-align:center;">TRL</th><th>Gouv.</th><th>Axe</th></tr></thead><tbody>${rowsP || '<tr><td colspan="4" class="empty">Aucun projet actif.</td></tr>'}</tbody></table></div>
+
+    <div class="grid c3">
+      <div class="card"><div class="muted">TRL moyen pondéré</div><div style="font-size:28px;font-weight:900;color:var(--brand);">${trlMoyen||'—'}</div><div class="muted" style="margin-top:4px;">${trlMin!==null?'min '+trlMin+' · max '+trlMax:'pondéré par les engagées'}</div></div>
+      <div class="card"><div class="muted">Projets actifs</div><div style="font-size:28px;font-weight:900;">${projetsActifs.length}</div><div class="muted" style="margin-top:4px;">jalonnés ou planifiés ${year}</div></div>
+      <div class="card"><div class="muted">Mode dominant</div><div style="font-size:18px;font-weight:900;">${(()=>{ const m = Object.entries(govShare).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1])[0]; return m? m[0] : '—'; })()}</div><div class="muted" style="margin-top:4px;">${(()=>{ const tot = Object.values(govShare).reduce((s,v)=>s+v,0); const m = Object.entries(govShare).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1])[0]; return tot && m ? Math.round(100*m[1]/tot)+"% de l'effort engagé" : ''; })()}</div></div>
+    </div>
+
+    ${Object.keys(engByAxe).length ? `<div class="section-title"><h2>Répartition de l'effort R&amp;D</h2><span class="tag t2-tag">par axe et par pôle</span></div>
+    <div class="grid c2">
+      <div class="card"><h3>Par axe R&amp;D&amp;I (FRASCATI)</h3><div class="chart-wrap"><canvas id="chyAxe"></canvas></div></div>
+      <div class="card"><h3>Par pôle métier</h3><div class="chart-wrap"><canvas id="chyPole"></canvas></div></div>
+    </div>` : ''}
+
+    <div class="section-title"><h2>Projets actifs en ${year}</h2><span class="tag t2-tag">${projetsActifs.length}</span></div>
+    <div class="card" style="padding:0; overflow-x:auto;"><table><thead><tr><th>Projet</th><th style="text-align:center;">TRL</th><th>Gouv.</th><th>Axe</th><th class="num">Engagées ${year}</th></tr></thead><tbody>${rowsP || '<tr><td colspan="5" class="empty">Aucun projet actif.</td></tr>'}</tbody></table></div>
   `;
 
-  // T3
+  if (Object.keys(engByAxe).length) {
+    const axeColors = ['#2E3AB8','#006B8A','#00A668','#788C28','#C01E60','#6C28B4','#8A6B1A','#666'];
+    charts.chyAxe = new Chart($('chyAxe'), {
+      type: 'doughnut',
+      data: { labels: Object.keys(engByAxe), datasets: [{ data: Object.values(engByAxe), backgroundColor: axeColors, borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+    charts.chyPole = new Chart($('chyPole'), {
+      type: 'doughnut',
+      data: { labels: Object.keys(engByPole), datasets: [{ data: Object.values(engByPole), backgroundColor: ['#1798A0','#D69130','#5B5BD6','#10A07A','#C13F8E','#7E8C2C','#A14C28','#666'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  // ========== T3 — Lecture stratégique : contexte pluriannuel ==========
+  // Mini-frise des 3 dernières années (engagées + fin. public)
+  const ctxYears = [year-2, year-1, year];
+  const engByCtxYear = ctxYears.map(y => DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && j.annee === y).reduce((s,j) => s+(j.depenses_engagees||0), 0));
+  const fpByCtxYear = ctxYears.map(y => DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && j.annee === y).reduce((s,j) => s+(j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0));
+  const tauxFinPub = eng > 0 ? Math.round(100*fp/eng) : 0;
+
+  // Cohérence dispositif × axe (signal d'erreur de qualification)
+  const incoherences = [];
+  jalons.forEach(j => {
+    const pid = (j.projets_ids||[])[0];
+    const pr = pid ? projetById[pid] : null;
+    if (!pr) return;
+    const t = (j.type_ci||'').toUpperCase();
+    const axe = pr.axe_rdi || '';
+    if (t === 'CIR' && (axe === 'Innovation' || axe === 'D&I' || axe === 'Développement')) incoherences.push({ projet: pr.nom, dispositif: t, axe });
+    if (t === 'CII' && (axe === 'Recherche' || axe === 'R&D')) incoherences.push({ projet: pr.nom, dispositif: t, axe });
+  });
+  const incohUnique = [...new Map(incoherences.map(x => [x.projet+'|'+x.dispositif, x])).values()];
+
   $('panel-t3').innerHTML = `
     <div class="lecture-intro">
-      <div class="li-eyebrow">Exercice ${year} · Stratégie</div>
-      <h2 class="li-title">Synthèse stratégique ${year}</h2>
-      <p class="li-lead">Indicateurs clés de l'exercice dans la trajectoire pluriannuelle.</p>
+      <div class="li-eyebrow">Exercice ${year} · Lecture stratégique</div>
+      <h2 class="li-title">Contexte de l'exercice ${year} dans la trajectoire</h2>
+      <p class="li-lead">Place de l'exercice dans la trajectoire pluriannuelle, taux de financement public obtenu, signaux de cohérence dispositif × axe.</p>
     </div>
+
     <div class="grid c3">
-      <div class="card"><div class="muted">CI ${year}</div><div style="font-size:26px;font-weight:900;">${shortEuro(ci)}</div></div>
-      <div class="card"><div class="muted">Projets actifs</div><div style="font-size:26px;font-weight:900;">${projetsActifs.length}</div></div>
-      <div class="card"><div class="muted">Subventions perçues</div><div style="font-size:26px;font-weight:900;">${shortEuro(subv)}</div></div>
-    </div>`;
+      <div class="card"><div class="muted">Taux de financement public</div><div style="font-size:28px;font-weight:900;color:var(--brand);">${tauxFinPub}%</div><div class="muted" style="margin-top:4px;">${shortEuro(fp)} sur ${shortEuro(eng)} engagés</div></div>
+      <div class="card"><div class="muted">CI obtenu</div><div style="font-size:28px;font-weight:900;">${shortEuro(ci)}</div><div class="muted" style="margin-top:4px;">CIR/CII/CICO cumulés</div></div>
+      <div class="card"><div class="muted">Subventions perçues</div><div style="font-size:28px;font-weight:900;color:var(--gold-dark);">${shortEuro(subv)}</div><div class="muted" style="margin-top:4px;">aides directes</div></div>
+    </div>
+
+    <div class="section-title"><h2>Mise en perspective pluriannuelle</h2><span class="tag t3-tag">3 derniers exercices</span></div>
+    <div class="grid c2">
+      <div class="card"><h3>Dépenses engagées</h3>${miniSparkBars(engByCtxYear, ctxYears.map(y => y+' · '+shortEuro(engByCtxYear[ctxYears.indexOf(y)])), 2)}</div>
+      <div class="card"><h3>Financement public obtenu</h3>${miniSparkBars(fpByCtxYear, ctxYears.map(y => y+' · '+shortEuro(fpByCtxYear[ctxYears.indexOf(y)])), 2)}</div>
+    </div>
+
+    ${incohUnique.length ? `<div class="section-title" style="border-bottom-color:var(--amber);"><h2>Signaux de cohérence dispositif × axe</h2><span class="tag" style="background:var(--amber-bg);color:var(--amber-dark);border-color:var(--amber);">${incohUnique.length}</span></div>
+      <div class="card" style="background:var(--amber-bg); border-color:var(--amber); border-left:3px solid var(--amber-dark);">
+        <div style="font-size:11px; color:var(--amber-dark); text-transform:uppercase; letter-spacing:0.6px; font-weight:700; margin-bottom:8px;">À examiner</div>
+        <table style="width:100%;font-size:12px;">
+          <thead><tr><th>Projet</th><th>Dispositif</th><th>Axe affiché</th></tr></thead>
+          <tbody>${incohUnique.map(x => '<tr><td>'+x.projet+'</td><td><span class="type-ci '+typeCIClass(x.dispositif)+'">'+x.dispositif+'</span></td><td>'+axeRDIBadge(x.axe)+'</td></tr>').join('')}</tbody>
+        </table>
+        <div style="margin-top:10px; font-size:11px; color:var(--muted);">Le CIR finance R/R&amp;D ; le CII finance Innovation. Une combinaison hors de cette grille mérite vérification de la qualification.</div>
+      </div>` : ''}
+  `;
 }
 
 /* ===== VUE DOSSIER ===== */
 function renderDossier(dossierId) {
   const d = DATA.dossiers.find(x => x.id === dossierId);
   if (!d) return;
-  // CRITIQUE : filtrer les jalons via la relation MULTIPLE (un jalon peut être dans plusieurs dossiers)
+  // Filtrage strict par dossiers_ids (relation Notion fiable, multiple)
   const jalonsDossier = DATA.jalons.filter(j => (j.dossiers_ids||[]).includes(dossierId));
   const livrablesDossier = getLivrables(d.societe).filter(l => (l.dossiers_ids||[]).includes(dossierId));
   const documentsDossier = getDocuments(d.societe).filter(doc => (doc.dossiers_ids||[]).includes(dossierId));
   const facturesDossier = (DATA.factures||[]).filter(f => (f.dossiers_ids||[]).includes(dossierId));
   const reunionsDossier = getReunions(d.societe).filter(r => (r.dossiers_ids||[]).includes(dossierId));
+  const risquesDossier = (DATA.risques||[]).filter(r => r.societe === d.societe && (r.dossiers_ids||[]).includes(dossierId));
+  const risquesActifsDoss = risquesDossier.filter(r => r.statut === 'À traiter' || r.statut === 'En cours');
 
   $('modeTag').textContent = 'DOSSIER ' + d.type.toUpperCase();
   $('entityName').textContent = d.nom;
@@ -2347,7 +2655,7 @@ function renderDossier(dossierId) {
   $('entitySub').textContent = 'Dossier '+d.type+' · Exercice '+d.annee+' · '+jalonsDossier.length+' jalon'+(jalonsDossier.length>1?'s':'')+' rattaché'+(jalonsDossier.length>1?'s':'')+assigneStr;
   $('topRight').innerHTML = '<span class="type-ci '+typeCIClass(d.type)+'" style="padding:4px 10px;">'+d.type+'</span>';
 
-  // Sommes calculées depuis les jalons
+  // ===== Sommes calculées depuis les jalons =====
   const engCalc    = jalonsDossier.reduce((s,j) => s+(j.depenses_engagees||0), 0);
   const valoCalc   = jalonsDossier.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
   const cirCalc    = jalonsDossier.reduce((s,j) => s+(j.montant_cir||0), 0);
@@ -2356,31 +2664,69 @@ function renderDossier(dossierId) {
   const subvCalc   = jalonsDossier.reduce((s,j) => s+(j.subvention_percue||0), 0);
   const fpCalc     = cirCalc + ciiCalc + cicoCalc + subvCalc;
   const nbCert     = jalonsDossier.filter(j => j.certifie).length;
+  const tauxValoD  = engCalc > 0 ? Math.round(100*valoCalc/engCalc) : null;
+  const tauxCertD  = jalonsDossier.length ? Math.round(100*nbCert/jalonsDossier.length) : null;
 
-  const isSubvDossier = (d.type||'').toLowerCase().includes('subv');
+  const isSubvDossier = (d.type||'').toLowerCase().includes('subv') || (d.type||'').toUpperCase() === 'SUB';
   const isCICODossier = (d.type||'').toLowerCase().includes('cico') || (d.type||'').toLowerCase().includes('collab');
-  const isCIIDossier  = (d.type||'').toLowerCase() === 'cii';
+  const isCIIDossier  = (d.type||'').toUpperCase() === 'CII';
+  const isCIRDossier  = (d.type||'').toUpperCase() === 'CIR';
 
-  // KPI principal dépend du type de dossier
+  // KPI principal selon type
   let kpiPrincipal;
-  if (isSubvDossier) {
-    kpiPrincipal = { label: 'Subvention perçue', value: shortEuro(subvCalc), footer: d.subvention_percue_rollup ? 'rollup : '+shortEuro(d.subvention_percue_rollup) : '' };
-  } else if (isCICODossier) {
-    kpiPrincipal = { label: 'Montant CICO', value: shortEuro(cicoCalc), footer: d.montant_cico_rollup ? 'rollup : '+shortEuro(d.montant_cico_rollup) : '' };
-  } else if (isCIIDossier) {
-    kpiPrincipal = { label: 'Montant CII', value: shortEuro(ciiCalc), footer: d.montant_cir_cii_rollup ? 'rollup CIR/CII : '+shortEuro(d.montant_cir_cii_rollup) : '' };
-  } else {
-    kpiPrincipal = { label: 'Montant CIR', value: shortEuro(cirCalc), footer: d.montant_cir_cii_rollup ? 'rollup CIR/CII : '+shortEuro(d.montant_cir_cii_rollup) : '' };
-  }
+  if (isSubvDossier)      kpiPrincipal = { label: 'Subvention perçue', value: shortEuro(subvCalc), footer: subvCalc?'aide directe':'' };
+  else if (isCICODossier) kpiPrincipal = { label: 'Montant CICO', value: shortEuro(cicoCalc), footer: 'crédit collaboration' };
+  else if (isCIIDossier)  kpiPrincipal = { label: 'Montant CII', value: shortEuro(ciiCalc), footer: 'crédit innovation' };
+  else                    kpiPrincipal = { label: 'Montant CIR', value: shortEuro(cirCalc), footer: 'crédit recherche' };
 
   renderKPIs([
-    { label: 'Type dossier', value: d.type, footer: 'exercice '+d.annee },
-    { label: 'Dép. engagées', value: shortEuro(engCalc), footer: d.depenses_engagees_rollup ? 'rollup : '+shortEuro(d.depenses_engagees_rollup) : jalonsDossier.length+' jalon'+(jalonsDossier.length>1?'s':'') },
+    { label: 'Dépenses engagées', value: shortEuro(engCalc), footer: tauxValoD!==null ? tauxValoD+'% valorisable' : jalonsDossier.length+' jalon'+(jalonsDossier.length>1?'s':'') },
     kpiPrincipal,
-    { label: 'Jalons certifiés', value: nbCert+'/'+jalonsDossier.length, footer: jalonsDossier.length ? Math.round((nbCert/jalonsDossier.length)*100)+'% validés' : '' }
+    { label: 'Financement public', value: shortEuro(fpCalc), footer: engCalc>0 ? Math.round(100*fpCalc/engCalc)+'% des engagées' : '' },
+    { label: 'Certification jalons', value: tauxCertD!==null ? nbCert+'/'+jalonsDossier.length : '—', footer: tauxCertD!==null ? tauxCertD+'% sécurisé' : '' }
   ]);
 
-  // T1 : contenu fiscal
+  // ============ T1 : Lecture comptable ============
+  // Bandeau d'alerte si risques rattachés au dossier
+  const alertStrip = risquesActifsDoss.length
+    ? '<div class="alert-strip"><span class="as-icon">⚠</span><span class="as-msg"><b>'+risquesActifsDoss.length+' alerte'+(risquesActifsDoss.length>1?'s':'')+'</b> sur ce dossier — '+(risquesActifsDoss.find(r=>r.montant_expose)?'exposition '+shortEuro(risquesActifsDoss.reduce((s,r)=>s+(r.montant_expose||0),0))+' · ':'')+'voir détails plus bas</span></div>'
+    : '';
+
+  // Taux d'effet par dispositif (réel vs théorique)
+  const theorique = isCIRDossier ? 30 : (isCIIDossier ? 20 : (isCICODossier ? 50 : null));
+  let tauxEffetRow = '';
+  if (theorique !== null) {
+    let tauxReel = null;
+    if (isCIRDossier && valoCalc > 0) tauxReel = Math.round(100*cirCalc/valoCalc);
+    else if (isCIIDossier && valoCalc > 0) tauxReel = Math.round(100*ciiCalc/valoCalc);
+    else if (isCICODossier && valoCalc > 0) tauxReel = Math.round(100*cicoCalc/valoCalc);
+    if (tauxReel !== null) {
+      const ecart = tauxReel - theorique;
+      const cls = Math.abs(ecart) <= 3 ? 'green' : (Math.abs(ecart) <= 7 ? 'amber' : 'brick');
+      const interp = Math.abs(ecart) <= 3 ? 'taux conforme' : (ecart < 0 ? 'effet inférieur — vérifier plafond/déduction subv.' : 'effet supérieur — vérifier saisie');
+      tauxEffetRow = '<div class="card" style="background:#fafbfc;"><div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;"><div><div style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:700;">Taux d\'effet du dispositif</div><div style="font-size:22px; font-weight:900; color:var(--ink);">'+tauxReel+'% <span style="font-size:13px; color:var(--muted); font-weight:600;">/ '+theorique+'% théorique</span></div></div><span class="badge-soft '+cls+'">'+(ecart>0?'+':'')+ecart+' pts · '+interp+'</span></div></div>';
+    }
+  }
+
+  // Répartition par projet et par axe R&DI
+  const projetById = {};
+  DATA.projets.filter(pr => pr.societe === d.societe).forEach(pr => { projetById[pr.id] = pr; });
+  const fpByProjD = {};
+  const engByAxeD = {}, projetsDuDossier = new Set();
+  jalonsDossier.forEach(j => {
+    const fp = (j.montant_cir||0) + (j.montant_cii||0) + (j.montant_cico||0) + (j.subvention_percue||0);
+    fpByProjD[j.projet||'—'] = (fpByProjD[j.projet||'—']||0) + fp;
+    const pid = (j.projets_ids||[])[0];
+    if (pid) {
+      projetsDuDossier.add(pid);
+      const pr = projetById[pid];
+      if (pr) {
+        const axe = pr.axe_rdi || 'Non qualifié';
+        engByAxeD[axe] = (engByAxeD[axe]||0) + (j.depenses_engagees||0);
+      }
+    }
+  });
+
   const rowsJ = jalonsDossier.map(j => {
     const autresDoss = (j.dossiers_ids||[]).filter(id => id !== dossierId);
     const autresLabels = autresDoss.map(id => {
@@ -2402,31 +2748,26 @@ function renderDossier(dossierId) {
       + '</tr>';
   }).join('');
 
-  // Répartition financement public par projet
-  const fpByProjD = {};
-  jalonsDossier.forEach(j => {
-    const fp = (j.montant_cir||0) + (j.montant_cii||0) + (j.montant_cico||0) + (j.subvention_percue||0);
-    fpByProjD[j.projet||'—'] = (fpByProjD[j.projet||'—']||0) + fp;
-  });
-
   $('panel-t1').innerHTML = `
+    ${alertStrip}
     <div class="lecture-intro">
       <div class="li-eyebrow">Dossier ${d.type} · Exercice ${d.annee}</div>
       <h2 class="li-title">${d.nom}</h2>
-      <p class="li-lead">${isSubvDossier ? "Dossier de subvention — trace les aides perçues." : (isCICODossier ? "Dossier CICO — crédit d'impôt collaboration de recherche." : "Dossier fiscal "+d.type+" — agrège les jalons éligibles.")}</p>
+      <p class="li-lead">${isSubvDossier ? "Dossier de subvention — trace les aides perçues, le rythme de consommation et les jalons rattachés." : (isCICODossier ? "Dossier CICO — crédit d'impôt collaboration de recherche, taux d'effet théorique 50%." : (isCIIDossier ? "Dossier CII — crédit d'impôt innovation, taux d'effet théorique 20%, plafonné à 400 k€ d'assiette." : "Dossier CIR — crédit d'impôt recherche, taux d'effet théorique 30%."))}</p>
     </div>
 
-    ${Object.keys(fpByProjD).length ? `<div class="section-title"><h2>Répartition du financement public par projet</h2><span class="tag t1-tag">${Object.keys(fpByProjD).length} projet${Object.keys(fpByProjD).length>1?'s':''}</span></div>
+    ${tauxEffetRow}
+
+    ${Object.keys(fpByProjD).length ? `<div class="section-title"><h2>Répartition financière du dossier</h2><span class="tag t1-tag">${Object.keys(fpByProjD).length} projet${Object.keys(fpByProjD).length>1?'s':''}</span></div>
       <div class="grid c2">
-        <div class="card"><h3>Par projet</h3><div class="chart-wrap"><canvas id="chd1"></canvas></div></div>
+        <div class="card"><h3>Financement public par projet</h3><div class="chart-wrap"><canvas id="chd1"></canvas></div></div>
         <div class="card"><h3>Cohérence calcul / rollup Notion</h3>
           <table style="width:100%;font-size:12px;">
             <tr><td>Dép. engagées (jalons)</td><td class="num"><b>${euro(engCalc)}</b></td></tr>
             <tr><td class="muted">Rollup Notion</td><td class="num muted">${euro(d.depenses_engagees_rollup)}</td></tr>
             <tr><td>Valorisables (jalons)</td><td class="num"><b>${euro(valoCalc)}</b></td></tr>
             <tr><td class="muted">Rollup Notion</td><td class="num muted">${euro(d.depenses_valorisables_rollup)}</td></tr>
-            <tr><td>CIR (jalons)</td><td class="num"><b>${euro(cirCalc)}</b></td></tr>
-            <tr><td>CII (jalons)</td><td class="num"><b>${euro(ciiCalc)}</b></td></tr>
+            <tr><td>CIR + CII (jalons)</td><td class="num"><b>${euro(cirCalc + ciiCalc)}</b></td></tr>
             <tr><td class="muted">Rollup CIR/CII Notion</td><td class="num muted">${euro(d.montant_cir_cii_rollup)}</td></tr>
             <tr><td>CICO (jalons)</td><td class="num"><b>${euro(cicoCalc)}</b></td></tr>
             <tr><td class="muted">Rollup Notion</td><td class="num muted">${euro(d.montant_cico_rollup)}</td></tr>
@@ -2437,7 +2778,7 @@ function renderDossier(dossierId) {
         </div>
       </div>` : ''}
 
-    <div class="section-title"><h2>Jalons rattachés au dossier</h2><span class="tag t1-tag">${jalonsDossier.length}</span></div>
+    <div class="section-title"><h2>Jalons rattachés au dossier</h2><span class="tag t1-tag">${jalonsDossier.length}${nbCert?' · '+nbCert+' certifié'+(nbCert>1?'s':''):''}</span></div>
     <div class="card" style="padding:0; overflow-x:auto;">
       <table><thead><tr><th>Projet</th><th>Année</th><th>Type</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">CIR</th><th class="num">CII</th><th class="num">CICO</th><th class="num">Subv.</th><th>Cert.</th><th>Multi-dossier</th></tr></thead>
       <tbody>${rowsJ || '<tr><td colspan="11" class="empty">Aucun jalon rattaché.</td></tr>'}</tbody></table>
@@ -2458,30 +2799,79 @@ function renderDossier(dossierId) {
     });
   }
 
-  // T2 : livrables et réunions du dossier
+  // ============ T2 : Cohérence pilotage R&D du dossier ============
+  // Identifier les projets sans verrou explicite (signal de fragilité au sens FRASCATI)
+  const projetsList = [...projetsDuDossier].map(pid => projetById[pid]).filter(Boolean);
+  const projetsSansVerrou = projetsList.filter(pr => !pr.verrous || pr.verrous.trim().length < 5);
+
+  // Détection d'incohérences dispositif × axe au sein du dossier
+  const axeIncoherent = (axe) => {
+    if (!axe) return false;
+    if (isCIRDossier && (axe === 'Innovation' || axe === 'D&I' || axe === 'Développement')) return true;
+    if (isCIIDossier && (axe === 'Recherche' || axe === 'R&D')) return true;
+    return false;
+  };
+  const projetsIncoherents = projetsList.filter(pr => axeIncoherent(pr.axe_rdi));
+
   $('panel-t2').innerHTML = `
+    ${alertStrip}
     <div class="lecture-intro">
-      <div class="li-eyebrow">Dossier · Production</div>
-      <h2 class="li-title">Livrables et réunions du dossier</h2>
-      <p class="li-lead">Production opérationnelle liée au dossier ${d.type} ${d.annee}.</p>
+      <div class="li-eyebrow">Dossier · Cohérence R&amp;D</div>
+      <h2 class="li-title">Vérification de cohérence dossier × projets</h2>
+      <p class="li-lead">${isCIRDossier?'Pour un CIR, les projets attendus sont en axe Recherche, R&amp;D ou D&amp;I. ':isCIIDossier?'Pour un CII, les projets attendus sont en axe Innovation, D&amp;I ou similaire. ':''}Production opérationnelle (livrables, réunions) liée au dossier.</p>
     </div>
-    ${livrablesDossier.length ? '<div class="section-title"><h2>Livrables</h2><span class="tag t2-tag">'+livrablesDossier.length+'</span></div><div class="livrable-list">'+livrablesDossier.map(renderLivrableRow).join('')+'</div>' : '<div class="card empty">Aucun livrable rattaché à ce dossier.</div>'}
+
+    ${projetsSansVerrou.length ? `<div class="section-title" style="border-bottom-color:var(--brick);"><h2>Projets sans verrou formalisé</h2><span class="tag" style="background:var(--brick-bg);color:var(--brick-dark);border-color:var(--brick);">${projetsSansVerrou.length}</span></div>
+      <div class="card" style="background:var(--brick-bg); border-color:var(--brick); border-left:3px solid var(--brick);">
+        <div style="font-size:11px; color:var(--brick-dark); text-transform:uppercase; letter-spacing:0.6px; font-weight:700; margin-bottom:8px;">Risque de défense en contrôle</div>
+        <ul style="margin:0; padding-left:20px; font-size:13px;">${projetsSansVerrou.map(pr => '<li><a onclick="setView(\'projet:'+pr.id+'\')" style="cursor:pointer;color:var(--brick-dark);text-decoration:underline;">'+pr.nom+'</a></li>').join('')}</ul>
+        <div style="margin-top:10px; font-size:11px; color:var(--muted);">Au sens FRASCATI, un projet sans verrou explicite n'est pas du R&amp;D — la défense en cas de contrôle est fragilisée. Renseigner le champ "Verrous" sur la fiche projet.</div>
+      </div>` : ''}
+
+    ${projetsIncoherents.length ? `<div class="section-title" style="border-bottom-color:var(--amber);"><h2>Projets dont l'axe ne correspond pas au dispositif</h2><span class="tag" style="background:var(--amber-bg);color:var(--amber-dark);border-color:var(--amber);">${projetsIncoherents.length}</span></div>
+      <div class="card" style="background:var(--amber-bg); border-color:var(--amber); border-left:3px solid var(--amber-dark);">
+        <table style="width:100%;font-size:12px;">
+          <thead><tr><th>Projet</th><th>Axe affiché</th><th>TRL</th></tr></thead>
+          <tbody>${projetsIncoherents.map(pr => '<tr><td><a onclick="setView(\'projet:'+pr.id+'\')" style="cursor:pointer;color:var(--brand);text-decoration:none;font-weight:600;">'+pr.nom+'</a></td><td>'+axeRDIBadge(pr.axe_rdi)+'</td><td>'+(pr.trl||'—')+'→'+(pr.trl_cible||'—')+'</td></tr>').join('')}</tbody>
+        </table>
+        <div style="margin-top:10px; font-size:11px; color:var(--muted);">Le dispositif ${d.type} ne couvre normalement pas ces axes — vérifier la qualification (champs scores R/D/I des projets).</div>
+      </div>` : ''}
+
+    ${Object.keys(engByAxeD).length > 1 ? `<div class="section-title"><h2>Répartition de l'effort par axe R&amp;D&amp;I</h2><span class="tag t2-tag">${Object.keys(engByAxeD).length} axes</span></div>
+      <div class="card"><div class="chart-wrap"><canvas id="chdAxe"></canvas></div></div>` : ''}
+
+    ${projetsList.length ? `<div class="section-title"><h2>Projets du dossier</h2><span class="tag t2-tag">${projetsList.length}</span></div>
+      <div class="card" style="padding:0; overflow-x:auto;"><table style="width:100%;"><thead><tr><th>Projet</th><th>Axe R&amp;D&amp;I</th><th>TRL</th><th>Gouv.</th><th>Verrou</th></tr></thead><tbody>${projetsList.map(pr => '<tr><td><a onclick="setView(\'projet:'+pr.id+'\')" style="cursor:pointer;color:var(--brand);text-decoration:none;font-weight:600;">'+pr.nom+'</a></td><td>'+axeRDIBadge(pr.axe_rdi)+'</td><td>'+(pr.trl||'—')+'→'+(pr.trl_cible||'—')+'</td><td>'+gouvernanceBadge(pr.gouvernance)+'</td><td>'+(pr.verrous && pr.verrous.trim().length >= 5 ? '<span style="color:var(--green-dark);">✓</span>' : '<span style="color:var(--brick-dark);">⚠ vide</span>')+'</td></tr>').join('')}</tbody></table></div>` : ''}
+
+    ${livrablesDossier.length ? '<div class="section-title"><h2>Livrables</h2><span class="tag t2-tag">'+livrablesDossier.length+'</span></div><div class="livrable-list">'+livrablesDossier.map(renderLivrableRow).join('')+'</div>' : ''}
     ${reunionsDossier.length ? '<div class="section-title"><h2>Réunions</h2><span class="tag t2-tag">'+reunionsDossier.length+'</span></div><div class="reunion-timeline">'+reunionsDossier.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(r => `<div class="reunion-item"><div class="rn-head"><span class="rn-type">${r.type||'Réunion'}</span><span class="rn-date">${r.date||'—'}</span></div><div class="rn-nom">${r.nom}</div></div>`).join('')+'</div>' : ''}
+    ${risquesDossier.length ? `<div class="section-title" style="border-bottom-color:var(--brick);"><h2>Alertes du dossier</h2><span class="tag" style="background:var(--brick-bg);color:var(--brick-dark);border-color:var(--brick);">${risquesDossier.length}</span></div>${risquesDossier.map(_risqueBloc).join('')}` : ''}
   `;
 
-  // T3 : contexte stratégique
-  const totalFPSoc = DATA.jalons.filter(j => j.societe === d.societe).reduce((s,j) => s+(j.montant_cir_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0);
+  if (Object.keys(engByAxeD).length > 1) {
+    charts.chdAxe = new Chart($('chdAxe'), {
+      type: 'doughnut',
+      data: { labels: Object.keys(engByAxeD), datasets: [{ data: Object.values(engByAxeD), backgroundColor: ['#2E3AB8','#006B8A','#00A668','#788C28','#C01E60','#6C28B4','#8A6B1A','#666'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  // ============ T3 : Lecture stratégique — épuré ============
+  const totalFPSoc = DATA.jalons.filter(j => j.societe === d.societe).reduce((s,j) => s+(j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0);
   const partDoss = totalFPSoc ? Math.round((fpCalc/totalFPSoc)*100) : 0;
+  const totalEngSoc = DATA.jalons.filter(j => j.societe === d.societe).reduce((s,j) => s+(j.depenses_engagees||0), 0);
+  const partEngDoss = totalEngSoc ? Math.round(100*engCalc/totalEngSoc) : 0;
+
   $('panel-t3').innerHTML = `
     <div class="lecture-intro">
-      <div class="li-eyebrow">Dossier · Contexte campagne ${d.annee}</div>
-      <h2 class="li-title">Poids du dossier dans la trajectoire client</h2>
-      <p class="li-lead">Ce dossier ${d.type} représente la contribution ${d.annee} au financement public cumulé de ${d.societe}.</p>
+      <div class="li-eyebrow">Dossier · Poids dans la trajectoire</div>
+      <h2 class="li-title">Contribution du dossier à la trajectoire ${d.societe}</h2>
+      <p class="li-lead">Poids du dossier dans le portefeuille R&amp;D et dans le financement public cumulé de la société.</p>
     </div>
     <div class="grid c3">
-      <div class="card"><div class="muted">Fin. public du dossier</div><div style="font-size:26px;font-weight:900;color:var(--brand);">${shortEuro(fpCalc)}</div><div class="muted" style="margin-top:4px;">CIR/CII + CICO + subv.</div></div>
-      <div class="card"><div class="muted">Part dans fin. public société</div><div style="font-size:26px;font-weight:900;">${partDoss}%</div><div class="muted" style="margin-top:4px;">sur ${shortEuro(totalFPSoc)} cumulés</div></div>
-      <div class="card"><div class="muted">Jalons rattachés</div><div style="font-size:26px;font-weight:900;">${jalonsDossier.length}</div><div class="muted" style="margin-top:4px;">${nbCert} certifié${nbCert>1?'s':''}</div></div>
+      <div class="card"><div class="muted">Part dans dépenses R&amp;D société</div><div style="font-size:28px;font-weight:900;color:var(--brand);">${partEngDoss}%</div><div class="muted" style="margin-top:4px;">${shortEuro(engCalc)} sur ${shortEuro(totalEngSoc)} cumulés</div></div>
+      <div class="card"><div class="muted">Part dans financement public société</div><div style="font-size:28px;font-weight:900;">${partDoss}%</div><div class="muted" style="margin-top:4px;">${shortEuro(fpCalc)} sur ${shortEuro(totalFPSoc)} cumulés</div></div>
+      <div class="card"><div class="muted">Avancement du dossier</div><div style="font-size:28px;font-weight:900;${tauxCertD===100?'color:var(--green-dark);':''}">${tauxCertD!==null?tauxCertD+'%':'—'}</div><div class="muted" style="margin-top:4px;">${nbCert} jalon${nbCert>1?'s':''} certifié${nbCert>1?'s':''} sur ${jalonsDossier.length}</div></div>
     </div>`;
 }
 
