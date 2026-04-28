@@ -342,6 +342,29 @@
   .axe-spectrum .as-axe { padding: 2px 8px; border-radius: 10px; background: #f0f1f5; color: var(--muted); border: 1px solid var(--border); font-weight: 600; font-size: 10px; letter-spacing: 0.2px; }
   .axe-spectrum .as-axe.cur { background: var(--brand-bg); color: var(--brand); border-color: var(--brand); font-weight: 700; }
 
+  /* ===== Tableau portefeuille triable (T2) ===== */
+  table.portfolio-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1000px; }
+  table.portfolio-table thead th { padding: 11px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); background: #f7f7f9; border-bottom: 2px solid var(--border); font-weight: 700; white-space: nowrap; }
+  table.portfolio-table thead th.num { text-align: right; }
+  table.portfolio-table thead th.th-sortable { cursor: pointer; user-select: none; transition: background 0.12s, color 0.12s; }
+  table.portfolio-table thead th.th-sortable:hover { background: var(--brand-bg); color: var(--brand); }
+  table.portfolio-table thead th.th-sortable.active { background: var(--brand-bg); color: var(--brand); }
+  table.portfolio-table thead th .th-sort-ico { font-size: 10px; color: var(--muted); margin-left: 4px; opacity: 0.5; }
+  table.portfolio-table thead th .th-sort-ico.active { color: var(--brand); opacity: 1; font-weight: 700; }
+  table.portfolio-table thead th.th-sortable:hover .th-sort-ico { opacity: 1; }
+  table.portfolio-table tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+  table.portfolio-table tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.portfolio-table tbody tr:last-child td { border-bottom: none; }
+  table.portfolio-table tbody tr:hover td { background: var(--brand-bg); }
+  table.portfolio-table .col-nom { min-width: 240px; }
+  table.portfolio-table .col-nom a:hover { color: var(--brand); text-decoration: underline; }
+  table.portfolio-table .col-nom-sub { font-size: 10.5px; color: var(--muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  /* Cellule poids : barre + pourcentage */
+  .poids-cell { display: inline-flex; align-items: center; gap: 8px; min-width: 100px; }
+  .poids-cell .poids-track { flex: 1; height: 8px; background: #f0f1f5; border-radius: 4px; overflow: hidden; min-width: 60px; }
+  .poids-cell .poids-fill { height: 100%; background: var(--brand); border-radius: 4px; min-width: 2px; }
+  .poids-cell .poids-pct { font-size: 11.5px; font-weight: 700; color: var(--ink); width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+
   /* ===== Indicateur de variation N vs N-1 ===== */
   .dl-good { color: var(--green-dark); font-size: 11px; font-weight: 700; }
   .dl-bad { color: var(--brick-dark); font-size: 11px; font-weight: 700; }
@@ -1179,6 +1202,112 @@ function collapseAllT2(societeName) {
   _t2_rerender(societeName);
 }
 
+/* ===== TABLEAU PORTEFEUILLE TRIABLE (T2) ===== */
+let T2_PORTF_FIELD = 'engagees'; // colonne de tri courante
+let T2_PORTF_DIR = 'desc';       // 'asc' ou 'desc'
+
+function _t2_portfolio_rerender(societeName) {
+  const container = document.getElementById('t2-portfolio-container');
+  if (!container) return;
+  const projets = DATA.projets.filter(p => p.societe === societeName);
+  const jalons = DATA.jalons.filter(j => j.societe === societeName);
+  container.innerHTML = _t2_portfolio_table(societeName, projets, jalons);
+}
+
+function sortT2Portfolio(field, societeName) {
+  if (T2_PORTF_FIELD === field) {
+    // Bascule asc/desc sur la même colonne
+    T2_PORTF_DIR = T2_PORTF_DIR === 'desc' ? 'asc' : 'desc';
+  } else {
+    T2_PORTF_FIELD = field;
+    // Sens par défaut : numériques en desc (plus gros en haut), textes en asc (alphabétique)
+    T2_PORTF_DIR = ['nom','axe','pole'].includes(field) ? 'asc' : 'desc';
+  }
+  _t2_portfolio_rerender(societeName);
+}
+
+function _t2_portfolio_table(societeName, projets, jalonsAll) {
+  if (!projets.length) return '<div class="card empty">Aucun projet enregistré pour cette société.</div>';
+  const safeSoc = societeName.replace(/'/g, "\\'");
+
+  // Calcule pour chaque projet : engagées cumulées + valorisées + jalons
+  const enriched = projets.map(p => {
+    const jp = jalonsAll.filter(j => (j.projets_ids||[]).includes(p.id));
+    const engP = jp.reduce((s,j) => s + (j.depenses_engagees||0), 0);
+    const valoP = jp.reduce((s,j) => s + (j.depenses_valorisables||0), 0);
+    const fpP = jp.reduce((s,j) => s + (j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0);
+    const nbCertP = jp.filter(j => j.certifie).length;
+    return { p, engP, valoP, fpP, nbJalons: jp.length, nbCert: nbCertP };
+  });
+  const totalEng = enriched.reduce((s,x) => s + x.engP, 0);
+
+  // Tri selon la colonne courante
+  const cmp = (a, b) => {
+    let va, vb;
+    switch (T2_PORTF_FIELD) {
+      case 'nom':       va = (a.p.nom||'').toLowerCase(); vb = (b.p.nom||'').toLowerCase(); break;
+      case 'trl':       va = a.p.trl || 0; vb = b.p.trl || 0; break;
+      case 'trl_cible': va = a.p.trl_cible || 0; vb = b.p.trl_cible || 0; break;
+      case 'gap':       va = (a.p.trl_cible||0) - (a.p.trl||0); vb = (b.p.trl_cible||0) - (b.p.trl||0); break;
+      case 'axe':       va = (a.p.axe_rdi||'zzz').toLowerCase(); vb = (b.p.axe_rdi||'zzz').toLowerCase(); break;
+      case 'pole':      va = (a.p.pole||'zzz').toLowerCase(); vb = (b.p.pole||'zzz').toLowerCase(); break;
+      case 'gouv':      va = (a.p.gouvernance||'zzz').toLowerCase(); vb = (b.p.gouvernance||'zzz').toLowerCase(); break;
+      case 'engagees':  va = a.engP; vb = b.engP; break;
+      case 'poids':     va = a.engP; vb = b.engP; break;
+      case 'fp':        va = a.fpP; vb = b.fpP; break;
+      case 'cert':      va = a.nbJalons ? (a.nbCert/a.nbJalons) : -1; vb = b.nbJalons ? (b.nbCert/b.nbJalons) : -1; break;
+      default:          va = a.engP; vb = b.engP;
+    }
+    if (va < vb) return T2_PORTF_DIR === 'asc' ? -1 : 1;
+    if (va > vb) return T2_PORTF_DIR === 'asc' ? 1 : -1;
+    // Tie-break : ordre alphabétique du nom
+    return (a.p.nom||'').localeCompare(b.p.nom||'');
+  };
+  const sorted = enriched.slice().sort(cmp);
+
+  // En-têtes triables
+  const sortIcon = (field) => {
+    if (T2_PORTF_FIELD !== field) return '<span class="th-sort-ico">⇅</span>';
+    return '<span class="th-sort-ico active">'+(T2_PORTF_DIR === 'desc' ? '▼' : '▲')+'</span>';
+  };
+  const th = (field, label, isNum) => '<th class="th-sortable'+(isNum?' num':'')+(T2_PORTF_FIELD===field?' active':'')+'" onclick="sortT2Portfolio(\''+field+'\',\''+safeSoc+'\')" title="Cliquer pour trier sur '+label+'">'+label+' '+sortIcon(field)+'</th>';
+
+  // Lignes
+  const rows = sorted.map(({p, engP, valoP, fpP, nbJalons, nbCert}) => {
+    const poids = totalEng > 0 ? (100*engP/totalEng) : 0;
+    const tauxCert = nbJalons > 0 ? Math.round(100*nbCert/nbJalons) : null;
+    return '<tr>'
+      + '<td class="col-nom"><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--ink);text-decoration:none;font-weight:700;" title="Ouvrir la fiche projet">'+p.nom+'</a>'
+        + '<div class="col-nom-sub">'+(p.demarrage||'—')+' → '+(p.cloture||'—')+'</div></td>'
+      + '<td class="num">'+trlGapBadge(p.trl, p.trl_cible)+'</td>'
+      + '<td>'+axeRDIBadge(p.axe_rdi)+'</td>'
+      + '<td>'+(p.pole ? '<span class="badge-soft purple">'+p.pole+'</span>' : '<span class="muted">—</span>')+'</td>'
+      + '<td>'+gouvernanceBadge(p.gouvernance)+'</td>'
+      + '<td class="num">'+(engP > 0 ? '<b>'+euro(engP)+'</b>' : '<span class="muted">—</span>')+'</td>'
+      + '<td class="num"><div class="poids-cell"><div class="poids-track"><div class="poids-fill" style="width:'+poids.toFixed(1)+'%;"></div></div><div class="poids-pct">'+poids.toFixed(1)+'%</div></div></td>'
+      + '<td class="num">'+(fpP > 0 ? '<b style="color:var(--brand);">'+euro(fpP)+'</b>' : '<span class="muted">—</span>')+'</td>'
+      + '<td class="num">'+(nbJalons > 0 ? nbCert+' / '+nbJalons+(tauxCert!==null?' <span class="muted" style="font-size:10px;">('+tauxCert+'%)</span>':'') : '<span class="muted">aucun jalon</span>')+'</td>'
+      + '</tr>';
+  }).join('');
+
+  return '<div class="card" style="padding:0; overflow-x:auto;">'
+    + '<table class="portfolio-table">'
+    +   '<thead><tr>'
+    +     th('nom', 'Projet')
+    +     th('gap', 'TRL', true)
+    +     th('axe', 'Axe R&D&I')
+    +     th('pole', 'Pôle métier')
+    +     th('gouv', 'Gouv.')
+    +     th('engagees', 'Engagées', true)
+    +     th('poids', 'Poids', true)
+    +     th('fp', 'Fin. public', true)
+    +     th('cert', 'Certif.', true)
+    +   '</tr></thead>'
+    +   '<tbody>'+rows+'</tbody>'
+    + '</table>'
+    + '</div>';
+}
+
 /* ===== Rendu de l'accordéon T1 dossiers groupés par exercice =====
    Un dossier multi-exercices (ex. CIFRE 2018-2022, France Relance 2021-2024) apparaît
    sous CHAQUE exercice où il a des jalons. Les montants affichés sont ceux de l'année
@@ -1748,18 +1877,17 @@ function _t1_client(jalons, factures, dossiers, livrables, documents, risques, n
       <div class="card"><h3>Répartition du financement public cumulé</h3><div class="chart-wrap"><canvas id="ch1b"></canvas></div></div>
     </div>
 
-    <div class="section-title"><h2>Synthèse des financements R&amp;D</h2><span class="tag t1-tag">matrice annuelle</span></div>
-    <div class="subv-equation"><b>Règle :</b> un jalon peut cumuler CIR (ou CII), CICO et subvention sur les mêmes dépenses engagées. La colonne <b>Fin. public total</b> est la somme des 4 pour l'année concernée.</div>
-    <div class="card" style="padding:0; overflow-x:auto;">
-      <table>
-        <thead><tr><th>Année</th><th class="num">Engagées</th><th class="num">Valorisables</th><th class="num">CIR</th><th class="num">CII</th><th class="num">CICO</th><th class="num">Subventions</th><th class="num">Fin. public total</th></tr></thead>
-        <tbody>${rowsMatrice || '<tr><td colspan="8" class="empty">Aucun jalon.</td></tr>'}
-        ${years.length ? '<tr class="total-row"><td>Total</td><td class="num">'+euro(totE)+'</td><td class="num">'+euro(totV)+'</td><td class="num">'+euro(totCIR)+'</td><td class="num">'+euro(totCII)+'</td><td class="num">'+euro(totCICO)+'</td><td class="num subv-cell">'+(totS?euro(totS):'—')+'</td><td class="num"><b>'+euro(totFP)+'</b></td></tr>' : ''}
-        </tbody>
-      </table>
-    </div>
-
     ${nbJalons > 0 ? '<div class="subv-equation" style="background:var(--green-bg); border-color:var(--green); border-left-color:var(--green-dark); margin-top:14px;"><b>Certification :</b> '+nbCertifies+' jalon'+(nbCertifies>1?'s':'')+' certifié'+(nbCertifies>1?'s':'')+' sur '+nbJalons+' ('+Math.round((nbCertifies/nbJalons)*100)+'%) — les jalons certifiés sont validés pour déclaration fiscale.</div>' : ''}
+
+    <div class="section-title">
+      <h2>Projets détaillés</h2>
+      <span class="tag t1-tag">${projets.length} projet${projets.length>1?'s':''}</span>
+      <div class="t2-toggle">
+        <button class="t2-toggle-btn ${T2_GROUP_MODE==='axe'?'active':''}" data-mode="axe" onclick="setT2GroupMode('axe', '${name.replace(/'/g, "\\'")}')">par Axe R&amp;DI</button>
+        <button class="t2-toggle-btn ${T2_GROUP_MODE==='pole'?'active':''}" data-mode="pole" onclick="setT2GroupMode('pole', '${name.replace(/'/g, "\\'")}')">par Pôle métier</button>
+      </div>
+    </div>
+    <div id="t2-frise-container">${_t2_projets_frise_par_axe(name, jalons)}</div>
 
     <div class="section-title"><h2>Dossiers détaillés</h2><span class="tag t1-tag">groupés par exercice</span></div>
     <div id="t1-dossiers-container">${_t1_dossiers_accordeon(dossiers, jalons, name)}</div>
@@ -1961,14 +2089,10 @@ function _t2_client(projets, livrables, reunions, risques, jalons, name) {
     </div>
 
     <div class="section-title">
-      <h2>Projets détaillés</h2>
-      <span class="tag t2-tag">${projets.length} projet${projets.length>1?'s':''}</span>
-      <div class="t2-toggle">
-        <button class="t2-toggle-btn ${T2_GROUP_MODE==='axe'?'active':''}" data-mode="axe" onclick="setT2GroupMode('axe', '${name.replace(/'/g, "\\'")}')">par Axe R&amp;DI</button>
-        <button class="t2-toggle-btn ${T2_GROUP_MODE==='pole'?'active':''}" data-mode="pole" onclick="setT2GroupMode('pole', '${name.replace(/'/g, "\\'")}')">par Pôle métier</button>
-      </div>
+      <h2>Portefeuille des projets</h2>
+      <span class="tag t2-tag">${projets.length} projet${projets.length>1?'s':''} · cliquez sur les en-têtes pour trier</span>
     </div>
-    <div id="t2-frise-container">${_t2_projets_frise_par_axe(name, jalons)}</div>
+    <div id="t2-portfolio-container">${_t2_portfolio_table(name, projets, jalons)}</div>
 
     <div class="section-title"><h2>Répartitions structurelles</h2><span class="tag t2-tag">analytique</span></div>
     <div class="grid c2">
