@@ -248,6 +248,16 @@
   .axe-stats small { color: var(--muted); font-weight: normal; }
   .axe-frise-block { margin: 0 0 var(--sp-7); }
   .axe-frise-block + .axe-frise-block { margin-top: var(--sp-6); padding-top: var(--sp-5); border-top: 1px dashed var(--border-soft); }
+  /* Accordéon T2 : header cliquable + chevron + rangée agrégée toujours visible */
+  .axe-header-clickable { cursor: pointer; user-select: none; transition: background 0.12s; padding-top: 8px; padding-bottom: 8px; border-radius: 4px; }
+  .axe-header-clickable:hover { background: var(--brand-bg); }
+  .axe-chevron { display: inline-block; width: 18px; text-align: center; font-size: 14px; color: var(--muted); transition: transform 0.15s; margin-right: 4px; }
+  .axe-frise-block.open .axe-chevron { color: var(--brand); }
+  .axe-agg-row { background: rgba(0,0,0,0.015); border-bottom: 1px solid var(--border); }
+  .axe-agg-row .frise-name { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .t2-actions { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-bottom: 12px; flex-wrap: wrap; }
+  .t2-action-btn { background: transparent; border: 1px solid var(--border); padding: 5px 11px; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; border-radius: 4px; transition: all 0.12s; }
+  .t2-action-btn:hover { background: var(--brand-bg); color: var(--brand); border-color: var(--brand); }
   /* Toggle de mode dans le titre de section T2 */
   .t2-toggle { display: inline-flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
   .t2-toggle-btn { background: transparent; border: 0; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: background 0.15s, color 0.15s; }
@@ -597,8 +607,10 @@ function renderHome() {
 
 function openSociete(name) {
   CURRENT_SOCIETE = name;
-  FRISE_SORT_YEAR = null; // reset du tri de la frise
+  FRISE_SORT_YEAR = null; // reset du tri de la frise T1
   T2_GROUP_MODE = 'axe';  // reset du mode de groupement T2
+  T2_SORT_YEAR = null;    // reset du tri par année T2
+  T2_OPEN_AXES = new Set(); // reset des axes ouverts (par défaut tout est replié)
   $('pageTitle').textContent = 'Portail ' + name;
   $('homeScreen').style.display = 'none';
   $('appScreen').style.display = 'grid';
@@ -765,10 +777,11 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
     if (r.p.cloture) allYearsSet.add(r.p.cloture);
     if (r.projectedYear) allYearsSet.add(r.projectedYear);
   });
-  const friseYears = [...allYearsSet].sort();
-  if (!friseYears.length) return '<div class="card empty">Aucune année à afficher.</div>';
-
-  // Palette RGB par axe
+  const friseYearsRaw = [...allYearsSet].sort((a,b)=>a-b);
+  if (!friseYearsRaw.length) return '<div class="card empty">Aucune année à afficher.</div>';
+  // Plage continue de l'année du projet le plus ancien jusqu'à la projection la plus tardive (pas de trous)
+  const friseYears = [];
+  for (let y = friseYearsRaw[0]; y <= friseYearsRaw[friseYearsRaw.length-1]; y++) friseYears.push(y);
   function axeRGB(axe) {
     const a = (axe||'').charAt(0).toUpperCase();
     if (a === 'R') return '46,58,184';   // #2E3AB8
@@ -872,18 +885,53 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
 
 /* ===== FRISE GROUPÉE PAR AXE R&DI OU PÔLE (utilisée dans le Temps 2) ===== */
 let T2_GROUP_MODE = 'axe'; // 'axe' = groupement par Axe R&DI ; 'pole' = groupement par Pôle métier
+let T2_SORT_YEAR = null;   // null = ordre par défaut ; sinon tri décroissant par dépenses de cette année
+let T2_OPEN_AXES = new Set(); // axes/pôles dépliés (par défaut tout est replié = vue agrégée)
+
+function _t2_rerender(societeName) {
+  const container = document.getElementById('t2-frise-container');
+  if (!container) return;
+  const jalonsAll = DATA.jalons.filter(j => j.societe === societeName);
+  container.innerHTML = _t2_projets_frise_par_axe(societeName, jalonsAll);
+}
 
 function setT2GroupMode(mode, societeName) {
+  if (T2_GROUP_MODE === mode) return;
   T2_GROUP_MODE = mode;
-  const container = document.getElementById('t2-frise-container');
-  if (container) {
-    const jalonsAll = DATA.jalons.filter(j => j.societe === societeName);
-    container.innerHTML = _t2_projets_frise_par_axe(societeName, jalonsAll);
-  }
-  // Mise à jour des boutons
+  T2_OPEN_AXES = new Set(); // les clés changent (axes ≠ pôles), on repart sur tout replié
+  _t2_rerender(societeName);
   document.querySelectorAll('.t2-toggle-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.mode === mode);
   });
+}
+
+function sortT2By(year, societeName) {
+  T2_SORT_YEAR = (T2_SORT_YEAR === year) ? null : year;
+  _t2_rerender(societeName);
+}
+
+function toggleT2Axe(key, societeName) {
+  if (T2_OPEN_AXES.has(key)) T2_OPEN_AXES.delete(key);
+  else T2_OPEN_AXES.add(key);
+  _t2_rerender(societeName);
+}
+
+function expandAllT2(societeName) {
+  // Déplie tous les groupes — pratique pour comparer sans cliquer chacun
+  const container = document.getElementById('t2-frise-container');
+  if (!container) return;
+  const jalonsAll = DATA.jalons.filter(j => j.societe === societeName);
+  // On précompte les groupes présents pour les ajouter à l'ensemble
+  DATA.projets.filter(p => p.societe === societeName).forEach(p => {
+    const k = T2_GROUP_MODE === 'pole' ? (p.pole || '—') : (p.axe_rdi || '—');
+    T2_OPEN_AXES.add(k);
+  });
+  container.innerHTML = _t2_projets_frise_par_axe(societeName, jalonsAll);
+}
+
+function collapseAllT2(societeName) {
+  T2_OPEN_AXES = new Set();
+  _t2_rerender(societeName);
 }
 
 function _t2_projets_frise_par_axe(societeName, jalonsAll) {
@@ -965,8 +1013,11 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
     if (r.p.cloture) allYearsSet.add(r.p.cloture);
     if (r.projectedYear) allYearsSet.add(r.projectedYear);
   });
-  const friseYears = [...allYearsSet].sort();
-  if (!friseYears.length) return '<div class="card empty">Aucune année à afficher.</div>';
+  const friseYearsRaw = [...allYearsSet].sort((a,b)=>a-b);
+  if (!friseYearsRaw.length) return '<div class="card empty">Aucune année à afficher.</div>';
+  // Plage continue de l'année du projet le plus ancien jusqu'à la projection la plus tardive (pas de trous)
+  const friseYears = [];
+  for (let y = friseYearsRaw[0]; y <= friseYearsRaw[friseYearsRaw.length-1]; y++) friseYears.push(y);
 
   // Choix de la clé de regroupement selon le mode
   const groupKey = (p) => T2_GROUP_MODE === 'pole' ? (p.pole || '—') : (p.axe_rdi || '—');
@@ -991,14 +1042,40 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
   }
 
   const colW = 100 / friseYears.length;
+  const safeSoc = societeName.replace(/'/g, "\\'");
 
-  const yearsHeader = '<div class="frise-header"><div class="frise-name">Projet</div><div class="frise-years">'
+  // Agrégats par groupe et par année (pour la barre toujours visible et pour le tri)
+  const aggByGroup = {}; // { groupKey: { year: totalEng } }
+  sortedGroups.forEach(g => {
+    aggByGroup[g] = {};
+    friseYears.forEach(y => { aggByGroup[g][y] = 0; });
+    byGroup[g].forEach(r => {
+      friseYears.forEach(y => { aggByGroup[g][y] += (r.engByY[y] || 0); });
+    });
+  });
+  let aggMaxEng = 0;
+  sortedGroups.forEach(g => friseYears.forEach(y => { if (aggByGroup[g][y] > aggMaxEng) aggMaxEng = aggByGroup[g][y]; }));
+
+  // Application du tri par année si actif : axes ET projets dans chaque axe par dépenses descendantes
+  if (T2_SORT_YEAR !== null) {
+    sortedGroups = sortedGroups.slice().sort((a,b) => (aggByGroup[b][T2_SORT_YEAR]||0) - (aggByGroup[a][T2_SORT_YEAR]||0));
+    sortedGroups.forEach(g => {
+      byGroup[g] = byGroup[g].slice().sort((a,b) => (b.engByY[T2_SORT_YEAR]||0) - (a.engByY[T2_SORT_YEAR]||0));
+    });
+  }
+
+  // Header années (cliquable pour tri, partagé par tous les blocs)
+  const yearsHeader = '<div class="frise-header"><div class="frise-name">Projet'
+    + (T2_SORT_YEAR ? ' <span class="frise-sort-hint">tri : ' + T2_SORT_YEAR + ' ↓</span>' : '')
+    + '</div><div class="frise-years">'
     + friseYears.map(y => {
         const isFuture = y > currentYear;
         const isCurrent = y === currentYear;
-        return '<div class="frise-year'+(isFuture?' future':'')+(isCurrent?' current':'')+'" style="width:'+colW+'%;">'+y
-          + (isFuture?'<div class="fr-proj-lbl">projection</div>':'')
-          + '</div>';
+        const isSortCol = T2_SORT_YEAR === y;
+        const cls = 'frise-year clickable' + (isFuture?' future':'') + (isCurrent?' current':'') + (isSortCol?' sorting':'');
+        return '<div class="'+cls+'" style="width:'+colW+'%;" onclick="sortT2By('+y+",'"+safeSoc+"')\" title=\"Trier les "+(T2_GROUP_MODE==='pole'?'pôles':'axes')+" et projets par dépenses de "+y+"\">"+y
+             + (isSortCol?'<div class="fr-proj-lbl">↓ tri actif</div>':(isFuture?'<div class="fr-proj-lbl">projection</div>':''))
+             + '</div>';
       }).join('')
     + '</div></div>';
 
@@ -1015,6 +1092,7 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
       let inner = '';
       let tooltip = r.p.nom+' · '+y;
       let styleAttr = 'width:'+colW+'%;';
+      if (T2_SORT_YEAR === y) cls += ' fr-sort-col';
       if (hasJalon) {
         cls += ' fr-filled';
         const intensity = maxEng > 0 ? (0.15 + 0.75 * (engY / maxEng)) : 0.5;
@@ -1035,19 +1113,46 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
     }).join('');
     const certifCount = r.jp.filter(j => j.certifie).length;
     const engTotal = Object.values(r.engByY).reduce((s,v)=>s+v, 0);
-    // Sous-libellé : on affiche l'autre dimension pour ne pas perdre l'info
     const otherDim = T2_GROUP_MODE === 'axe'
       ? (r.p.pole ? 'Pôle ' + r.p.pole + ' · ' : '')
       : ((r.p.axe_rdi && r.p.axe_rdi !== '—') ? r.p.axe_rdi + ' · ' : '');
+    const sortHighlight = T2_SORT_YEAR !== null
+      ? ' · <b style="color:var(--brand);">'+shortEuro(r.engByY[T2_SORT_YEAR]||0)+' en '+T2_SORT_YEAR+'</b>'
+      : '';
     return '<div class="frise-row">'
       + '<div class="frise-name" style="border-left-color: rgb('+meta.rgb+');">'
         + '<a onclick="setView(\'projet:'+r.p.id+'\')" style="cursor:pointer; color:var(--ink); font-weight:700; text-decoration:none;">'+r.p.nom+'</a>'
-        + '<div class="frise-sub">'+otherDim+'TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(engTotal)+' engagés · '+shortEuro(r.fpTotal)+' fin. public'+(certifCount?' · '+certifCount+'✓':'')+'</div>'
+        + '<div class="frise-sub">'+otherDim+'TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(engTotal)+' engagés · '+shortEuro(r.fpTotal)+' fin. public'+(certifCount?' · '+certifCount+'✓':'')+sortHighlight+'</div>'
       + '</div>'
       + '<div class="frise-years">'+segments+'</div>'
       + '</div>';
   }
 
+  // Rangée agrégée d'un groupe (ligne timeline toujours visible, indépendante de l'état déplié)
+  function renderAggRow(g) {
+    const meta = getMeta(g, T2_GROUP_MODE);
+    const segments = friseYears.map(y => {
+      const v = aggByGroup[g][y] || 0;
+      let cls = 'fr-cell';
+      if (T2_SORT_YEAR === y) cls += ' fr-sort-col';
+      let styleAttr = 'width:'+colW+'%;';
+      let inner = '';
+      if (v > 0) {
+        const intensity = aggMaxEng > 0 ? (0.20 + 0.75 * (v / aggMaxEng)) : 0.4;
+        styleAttr += 'background:rgba('+meta.rgb+','+intensity.toFixed(3)+');';
+        const textColor = intensity > 0.55 ? '#fff' : 'var(--ink)';
+        const textShadow = intensity > 0.55 ? 'text-shadow: 0 1px 2px rgba(0,0,0,0.35);' : '';
+        inner = '<div class="fr-eng" style="color:'+textColor+'; '+textShadow+'; font-weight:700;">'+shortEuro(v)+'</div>';
+      }
+      return '<div class="'+cls+'" style="'+styleAttr+'" title="Dép. engagées '+y+' (cumul groupe) : '+shortEuro(v)+'">'+inner+'</div>';
+    }).join('');
+    return '<div class="frise-row axe-agg-row">'
+      + '<div class="frise-name" style="border-left-color: rgb('+meta.rgb+'); font-style:italic; color:var(--muted);">cumul du groupe</div>'
+      + '<div class="frise-years">'+segments+'</div>'
+      + '</div>';
+  }
+
+  // Construction des blocs accordéon
   const blocks = sortedGroups.map(g => {
     const meta = getMeta(g, T2_GROUP_MODE);
     const rows = byGroup[g];
@@ -1058,9 +1163,15 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
     const groupLabel = g === '—'
       ? (T2_GROUP_MODE === 'pole' ? 'Pôle non renseigné' : 'Axe non renseigné')
       : g;
-    return '<div class="axe-frise-block">'
-      + '<div class="axe-header" style="border-left:4px solid rgb('+meta.rgb+'); padding-left:12px;">'
+    const isOpen = T2_OPEN_AXES.has(g);
+    const safeKey = String(g).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const sortHint = (T2_SORT_YEAR !== null)
+      ? ' <span style="color:var(--brand); font-weight:700;">' + shortEuro(aggByGroup[g][T2_SORT_YEAR]||0) + ' en ' + T2_SORT_YEAR + '</span>'
+      : '';
+    return '<div class="axe-frise-block'+(isOpen?' open':'')+'">'
+      + '<div class="axe-header axe-header-clickable" style="border-left:4px solid rgb('+meta.rgb+'); padding-left:12px;" onclick="toggleT2Axe(\''+safeKey+'\',\''+safeSoc+'\')" title="'+(isOpen?'Replier':'Déplier')+' '+groupLabel.replace(/"/g,'&quot;')+'">'
         + '<div class="axe-title">'
+          + '<span class="axe-chevron">'+(isOpen?'▾':'▸')+'</span>'
           + '<span class="axe-pill" style="background:rgb('+meta.rgb+');">'+meta.code+'</span>'
           + '<div><h3 style="margin:0;">'+groupLabel+'</h3>'
           + '<small style="color:var(--muted);">'+meta.desc+'</small></div>'
@@ -1070,19 +1181,34 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
           + '<span>TRL moyen <b>'+trlMoyen+'</b></span>'
           + '<span><b>'+shortEuro(totEng)+'</b> engagés</span>'
           + '<span><b>'+shortEuro(totFP)+'</b> fin. public</span>'
+          + sortHint
         + '</div>'
       + '</div>'
-      + '<div class="frise" style="margin-top:8px;">' + yearsHeader + rows.map(renderProjRow).join('') + '</div>'
+      + '<div class="frise" style="margin-top:8px;">'
+        + renderAggRow(g)
+        + (isOpen ? rows.map(renderProjRow).join('') : '')
+      + '</div>'
       + '</div>';
   }).join('');
 
-  const legend = '<div class="frise-legend">'
-    + '<span><b>Lecture</b> : chaque cellule porte la couleur du groupe (' + (T2_GROUP_MODE === 'pole' ? 'pôle métier' : 'axe R&DI') + ') du projet. Intensité = dépenses engagées de l\'année.</span>'
-    + '<span class="lg-sep">·</span>'
-    + '<span><span class="lg-dot fr-projected"></span> Projection N+1 (jalon en cours)</span>'
+  // Barre d'actions (déplier/replier tout)
+  const totalGroups = sortedGroups.length;
+  const openCount = sortedGroups.filter(g => T2_OPEN_AXES.has(g)).length;
+  const actions = '<div class="t2-actions">'
+    + '<span style="color:var(--muted); font-size:12px;">'+openCount+' / '+totalGroups+' '+(T2_GROUP_MODE==='pole'?'pôle'+(totalGroups>1?'s':''):'axe'+(totalGroups>1?'s':''))+' déplié'+(openCount>1?'s':'')+'</span>'
+    + '<button class="t2-action-btn" onclick="expandAllT2(\''+safeSoc+'\')">Tout déplier</button>'
+    + '<button class="t2-action-btn" onclick="collapseAllT2(\''+safeSoc+'\')">Tout replier</button>'
     + '</div>';
 
-  return '<div class="card frise-card">'+blocks+legend+'</div>';
+  const legend = '<div class="frise-legend">'
+    + '<span><b>Lecture</b> : chaque '+(T2_GROUP_MODE==='pole'?'pôle métier':'axe R&DI')+' affiche d\'abord sa timeline cumulée. Cliquez sur l\'en-tête pour révéler les projets.</span>'
+    + '<span class="lg-sep">·</span>'
+    + '<span><span class="lg-dot fr-projected"></span> Projection N+1 (jalon en cours)</span>'
+    + '<span class="lg-sep">·</span>'
+    + '<span class="lg-hint">💡 Cliquez sur une année pour trier '+(T2_GROUP_MODE==='pole'?'pôles':'axes')+' et projets par dépenses de cet exercice</span>'
+    + '</div>';
+
+  return '<div class="card frise-card">'+actions+'<div class="frise" style="margin-bottom:10px;">'+yearsHeader+'</div>'+blocks+legend+'</div>';
 }
 
 /* ===== LECTURE I — DAF / FINANCIÈRE ===== */
