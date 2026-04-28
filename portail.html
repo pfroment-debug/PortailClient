@@ -322,14 +322,25 @@
   .badge-soft.rdi-rdi { color: rgb(108,40,180); background: rgba(108,40,180,0.10); border-color: rgba(108,40,180,0.4); }
   .badge-soft.rdi-x { color: var(--ink); background: #eee; border-color: var(--border); }
 
-  /* ===== Mini-bar scores R / I / D ===== */
-  .rdi-bar { display: flex; height: 28px; border-radius: 4px; overflow: hidden; font-size: 11px; font-weight: 700; color: #fff; }
-  .rdi-bar.empty { background: #f5f5f5; align-items: center; justify-content: center; color: var(--muted); font-style: italic; padding: 0 12px; }
-  .rdi-bar > div { display: flex; align-items: center; justify-content: center; min-width: 0; padding: 0 6px; transition: filter 0.12s; }
-  .rdi-bar > div:hover { filter: brightness(1.08); }
-  .rdi-bar .rdi-r { background: rgb(46,58,184); }
-  .rdi-bar .rdi-i { background: rgb(192,30,96); }
-  .rdi-bar .rdi-d { background: rgb(0,138,72); }
+  /* ===== Mini-graphique scores Recherche / Développement / Innovation ===== */
+  .rdi-stack { display: flex; flex-direction: column; gap: 6px; }
+  .rdi-stack.empty { padding: 16px; background: #f5f5f5; border-radius: 4px; align-items: center; justify-content: center; min-height: 60px; }
+  .rdi-stack.empty span { font-style: italic; }
+  .rdi-row { display: grid; grid-template-columns: 110px 1fr 38px 28px; align-items: center; gap: 10px; font-size: 12px; }
+  .rdi-row .rdi-lbl { color: var(--ink); font-weight: 600; font-size: 11.5px; }
+  .rdi-row .rdi-track { background: #f0f1f5; height: 14px; border-radius: 3px; overflow: hidden; }
+  .rdi-row .rdi-fill { height: 100%; min-width: 2px; transition: width 0.3s ease-out; border-radius: 3px; }
+  .rdi-row .rdi-fill.rdi-r { background: rgb(46,58,184); }
+  .rdi-row .rdi-fill.rdi-d { background: rgb(0,138,72); }
+  .rdi-row .rdi-fill.rdi-i { background: rgb(192,30,96); }
+  .rdi-row .rdi-pct { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); text-align: right; font-size: 11.5px; }
+  .rdi-row .rdi-score { font-variant-numeric: tabular-nums; color: var(--muted); text-align: right; font-size: 10.5px; padding: 2px 5px; background: #f5f5f5; border-radius: 3px; }
+
+  /* ===== Spectre des axes possibles (rappel pédagogique) ===== */
+  .axe-spectrum { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 10px 0 0; font-size: 10.5px; color: var(--muted); }
+  .axe-spectrum .as-lbl { color: var(--muted); margin-right: 4px; font-style: italic; }
+  .axe-spectrum .as-axe { padding: 2px 8px; border-radius: 10px; background: #f0f1f5; color: var(--muted); border: 1px solid var(--border); font-weight: 600; font-size: 10px; letter-spacing: 0.2px; }
+  .axe-spectrum .as-axe.cur { background: var(--brand-bg); color: var(--brand); border-color: var(--brand); font-weight: 700; }
 
   /* ===== Indicateur de variation N vs N-1 ===== */
   .dl-good { color: var(--green-dark); font-size: 11px; font-weight: 700; }
@@ -615,16 +626,35 @@ function deltaBadge(curr, prev, pos) {
   return '<span class="'+cls+'">'+arrow+' '+(isUp?'+':'')+pctVal+'% N-1</span>';
 }
 
-// Mini-barre horizontale des scores R / I / D (formules Notion). Donne la justification numérique de l'axe.
+// Mini-graphique des trois scores Recherche / Développement / Innovation (formules Notion).
+// Donne la justification numérique du champ "axe R&D&I" qui peut prendre 6 valeurs : Recherche, R&D, Développement, D&I, Innovation, R&D&I.
 function scoresRDIBar(scoreR, scoreI, scoreD) {
   const r = scoreR || 0, i = scoreI || 0, d = scoreD || 0;
   const tot = r + i + d;
-  if (!tot) return '<div class="rdi-bar empty"><span class="muted">scores R/D/I non calculés</span></div>';
-  const pR = Math.round(100*r/tot), pI = Math.round(100*i/tot), pD = 100 - pR - pI;
-  return '<div class="rdi-bar" title="Recherche '+r+' · Innovation '+i+' · Développement '+d+'">'
-    + (pR>0 ? '<div class="rdi-r" style="flex:'+pR+';" title="Recherche : '+r+' ('+pR+'%)">R '+pR+'%</div>' : '')
-    + (pI>0 ? '<div class="rdi-i" style="flex:'+pI+';" title="Innovation : '+i+' ('+pI+'%)">I '+pI+'%</div>' : '')
-    + (pD>0 ? '<div class="rdi-d" style="flex:'+pD+';" title="Développement : '+d+' ('+pD+'%)">D '+pD+'%</div>' : '')
+  if (!tot) return '<div class="rdi-stack empty"><span class="muted">Scores Recherche / Développement / Innovation non calculés</span></div>';
+  const pR = Math.round(100*r/tot);
+  const pI = Math.round(100*i/tot);
+  const pD = 100 - pR - pI;
+  // Ordre FRASCATI : Recherche → Développement → Innovation
+  const row = (label, score, p, cls) => '<div class="rdi-row">'
+    + '<div class="rdi-lbl">'+label+'</div>'
+    + '<div class="rdi-track"><div class="rdi-fill '+cls+'" style="width:'+p+'%;"></div></div>'
+    + '<div class="rdi-pct">'+p+'%</div>'
+    + '<div class="rdi-score" title="score brut Notion">'+score+'</div>'
+    + '</div>';
+  return '<div class="rdi-stack">'
+    + row('Recherche', r, pR, 'rdi-r')
+    + row('Développement', d, pD, 'rdi-d')
+    + row('Innovation', i, pI, 'rdi-i')
+    + '</div>';
+}
+
+// Affiche les 6 axes possibles avec celui du projet en surbrillance — rappel pédagogique du spectre Notion.
+function axeSpectrum(currentAxe) {
+  const axes = ['Recherche', 'R&D', 'Développement', 'D&I', 'Innovation', 'R&D&I'];
+  return '<div class="axe-spectrum">'
+    + '<span class="as-lbl">spectre des axes :</span>'
+    + axes.map(a => '<span class="as-axe'+(a === currentAxe ? ' cur' : '')+'">'+a+'</span>').join('')
     + '</div>';
 }
 
@@ -2344,9 +2374,10 @@ function renderProjet(projetId) {
         ${trlBar(p.trl, p.trl_cible, true)}
       </div>
       <div style="margin-top:18px;">
-        <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:700; margin-bottom:6px;">Justification de l'axe — scores R/I/D (formules Notion)</div>
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:700; margin-bottom:8px;">Pondération Recherche · Développement · Innovation — justification de l'axe</div>
         ${scoresRDIBar(p.score_r, p.score_i, p.score_d)}
-        <div style="font-size:11px; color:var(--muted); margin-top:6px;">L'axe affiché est calculé automatiquement à partir des trois scores. Cette répartition est la pièce de défense numérique en cas de contrôle.</div>
+        ${axeSpectrum(p.axe_rdi)}
+        <div style="font-size:11px; color:var(--muted); margin-top:8px;">Les trois scores Notion combinés produisent l'axe R&amp;D&amp;I. Cette pondération est la pièce de défense numérique en cas de contrôle.</div>
       </div>
     </div>
 
@@ -2387,16 +2418,16 @@ function renderProjet(projetId) {
       <div class="card"><div class="muted">Vélocité TRL prévue</div><div style="font-size:28px;font-weight:900;">${velocityP}</div><div class="muted" style="margin-top:4px;">${dureeP?dureeP+' an'+(dureeP>1?'s':'')+' déclarés':'—'}</div></div>
     </div>
 
-    ${tot > 0 ? `<div class="section-title"><h2>Pondération R / I / D</h2><span class="tag t3-tag">qualification de l'axe</span></div>
+    ${tot > 0 ? `<div class="section-title"><h2>Pondération Recherche · Développement · Innovation</h2><span class="tag t3-tag">qualification de l'axe</span></div>
       <div class="grid c2">
-        <div class="card"><h3>Distribution des scores</h3><div class="chart-wrap"><canvas id="chpj3"></canvas></div></div>
-        <div class="card"><h3>Axe dominant</h3><div style="padding:24px;text-align:center;"><div style="font-size:42px;font-weight:900;color:var(--brand);letter-spacing:2px;">${p.axe_rdi||'—'}</div><div class="muted" style="margin-top:10px;">axe R&amp;D&amp;I déterminé par les scores</div><div style="margin-top:14px;">${scoresRDIBar(scoreR, scoreI, scoreD)}</div></div></div>
+        <div class="card"><h3>Distribution des trois scores</h3><div class="chart-wrap"><canvas id="chpj3"></canvas></div></div>
+        <div class="card"><h3>Axe calculé</h3><div style="padding:24px;text-align:center;"><div style="font-size:42px;font-weight:900;color:var(--brand);letter-spacing:2px;">${p.axe_rdi||'—'}</div><div class="muted" style="margin-top:10px;">axe R&amp;D&amp;I déterminé par les scores</div><div style="margin-top:14px;">${scoresRDIBar(scoreR, scoreI, scoreD)}</div>${axeSpectrum(p.axe_rdi)}</div></div>
       </div>` : ''}`;
 
   if (tot > 0) {
     charts.chpj3 = new Chart($('chpj3'), {
       type: 'doughnut',
-      data: { labels: ['Recherche','Innovation','Développement'], datasets: [{ data: [scoreR, scoreI, scoreD], backgroundColor: ['#2E3AB8','#C01E60','#00A668'], borderWidth: 0 }] },
+      data: { labels: ['Recherche','Développement','Innovation'], datasets: [{ data: [scoreR, scoreD, scoreI], backgroundColor: ['#2E3AB8','#00A668','#C01E60'], borderWidth: 0 }] },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
     });
   }
