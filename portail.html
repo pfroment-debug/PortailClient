@@ -940,7 +940,7 @@ function renderOverview() {
     { label: 'Livrables en cours', value: pend.length, footer: pend[0] ? '→ '+relDays(pend[0].deadline) : 'aucune échéance' },
   ]);
 
-  _t1_client(jalons, factures, dossiers, livrables, documents, risques, name);
+  _t1_client(jalons, factures, dossiers, livrables, documents, risques, projets, name);
   _t2_client(projets, livrables, reunions, risques, jalons, name);
   _t3_client(jalons, projets, risques, contacts, documents, name);
 }
@@ -1797,7 +1797,7 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
 }
 
 /* ===== LECTURE I — DAF / FINANCIÈRE ===== */
-function _t1_client(jalons, factures, dossiers, livrables, documents, risques, name) {
+function _t1_client(jalons, factures, dossiers, livrables, documents, risques, projets, name) {
   const years = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
   const byYear = {};
   years.forEach(y => byYear[y] = { eng: 0, valo: 0, cir: 0, cii: 0, cico: 0, subv: 0 });
