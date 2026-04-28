@@ -248,6 +248,12 @@
   .axe-stats small { color: var(--muted); font-weight: normal; }
   .axe-frise-block { margin: 0 0 var(--sp-7); }
   .axe-frise-block + .axe-frise-block { margin-top: var(--sp-6); padding-top: var(--sp-5); border-top: 1px dashed var(--border-soft); }
+  /* Toggle de mode dans le titre de section T2 */
+  .t2-toggle { display: inline-flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .t2-toggle-btn { background: transparent; border: 0; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: background 0.15s, color 0.15s; }
+  .t2-toggle-btn:hover { background: var(--brand-bg); color: var(--brand); }
+  .t2-toggle-btn.active { background: var(--brand); color: #fff; }
+  .t2-toggle-btn + .t2-toggle-btn { border-left: 1px solid var(--border); }
   .frise { display: block; }
   .frise-header, .frise-row {
     display: flex;
@@ -592,6 +598,7 @@ function renderHome() {
 function openSociete(name) {
   CURRENT_SOCIETE = name;
   FRISE_SORT_YEAR = null; // reset du tri de la frise
+  T2_GROUP_MODE = 'axe';  // reset du mode de groupement T2
   $('pageTitle').textContent = 'Portail ' + name;
   $('homeScreen').style.display = 'none';
   $('appScreen').style.display = 'grid';
@@ -863,14 +870,29 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   return '<div class="card frise-card" id="frise-container-inner"><div class="frise">'+header+rows+'</div>'+legend+'</div>';
 }
 
-/* ===== FRISE GROUPÉE PAR AXE R&DI (utilisée dans le Temps 2) ===== */
+/* ===== FRISE GROUPÉE PAR AXE R&DI OU PÔLE (utilisée dans le Temps 2) ===== */
+let T2_GROUP_MODE = 'axe'; // 'axe' = groupement par Axe R&DI ; 'pole' = groupement par Pôle métier
+
+function setT2GroupMode(mode, societeName) {
+  T2_GROUP_MODE = mode;
+  const container = document.getElementById('t2-frise-container');
+  if (container) {
+    const jalonsAll = DATA.jalons.filter(j => j.societe === societeName);
+    container.innerHTML = _t2_projets_frise_par_axe(societeName, jalonsAll);
+  }
+  // Mise à jour des boutons
+  document.querySelectorAll('.t2-toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+}
+
 function _t2_projets_frise_par_axe(societeName, jalonsAll) {
   const projets = DATA.projets.filter(p => p.societe === societeName);
   if (!projets.length) return '<div class="card empty">Aucun projet.</div>';
 
   const currentYear = new Date().getFullYear();
 
-  // Métadonnées d'axe (cohérentes avec le bloc agrégé du portefeuille)
+  // Métadonnées d'axe R&DI (palette FRASCATI)
   const axeOrder = ['Recherche', 'R&D', 'Développement', 'D&I', 'Innovation', 'R&DI', 'R&D&I'];
   const axeMeta = {
     'Recherche':     { rgb: '46,58,184',  code: 'R',     desc: 'Production de connaissances nouvelles' },
@@ -881,7 +903,39 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
     'R&DI':          { rgb: '128,40,160', code: 'R&DI',  desc: 'Recherche couplée au continuum développement-innovation' },
     'R&D&I':         { rgb: '90,55,160',  code: 'R&D&I', desc: 'Trois axes traités sur le même plan' },
   };
-  const getAxeMeta = (axe) => axeMeta[axe] || { rgb: '120,120,120', code: axe || '—', desc: 'Axe non renseigné' };
+
+  // Palette pour les pôles métier — déterministe selon le nom du pôle (hash → teinte stable)
+  // Couleurs choisies pour rester distinctes de la palette R/D/I afin d'éviter toute confusion sémantique
+  const poleColors = [
+    '14,116,144',   // teal
+    '180,83,9',     // ambre
+    '79,70,229',    // indigo
+    '5,150,105',    // émeraude
+    '190,18,60',    // rouge sombre
+    '124,58,237',   // violet
+    '202,138,4',    // jaune sombre
+    '8,145,178',    // cyan
+    '15,118,110',   // sarcelle
+    '161,98,7',     // marron
+  ];
+  function poleHash(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+
+  function getMeta(value, mode) {
+    if (mode === 'axe') return axeMeta[value] || { rgb: '120,120,120', code: value || '—', desc: 'Axe non renseigné' };
+    // mode === 'pole'
+    if (!value) return { rgb: '120,120,120', code: '—', desc: 'Pôle non renseigné' };
+    const rgb = poleColors[poleHash(value) % poleColors.length];
+    // Code court : initiales si 2+ mots, sinon 3 premières lettres en majuscules
+    const words = value.trim().split(/\s+/);
+    const code = words.length >= 2
+      ? words.slice(0, 3).map(w => w[0]).join('').toUpperCase()
+      : value.substring(0, 3).toUpperCase();
+    return { rgb, code, desc: 'Pôle métier' };
+  }
 
   // Pré-calcul (identique à _t1_projets_frise) : pour chaque projet, jalons + années + projection N+1
   const projRows = projets.map(p => {
@@ -899,7 +953,7 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
     };
   });
 
-  // Échelle d'intensité globale (commune à toutes les frises pour comparabilité visuelle)
+  // Échelle d'intensité globale (commune à tous les blocs pour comparabilité visuelle)
   let maxEng = 0;
   projRows.forEach(r => { Object.values(r.engByY).forEach(v => { if (v > maxEng) maxEng = v; }); });
 
@@ -914,20 +968,30 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
   const friseYears = [...allYearsSet].sort();
   if (!friseYears.length) return '<div class="card empty">Aucune année à afficher.</div>';
 
-  // Groupement par axe
-  const byAxe = {};
+  // Choix de la clé de regroupement selon le mode
+  const groupKey = (p) => T2_GROUP_MODE === 'pole' ? (p.pole || '—') : (p.axe_rdi || '—');
+
+  const byGroup = {};
   projRows.forEach(r => {
-    const a = r.p.axe_rdi || '—';
-    (byAxe[a] = byAxe[a] || []).push(r);
+    const k = groupKey(r.p);
+    (byGroup[k] = byGroup[k] || []).push(r);
   });
-  const knownAxes = axeOrder.filter(a => byAxe[a]);
-  const otherAxes = Object.keys(byAxe).filter(a => !axeOrder.includes(a) && a !== '—').sort();
-  const sortedAxes = [...knownAxes, ...otherAxes];
-  if (byAxe['—']) sortedAxes.push('—');
+
+  // Tri : pour les axes, ordre canonique R→I ; pour les pôles, ordre alphabétique
+  let sortedGroups;
+  if (T2_GROUP_MODE === 'axe') {
+    const known = axeOrder.filter(a => byGroup[a]);
+    const others = Object.keys(byGroup).filter(a => !axeOrder.includes(a) && a !== '—').sort();
+    sortedGroups = [...known, ...others];
+    if (byGroup['—']) sortedGroups.push('—');
+  } else {
+    const others = Object.keys(byGroup).filter(a => a !== '—').sort((a,b) => a.localeCompare(b, 'fr'));
+    sortedGroups = others;
+    if (byGroup['—']) sortedGroups.push('—');
+  }
 
   const colW = 100 / friseYears.length;
 
-  // En-tête commun (années) — pas de tri cliquable ici, c'est un module de lecture R&D
   const yearsHeader = '<div class="frise-header"><div class="frise-name">Projet</div><div class="frise-years">'
     + friseYears.map(y => {
         const isFuture = y > currentYear;
@@ -938,9 +1002,8 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
       }).join('')
     + '</div></div>';
 
-  // Pour chaque projet, génère sa ligne de cellules (factorisé)
   function renderProjRow(r) {
-    const meta = getAxeMeta(r.p.axe_rdi || '—');
+    const meta = getMeta(groupKey(r.p), T2_GROUP_MODE);
     const segments = friseYears.map(y => {
       const hasJalon = r.anneesJalons.includes(y);
       const isProjected = r.projectedYear === y;
@@ -972,28 +1035,34 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
     }).join('');
     const certifCount = r.jp.filter(j => j.certifie).length;
     const engTotal = Object.values(r.engByY).reduce((s,v)=>s+v, 0);
+    // Sous-libellé : on affiche l'autre dimension pour ne pas perdre l'info
+    const otherDim = T2_GROUP_MODE === 'axe'
+      ? (r.p.pole ? 'Pôle ' + r.p.pole + ' · ' : '')
+      : ((r.p.axe_rdi && r.p.axe_rdi !== '—') ? r.p.axe_rdi + ' · ' : '');
     return '<div class="frise-row">'
       + '<div class="frise-name" style="border-left-color: rgb('+meta.rgb+');">'
         + '<a onclick="setView(\'projet:'+r.p.id+'\')" style="cursor:pointer; color:var(--ink); font-weight:700; text-decoration:none;">'+r.p.nom+'</a>'
-        + '<div class="frise-sub">TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(engTotal)+' engagés · '+shortEuro(r.fpTotal)+' fin. public'+(certifCount?' · '+certifCount+'✓':'')+'</div>'
+        + '<div class="frise-sub">'+otherDim+'TRL '+(r.p.trl||'—')+'→'+(r.p.trl_cible||'—')+' · '+shortEuro(engTotal)+' engagés · '+shortEuro(r.fpTotal)+' fin. public'+(certifCount?' · '+certifCount+'✓':'')+'</div>'
       + '</div>'
       + '<div class="frise-years">'+segments+'</div>'
       + '</div>';
   }
 
-  // Rendu : un bloc d'axe par groupe, avec en-tête synthétique
-  const axeBlocks = sortedAxes.map(axe => {
-    const meta = getAxeMeta(axe);
-    const rows = byAxe[axe];
+  const blocks = sortedGroups.map(g => {
+    const meta = getMeta(g, T2_GROUP_MODE);
+    const rows = byGroup[g];
     const totEng = rows.reduce((s,r) => s + Object.values(r.engByY).reduce((a,b)=>a+b,0), 0);
     const totFP = rows.reduce((s,r) => s + r.fpTotal, 0);
     const trlVals = rows.map(r => r.p.trl).filter(t => t);
     const trlMoyen = trlVals.length ? (trlVals.reduce((a,b)=>a+b,0) / trlVals.length).toFixed(1) : '—';
+    const groupLabel = g === '—'
+      ? (T2_GROUP_MODE === 'pole' ? 'Pôle non renseigné' : 'Axe non renseigné')
+      : g;
     return '<div class="axe-frise-block">'
       + '<div class="axe-header" style="border-left:4px solid rgb('+meta.rgb+'); padding-left:12px;">'
         + '<div class="axe-title">'
           + '<span class="axe-pill" style="background:rgb('+meta.rgb+');">'+meta.code+'</span>'
-          + '<div><h3 style="margin:0;">'+(axe === '—' ? 'Axe non renseigné' : axe)+'</h3>'
+          + '<div><h3 style="margin:0;">'+groupLabel+'</h3>'
           + '<small style="color:var(--muted);">'+meta.desc+'</small></div>'
         + '</div>'
         + '<div class="axe-stats">'
@@ -1008,12 +1077,12 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
   }).join('');
 
   const legend = '<div class="frise-legend">'
-    + '<span><b>Lecture</b> : chaque cellule porte la couleur de l\'axe R&DI du projet. Intensité = dépenses engagées de l\'année (échelle commune).</span>'
+    + '<span><b>Lecture</b> : chaque cellule porte la couleur du groupe (' + (T2_GROUP_MODE === 'pole' ? 'pôle métier' : 'axe R&DI') + ') du projet. Intensité = dépenses engagées de l\'année.</span>'
     + '<span class="lg-sep">·</span>'
     + '<span><span class="lg-dot fr-projected"></span> Projection N+1 (jalon en cours)</span>'
     + '</div>';
 
-  return '<div class="card frise-card">'+axeBlocks+legend+'</div>';
+  return '<div class="card frise-card">'+blocks+legend+'</div>';
 }
 
 /* ===== LECTURE I — DAF / FINANCIÈRE ===== */
@@ -1309,8 +1378,15 @@ function _t2_client(projets, livrables, reunions, risques, jalons, name) {
       <div class="card"><h3>Cadence des réunions (12 mois)</h3><div class="chart-wrap"><canvas id="ch2cad"></canvas></div></div>
     </div>
 
-    <div class="section-title"><h2>Projets détaillés par axe R&amp;DI</h2><span class="tag t2-tag">${projets.length} projet${projets.length>1?'s':''} · ${sortedAxes.length} axe${sortedAxes.length>1?'s':''}</span></div>
-    ${_t2_projets_frise_par_axe(name, jalons)}
+    <div class="section-title">
+      <h2>Projets détaillés</h2>
+      <span class="tag t2-tag">${projets.length} projet${projets.length>1?'s':''}</span>
+      <div class="t2-toggle">
+        <button class="t2-toggle-btn ${T2_GROUP_MODE==='axe'?'active':''}" data-mode="axe" onclick="setT2GroupMode('axe', '${name.replace(/'/g, "\\'")}')">par Axe R&amp;DI</button>
+        <button class="t2-toggle-btn ${T2_GROUP_MODE==='pole'?'active':''}" data-mode="pole" onclick="setT2GroupMode('pole', '${name.replace(/'/g, "\\'")}')">par Pôle métier</button>
+      </div>
+    </div>
+    <div id="t2-frise-container">${_t2_projets_frise_par_axe(name, jalons)}</div>
 
     <div class="section-title"><h2>Répartitions structurelles</h2><span class="tag t2-tag">analytique</span></div>
     <div class="grid c2">
