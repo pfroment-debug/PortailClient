@@ -792,8 +792,7 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
 
   // Pré-calcul : pour chaque projet, jalons + années + projection N+1
   const projRows = projets.map(p => {
-    const key = p.nom.split(' — ')[0];
-    const jp = jalonsAll.filter(j => (j.projets_ids||[]).includes(p.id) || (key.length>3 && j.projet && j.projet.includes(key)));
+    const jp = jalonsAll.filter(j => (j.projets_ids||[]).includes(p.id));
     const anneesJalons = [...new Set(jp.map(j => j.annee).filter(Boolean))].sort();
     const latestYear = anneesJalons.length ? anneesJalons[anneesJalons.length - 1] : null;
     const hasOpen = latestYear ? jp.some(j => j.annee === latestYear && (j.avancement === null || j.avancement === undefined || j.avancement < 1)) : false;
@@ -1270,10 +1269,10 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
     return { rgb, code, desc: 'Pôle métier' };
   }
 
-  // Pré-calcul (identique à _t1_projets_frise) : pour chaque projet, jalons + années + projection N+1
+  // Pré-calcul : pour chaque projet, jalons + années + projection N+1
+  // (filtrage strict par projets_ids — un match par préfixe sur le nom causait de faux positifs : ex. BDAA matchait BDAA-IA, MICO matchait LIFESPANMICO)
   const projRows = projets.map(p => {
-    const key = p.nom.split(' — ')[0];
-    const jp = jalonsAll.filter(j => (j.projets_ids||[]).includes(p.id) || (key.length>3 && j.projet && j.projet.includes(key)));
+    const jp = jalonsAll.filter(j => (j.projets_ids||[]).includes(p.id));
     const anneesJalons = [...new Set(jp.map(j => j.annee).filter(Boolean))].sort();
     const latestYear = anneesJalons.length ? anneesJalons[anneesJalons.length - 1] : null;
     const hasOpen = latestYear ? jp.some(j => j.annee === latestYear && (j.avancement === null || j.avancement === undefined || j.avancement < 1)) : false;
@@ -2052,12 +2051,12 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
 function renderProjet(projetId) {
   const p = DATA.projets.find(x => x.id === projetId);
   if (!p) return;
-  // Filtre par projets_ids si dispo (relation vraie), sinon fallback par nom
-  const key = p.nom.split(' — ')[0];
-  const jalons = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && ((j.projets_ids||[]).includes(projetId) || (key.length>3 && j.projet && j.projet.includes(key))));
-  const livrables = getLivrables(CURRENT_SOCIETE).filter(l => (l.projets_ids||[]).includes(projetId) || (l.projets_lies||[]).some(pn => pn.includes(key)));
-  const risques = (DATA.risques||[]).filter(r => r.societe === CURRENT_SOCIETE && ((r.projets_ids||[]).includes(projetId) || (r.projets_lies||[]).some(pn => pn.includes(key))));
-  const reunions = getReunions(CURRENT_SOCIETE).filter(r => (r.projets_ids||[]).includes(projetId) || (r.projets_lies||[]).some(pn => pn.includes(key)));
+  // Tous les filtres utilisent la relation Notion `projets_ids` (fiable). Le match par préfixe
+  // de nom causait des faux positifs sur les familles à préfixe commun (BDAA / BDAA-IA, MICO / LIFESPANMICO).
+  const jalons = DATA.jalons.filter(j => j.societe === CURRENT_SOCIETE && (j.projets_ids||[]).includes(projetId));
+  const livrables = getLivrables(CURRENT_SOCIETE).filter(l => (l.projets_ids||[]).includes(projetId));
+  const risques = (DATA.risques||[]).filter(r => r.societe === CURRENT_SOCIETE && (r.projets_ids||[]).includes(projetId));
+  const reunions = getReunions(CURRENT_SOCIETE).filter(r => (r.projets_ids||[]).includes(projetId));
 
   $('modeTag').textContent = 'PROJET R&D';
   $('entityName').textContent = p.nom;
