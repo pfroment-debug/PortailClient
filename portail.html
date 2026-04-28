@@ -258,54 +258,52 @@
   .t2-actions { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-bottom: 12px; flex-wrap: wrap; }
   .t2-action-btn { background: transparent; border: 1px solid var(--border); padding: 5px 11px; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; border-radius: 4px; transition: all 0.12s; }
   .t2-action-btn:hover { background: var(--brand-bg); color: var(--brand); border-color: var(--brand); }
-  /* Accordéon dossiers (T1) groupés par exercice */
-  .exercice-block { margin-bottom: 22px; }
-  .exercice-block + .exercice-block { padding-top: 18px; border-top: 2px solid var(--border-soft); }
-  .exercice-header-mini { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
-  .exercice-header-mini h3 { margin: 0; font-size: 15px; color: var(--ink); font-weight: 700; letter-spacing: -0.2px; }
-  .exercice-header-mini .ex-count { color: var(--muted); font-size: 12px; }
-  .exercice-dossiers { display: flex; flex-direction: column; gap: 8px; }
-  .dossier-block { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: border-color 0.12s, box-shadow 0.12s; background: #fff; }
-  .dossier-block:hover { border-color: var(--brand); }
-  .dossier-block.open { border-color: var(--brand); box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-  .dossier-block.multi-year { border-left-width: 3px; border-left-color: var(--purple); }
-  .dossier-block.multi-year:hover, .dossier-block.multi-year.open { border-left-color: var(--purple-dark); }
-  /* Header replié : 2 lignes — identité puis grille de métriques */
-  .dossier-header { padding: 10px 14px 12px; cursor: pointer; user-select: none; transition: background 0.12s; }
-  .dossier-header:hover { background: var(--brand-bg); }
-  .dossier-block.open .dossier-header { background: var(--brand-bg); border-bottom: 1px solid var(--border); }
-  .dh-id { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-  .dh-id .axe-chevron { margin-right: 0; }
-  .dh-id .dh-name { color: var(--ink); font-weight: 700; text-decoration: none; cursor: pointer; font-size: 13.5px; }
-  .dh-id .dh-name:hover { color: var(--brand); }
-  .dh-id .dh-pdj { margin-left: auto; color: var(--muted); font-size: 11px; font-style: italic; padding-left: 12px; }
-  .dh-span { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--purple-bg); color: var(--purple-dark); border: 1px solid var(--purple); font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  /* Grille de 4 indicateurs alignés (Dépenses · CI · Subv. · Certif) */
-  .dh-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; padding-left: 60px; }
-  .dh-metrics[data-cells="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .dh-cell { min-width: 0; }
-  .dh-cell .dh-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 2px; }
-  .dh-cell .dh-val { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.2; }
-  .dh-cell .dh-val.dh-strong { color: var(--brand); }
-  .dh-cell .dh-val.muted { color: var(--muted); font-weight: normal; font-size: 13px; font-style: italic; }
-  .dh-cell .dh-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-  .dh-cell .dh-sub.muted { color: transparent; }
-  .dh-cell .dh-pct { font-weight: 700; color: var(--ink); }
-  /* Body déplié : table jalons */
-  .dossier-body { background: #fafafa; padding: 0; }
-  table.dossier-jalons { width: 100%; border-collapse: collapse; font-size: 12px; }
-  table.dossier-jalons th { background: #f5f5f5; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); }
-  table.dossier-jalons th.num { text-align: right; }
-  table.dossier-jalons td { padding: 8px 10px; border-bottom: 1px solid var(--border-soft); }
-  table.dossier-jalons td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  table.dossier-jalons tr:last-child td { border-bottom: none; }
-  table.dossier-jalons tr:hover { background: var(--brand-bg); }
-  /* Mobile : grille collapse en 2 colonnes, PDJ remonte sur sa propre ligne */
-  @media (max-width: 720px) {
-    .dh-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-left: 0; }
-    .dh-metrics[data-cells="3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .dh-id .dh-pdj { margin-left: 0; padding-left: 0; width: 100%; }
-  }
+  /* ===== Table des dossiers comptables (T1) ===== */
+  .dossiers-table-wrap { overflow-x: auto; }
+  table.dossiers-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 880px; }
+  table.dossiers-table colgroup .col-dossier-w { width: auto; }
+  table.dossiers-table colgroup .col-num-w { width: 14%; }
+  table.dossiers-table colgroup .col-pdj-w { width: 110px; }
+  table.dossiers-table thead th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); text-align: left; padding: 12px 14px; background: #f7f7f9; border-bottom: 2px solid var(--border); font-weight: 700; }
+  table.dossiers-table thead th.num { text-align: right; }
+  /* Bandeau d'exercice */
+  table.dossiers-table tr.ex-row > td { background: #eef2f7; padding: 9px 14px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  table.dossiers-table tr.ex-row .ex-title { font-weight: 700; color: var(--ink); font-size: 13px; letter-spacing: -0.2px; }
+  table.dossiers-table tr.ex-row .ex-count { color: var(--muted); font-size: 11px; margin-left: 10px; font-weight: normal; }
+  /* Ligne dossier */
+  table.dossiers-table tr.dossier-row { cursor: pointer; transition: background 0.12s; }
+  table.dossiers-table tr.dossier-row:hover > td { background: var(--brand-bg); }
+  table.dossiers-table tr.dossier-row.open > td { background: var(--brand-bg); }
+  table.dossiers-table tr.dossier-row > td { padding: 11px 14px; border-bottom: 1px solid var(--border-soft); vertical-align: top; background: #fff; }
+  table.dossiers-table tr.dossier-row > td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.dossiers-table tr.dossier-row > td.col-pdj { text-align: right; color: var(--muted); font-style: italic; font-size: 11px; }
+  /* Multi-exercices : liseré violet sur la cellule dossier */
+  table.dossiers-table tr.dossier-row.multi > td.col-dossier { box-shadow: inset 3px 0 0 var(--purple); }
+  /* Cellule dossier (chevron + badge + nom + tag) */
+  .dt-dossier { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; min-width: 0; }
+  .dt-dossier .dt-chev { color: var(--muted); font-size: 12px; width: 12px; flex-shrink: 0; transition: color 0.12s; }
+  table.dossiers-table tr.dossier-row.open .dt-chev { color: var(--brand); }
+  .dt-dossier .type-ci { padding: 3px 9px; flex-shrink: 0; }
+  .dt-dossier .dt-name { color: var(--ink); font-weight: 700; text-decoration: none; cursor: pointer; line-height: 1.3; }
+  .dt-dossier .dt-name:hover { color: var(--brand); text-decoration: underline; }
+  .dt-multi { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--purple-bg); color: var(--purple-dark); border: 1px solid var(--purple); font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  /* Cellule numérique (primaire + secondaire en sous-info) */
+  table.dossiers-table .dt-primary { font-weight: 700; font-size: 14px; color: var(--ink); line-height: 1.2; }
+  table.dossiers-table .dt-primary.muted { color: var(--muted); font-weight: normal; }
+  table.dossiers-table .dt-primary.strong { color: var(--brand); }
+  table.dossiers-table .dt-primary.subv { color: var(--brick-dark); }
+  table.dossiers-table .dt-secondary { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.2; min-height: 13px; }
+  /* Ligne body (table jalons sous-jacente) */
+  table.dossiers-table tr.dossier-body-row > td { padding: 0; background: #fafbfc; border-bottom: 1px solid var(--border); }
+  table.dossiers-table tr.dossier-body-row table.dossier-jalons { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.dossiers-table tr.dossier-body-row table.dossier-jalons th { background: #f0f2f5; padding: 7px 14px; text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  table.dossiers-table tr.dossier-body-row table.dossier-jalons th.num { text-align: right; }
+  table.dossiers-table tr.dossier-body-row table.dossier-jalons td { padding: 7px 14px; border-bottom: 1px solid var(--border-soft); }
+  table.dossiers-table tr.dossier-body-row table.dossier-jalons td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.dossiers-table tr.dossier-body-row table.dossier-jalons tr:last-child td { border-bottom: none; }
+  table.dossiers-table tr.dossier-body-row table.dossier-jalons tr:hover { background: rgba(255,255,255,0.7); }
+  /* Action bar dédiée à la table dossiers T1 (T2 garde son propre .t2-actions) */
+  .dossiers-actions { display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding: 12px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   /* Toggle de mode dans le titre de section T2 */
   .t2-toggle { display: inline-flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
   .t2-toggle-btn { background: transparent; border: 0; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: background 0.15s, color 0.15s; }
@@ -1074,94 +1072,98 @@ function _t1_dossiers_accordeon(dossiers, jalonsAll, societeName) {
     if (T1_OPEN_DOSSIERS.has(y+'|'+d.id)) openPairs++;
   }));
 
-  const actions = '<div class="t2-actions">'
-    + '<span style="color:var(--muted); font-size:12px;">'+openPairs+' / '+totalPairs+' dossier'+(totalPairs>1?'s':'')+' déplié'+(openPairs>1?'s':'')+'</span>'
+  const actions = '<div class="dossiers-actions">'
+    + '<span style="color:var(--muted); font-size:12px; margin-right:auto;">'+openPairs+' / '+totalPairs+' dossier'+(totalPairs>1?'s':'')+' déplié'+(openPairs>1?'s':'')+'</span>'
     + '<button class="t2-action-btn" onclick="expandAllT1(\''+safeSoc+'\')">Tout déplier</button>'
     + '<button class="t2-action-btn" onclick="collapseAllT1(\''+safeSoc+'\')">Tout replier</button>'
     + '</div>';
 
-  // Rendu d'un (dossier × année) — 2 lignes : identité puis 4 indicateurs alignés
-  function renderDossierForYear(d, year) {
+  // Rendu d'une ligne dossier (TR principal + TR body si déplié)
+  function renderDossierRow(d, year) {
     const dJalons = jalonsForYearAndDossier(d, year);
     const key = year + '|' + d.id;
     const isOpen = T1_OPEN_DOSSIERS.has(key);
 
-    // Montants de l'ANNÉE (pas le rollup total)
     const totEng = dJalons.reduce((s,j) => s + (j.depenses_engagees||0), 0);
     const totValo = dJalons.reduce((s,j) => s + (j.depenses_valorisables||0), 0);
     const totCir = dJalons.reduce((s,j) => s + (j.montant_cir||0), 0);
     const totCii = dJalons.reduce((s,j) => s + (j.montant_cii||0), 0);
     const totCico = dJalons.reduce((s,j) => s + (j.montant_cico||0), 0);
-    const totCi = totCir + totCii + totCico; // CI obtenu agrégé
+    const totCi = totCir + totCii + totCico;
     const totSub = dJalons.reduce((s,j) => s + (j.subvention_percue||0), 0);
     const tauxValo = totEng > 0 ? Math.round(100 * totValo / totEng) : null;
+    const tauxCi = totEng > 0 ? Math.round(100 * totCi / totEng) : null;
+    const tauxSub = totEng > 0 ? Math.round(100 * totSub / totEng) : null;
     const nbCert = dJalons.filter(j => j.certifie).length;
     const nbJal = dJalons.length;
     const tauxCert = nbJal > 0 ? Math.round(100 * nbCert / nbJal) : null;
     const assigne = (d.assigne && d.assigne.length) ? d.assigne.join(', ') : null;
 
-    // Plage multi-exercices (uniquement si > 1 année)
     const yearsList = [...yearsCovered[d.id]].sort((a,b)=>a-b);
     const isMulti = yearsList.length > 1;
-    const spanLabel = isMulti
-      ? '<span class="dh-span" title="Couvre les exercices : '+yearsList.join(', ')+'">'+yearsList[0]+'→'+yearsList[yearsList.length-1]+'</span>'
+    const multiTag = isMulti
+      ? '<span class="dt-multi" title="Couvre les exercices : '+yearsList.join(', ')+'">'+yearsList[0]+'→'+yearsList[yearsList.length-1]+'</span>'
       : '';
 
-    // Ligne 1 — identité
-    const idLine = '<div class="dh-id">'
-      + '<span class="axe-chevron">'+(isOpen?'▾':'▸')+'</span>'
-      + '<span class="type-ci '+typeCIClass(d.type)+'" style="padding:3px 9px;">'+d.type+'</span>'
-      + '<a class="dh-name" onclick="event.stopPropagation(); setView(\'dossier:'+d.id+'\')">'+d.nom+'</a>'
-      + spanLabel
-      + (assigne ? '<span class="dh-pdj" title="Responsable PDJ">'+assigne+'</span>' : '')
-      + '</div>';
+    // Cellule "Dossier" (nom + métadonnées)
+    const dossierCell = '<td class="col-dossier'+(isMulti?' multi':'')+'">'
+      + '<div class="dt-dossier">'
+        + '<span class="dt-chev">'+(isOpen?'▾':'▸')+'</span>'
+        + '<span class="type-ci '+typeCIClass(d.type)+'">'+d.type+'</span>'
+        + '<a class="dt-name" onclick="event.stopPropagation(); setView(\'dossier:'+d.id+'\')" title="Ouvrir la fiche dossier">'+d.nom+'</a>'
+        + multiTag
+      + '</div>'
+      + '</td>';
 
-    // Ligne 2 — grille de 4 indicateurs (Dépenses, CI obtenu, Subvention, Certification)
-    // Indicateurs masqués si non pertinents (subv=0 ou pas de jalon)
-    const cells = [];
-    cells.push('<div class="dh-cell">'
-      + '<div class="dh-lbl">Dépenses</div>'
-      + '<div class="dh-val">'+euro(totEng)+'</div>'
-      + (totEng>0 ? '<div class="dh-sub">valorisable '+euro(totValo)+(tauxValo!==null?' <span class="dh-pct">'+tauxValo+'%</span>':'')+'</div>' : '<div class="dh-sub muted">—</div>')
-      + '</div>');
-    cells.push('<div class="dh-cell">'
-      + '<div class="dh-lbl">CI obtenu</div>'
-      + '<div class="dh-val'+(totCi>0?' dh-strong':'')+'">'+(totCi>0?euro(totCi):'—')+'</div>'
-      + (totCi>0 && totEng>0 ? '<div class="dh-sub">'+Math.round(100*totCi/totEng)+'% des engagées</div>' : '<div class="dh-sub muted">&nbsp;</div>')
-      + '</div>');
-    if (totSub > 0) {
-      cells.push('<div class="dh-cell">'
-        + '<div class="dh-lbl">Subvention</div>'
-        + '<div class="dh-val subv-cell">'+euro(totSub)+'</div>'
-        + (totEng>0 ? '<div class="dh-sub">'+Math.round(100*totSub/totEng)+'% des engagées</div>' : '<div class="dh-sub muted">&nbsp;</div>')
-        + '</div>');
-    }
-    if (nbJal > 0) {
-      cells.push('<div class="dh-cell">'
-        + '<div class="dh-lbl">Certification</div>'
-        + '<div class="dh-val'+(tauxCert===100?' dh-strong':'')+'">'+nbCert+' / '+nbJal+'</div>'
-        + (tauxCert!==null ? '<div class="dh-sub'+(tauxCert===100?'':'')+'">'+tauxCert+'% certifié'+(tauxCert>1?'s':'')+'</div>' : '<div class="dh-sub muted">&nbsp;</div>')
-        + '</div>');
-    } else {
-      cells.push('<div class="dh-cell">'
-        + '<div class="dh-lbl">Jalons</div>'
-        + '<div class="dh-val muted">aucun</div>'
-        + '<div class="dh-sub muted">&nbsp;</div>'
-        + '</div>');
-    }
-    const metricsLine = '<div class="dh-metrics" data-cells="'+cells.length+'">' + cells.join('') + '</div>';
+    // Cellule numérique standardisée : primaire + secondaire
+    const numCell = (primary, secondary, opts) => {
+      opts = opts || {};
+      const pCls = ['dt-primary'];
+      if (opts.muted) pCls.push('muted');
+      if (opts.strong) pCls.push('strong');
+      if (opts.subv) pCls.push('subv');
+      return '<td class="num">'
+        + '<div class="'+pCls.join(' ')+'">'+primary+'</div>'
+        + '<div class="dt-secondary">'+(secondary||'&nbsp;')+'</div>'
+        + '</td>';
+    };
 
-    const header = '<div class="dossier-header" onclick="toggleT1Dossier(\''+key+'\',\''+safeSoc+'\')" title="'+(isOpen?'Replier':'Déplier')+'">'
-      + idLine
-      + metricsLine
-      + '</div>';
+    const cellEng = numCell(
+      euro(totEng),
+      tauxValo!==null ? 'valorisable '+tauxValo+'%' : '&nbsp;',
+      { muted: totEng===0 }
+    );
+    const cellCi = numCell(
+      totCi>0 ? euro(totCi) : '—',
+      totCi>0 && tauxCi!==null ? tauxCi+'% des dépenses' : '&nbsp;',
+      { muted: totCi===0, strong: totCi>0 }
+    );
+    const cellSub = numCell(
+      totSub>0 ? euro(totSub) : '—',
+      totSub>0 && tauxSub!==null ? tauxSub+'% des dépenses' : '&nbsp;',
+      { muted: totSub===0, subv: totSub>0 }
+    );
+    const cellCert = nbJal > 0
+      ? numCell(
+          nbCert+' / '+nbJal,
+          tauxCert!==null ? tauxCert+'% certifié'+(tauxCert>1?'s':'') : '&nbsp;',
+          { strong: tauxCert===100 }
+        )
+      : numCell('—', 'aucun jalon', { muted: true });
+    const cellPdj = '<td class="col-pdj">' + (assigne ? '<span title="Responsable PDJ">'+assigne+'</span>' : '<span class="muted">—</span>') + '</td>';
 
-    let body = '';
+    const mainRow = '<tr class="dossier-row'+(isOpen?' open':'')+(isMulti?' multi':'')+'" onclick="toggleT1Dossier(\''+key+'\',\''+safeSoc+'\')" title="'+(isOpen?'Replier':'Déplier')+'">'
+      + dossierCell + cellEng + cellCi + cellSub + cellCert + cellPdj
+      + '</tr>';
+
+    // Ligne corps (table de jalons) si déplié
+    let bodyRow = '';
     if (isOpen) {
+      let bodyContent = '';
       if (!nbJal) {
-        body = '<div class="dossier-body"><div class="empty" style="padding:14px;">Aucun jalon en '+year+' pour ce dossier.</div></div>';
+        bodyContent = '<div class="empty" style="padding:20px;">Aucun jalon en '+year+' pour ce dossier.</div>';
       } else {
-        const rows = dJalons
+        const jalonRows = dJalons
           .slice()
           .sort((a,b) => (b.depenses_engagees||0) - (a.depenses_engagees||0))
           .map(j => {
@@ -1174,7 +1176,6 @@ function _t1_dossiers_accordeon(dossiers, jalonsAll, societeName) {
             const certBadge = j.certifie
               ? '<span style="color:var(--green-dark); font-weight:700;" title="jalon certifié pour déclaration fiscale">✓</span>'
               : '<span class="muted">—</span>';
-            // Le type CI du jalon n'est utile que pour les CIR/CII (CICO et SUB n'ont pas de type CI distinct au niveau jalon)
             const typeBadge = j.type_ci
               ? '<span class="type-ci '+typeCIClass(j.type_ci)+'">'+j.type_ci+'</span>'
               : '<span class="muted">—</span>';
@@ -1191,31 +1192,44 @@ function _t1_dossiers_accordeon(dossiers, jalonsAll, societeName) {
               + '<td class="num">'+certBadge+'</td>'
               + '</tr>';
           }).join('');
-        body = '<div class="dossier-body">'
-          + '<table class="dossier-jalons">'
+        bodyContent = '<table class="dossier-jalons">'
           +   '<thead><tr><th>Projet</th><th>Type</th><th class="num">Engagées</th><th class="num">Valorisables</th><th class="num">CIR</th><th class="num">CII</th><th class="num">CICO</th><th class="num">Sub.</th><th class="num">Avanc.</th><th class="num">Cert.</th></tr></thead>'
-          +   '<tbody>'+rows+'</tbody>'
-          + '</table>'
-          + '</div>';
+          +   '<tbody>'+jalonRows+'</tbody>'
+          + '</table>';
       }
+      bodyRow = '<tr class="dossier-body-row"><td colspan="6">'+bodyContent+'</td></tr>';
     }
-    return '<div class="dossier-block'+(isOpen?' open':'')+(isMulti?' multi-year':'')+'">'+header+body+'</div>';
+
+    return mainRow + bodyRow;
   }
 
-  // 4. Construire les blocs par exercice — header minimal (les agrégats sont déjà dans la matrice de synthèse en haut de page)
-  const yearBlocks = years.map(y => {
+  // Construction de la TBODY : alternance bandeau exercice + lignes dossiers
+  const tbodyRows = years.map(y => {
     const dy = yearDossiers[y].slice().sort((a,b) => typeRank(a.type) - typeRank(b.type) || (a.nom||'').localeCompare(b.nom||''));
     const yLabel = y || 'Sans exercice';
-    return '<div class="exercice-block">'
-      + '<div class="exercice-header-mini">'
-        + '<h3>Exercice '+yLabel+'</h3>'
-        + '<span class="ex-count">'+dy.length+' dossier'+(dy.length>1?'s':'')+'</span>'
-      + '</div>'
-      + '<div class="exercice-dossiers">' + dy.map(d => renderDossierForYear(d, y)).join('') + '</div>'
-      + '</div>';
+    const exHeader = '<tr class="ex-row"><td colspan="6">'
+      + '<span class="ex-title">Exercice '+yLabel+'</span>'
+      + '<span class="ex-count">' + dy.length + ' dossier'+(dy.length>1?'s':'')+'</span>'
+      + '</td></tr>';
+    return exHeader + dy.map(d => renderDossierRow(d, y)).join('');
   }).join('');
 
-  return '<div class="card frise-card">'+actions+yearBlocks+'</div>';
+  const table = '<div class="dossiers-table-wrap"><table class="dossiers-table">'
+    + '<colgroup>'
+      + '<col class="col-dossier-w"><col class="col-num-w"><col class="col-num-w"><col class="col-num-w"><col class="col-num-w"><col class="col-pdj-w">'
+    + '</colgroup>'
+    + '<thead><tr>'
+      + '<th>Dossier</th>'
+      + '<th class="num">Dépenses</th>'
+      + '<th class="num">CI obtenu</th>'
+      + '<th class="num">Subvention</th>'
+      + '<th class="num">Certification</th>'
+      + '<th class="num">PDJ</th>'
+    + '</tr></thead>'
+    + '<tbody>'+tbodyRows+'</tbody>'
+    + '</table></div>';
+
+  return '<div class="card" style="padding:0; overflow:hidden;">'+actions+table+'</div>';
 }
 
 function _t2_projets_frise_par_axe(societeName, jalonsAll) {
