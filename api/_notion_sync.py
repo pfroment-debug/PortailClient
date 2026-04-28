@@ -296,6 +296,9 @@ def transform_projet(page, societe_by_id):
     tot_engagees = _try(page, ["Tot Dépenses Engagées"], _x_number) or 0
     tot_valo     = _try(page, ["Tot dépenses valorisées"], _x_number) or 0
 
+    # Pôle métier (select Notion) — distinct de l'axe R&DI
+    pole = _try(page, ["Pôle", "Pole"], _x_select) or ""
+
     return {
         "id":           _norm(page["id"]),
         "societe":      _resolve_name(page, societe_by_id, ["Société 2026"]),
@@ -312,6 +315,7 @@ def transform_projet(page, societe_by_id):
         "score_i":      int(score_i),
         "score_d":      int(score_d),
         "axe_rdi":      axe,
+        "pole":         pole,
         "tot_cir_cii_rollup":         tot_cir_cii,
         "tot_cico_rollup":            tot_cico,
         "tot_subv_rollup":            tot_subv,
