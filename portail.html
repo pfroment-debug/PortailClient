@@ -342,23 +342,50 @@
   .axe-spectrum .as-axe { padding: 2px 8px; border-radius: 10px; background: #f0f1f5; color: var(--muted); border: 1px solid var(--border); font-weight: 600; font-size: 10px; letter-spacing: 0.2px; }
   .axe-spectrum .as-axe.cur { background: var(--brand-bg); color: var(--brand); border-color: var(--brand); font-weight: 700; }
 
-  /* ===== Tableau portefeuille triable (T2) ===== */
-  table.portfolio-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1000px; }
-  table.portfolio-table thead th { padding: 11px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); background: #f7f7f9; border-bottom: 2px solid var(--border); font-weight: 700; white-space: nowrap; }
+  /* ===== Tableau portefeuille triable (T2) — style avec bars TRL et description ===== */
+  table.portfolio-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1280px; }
+  table.portfolio-table thead th { padding: 12px 14px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); background: #f7f7f9; border-bottom: 2px solid var(--border); font-weight: 700; white-space: nowrap; }
   table.portfolio-table thead th.num { text-align: right; }
+  table.portfolio-table thead th.center { text-align: center; }
   table.portfolio-table thead th.th-sortable { cursor: pointer; user-select: none; transition: background 0.12s, color 0.12s; }
   table.portfolio-table thead th.th-sortable:hover { background: var(--brand-bg); color: var(--brand); }
   table.portfolio-table thead th.th-sortable.active { background: var(--brand-bg); color: var(--brand); }
   table.portfolio-table thead th .th-sort-ico { font-size: 10px; color: var(--muted); margin-left: 4px; opacity: 0.5; }
   table.portfolio-table thead th .th-sort-ico.active { color: var(--brand); opacity: 1; font-weight: 700; }
   table.portfolio-table thead th.th-sortable:hover .th-sort-ico { opacity: 1; }
-  table.portfolio-table tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+  table.portfolio-table tbody td { padding: 14px 14px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
   table.portfolio-table tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
   table.portfolio-table tbody tr:last-child td { border-bottom: none; }
   table.portfolio-table tbody tr:hover td { background: var(--brand-bg); }
-  table.portfolio-table .col-nom { min-width: 240px; }
-  table.portfolio-table .col-nom a:hover { color: var(--brand); text-decoration: underline; }
-  table.portfolio-table .col-nom-sub { font-size: 10.5px; color: var(--muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+  /* Cellule Projet : nom en gras + description en italique discret */
+  table.portfolio-table .col-nom { min-width: 280px; max-width: 340px; }
+  table.portfolio-table .col-nom .pf-name { color: var(--ink); font-weight: 700; text-decoration: none; cursor: pointer; font-size: 13.5px; line-height: 1.3; display: block; }
+  table.portfolio-table .col-nom .pf-name:hover { color: var(--brand); text-decoration: underline; }
+  table.portfolio-table .col-nom .pf-desc { font-size: 11.5px; color: var(--muted); margin-top: 5px; line-height: 1.45; font-weight: normal; }
+
+  /* Cellule TRL : bars 1-9 centrées + texte explicite en dessous */
+  table.portfolio-table .col-trl { text-align: center; min-width: 220px; }
+  table.portfolio-table .col-trl .trl { justify-content: center; }
+  table.portfolio-table .col-trl .pf-trl-text { font-size: 11px; color: var(--muted); margin-top: 5px; font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
+
+  /* Cellule Axe RDI : texte en gras (pas de badge — plus discret) */
+  table.portfolio-table .pf-axe { font-weight: 700; color: var(--ink); font-size: 12.5px; }
+
+  /* Cellule Strat. PI : pavé coloré mauve (style capture) */
+  table.portfolio-table .pi-cell { display: inline-block; padding: 6px 12px; background: rgba(108,40,180,0.08); color: rgb(80,30,135); border: 1px solid rgba(108,40,180,0.25); border-radius: 4px; font-size: 11.5px; font-weight: 600; line-height: 1.35; max-width: 180px; }
+  table.portfolio-table .pi-cell.muted { background: transparent; border: none; padding: 0; color: var(--muted); font-weight: normal; }
+
+  /* Cellule Gouvernance : pill rectangulaire pleine couleur (style capture) */
+  table.portfolio-table .gov-pill { display: inline-block; padding: 5px 12px; border-radius: 3px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; }
+  table.portfolio-table .gov-pill.gov-interne-pill { background: rgba(0,138,72,0.12); color: rgb(0,90,50); border: 1px solid rgba(0,138,72,0.3); }
+  table.portfolio-table .gov-pill.gov-codev-pill { background: rgba(192,30,96,0.10); color: rgb(150,20,75); border: 1px solid rgba(192,30,96,0.3); }
+  table.portfolio-table .gov-pill.gov-presta-pill { background: rgba(180,60,30,0.10); color: rgb(140,45,20); border: 1px solid rgba(180,60,30,0.3); }
+  table.portfolio-table .gov-pill.gov-x-pill { background: #f0f0f0; color: var(--muted); border: 1px solid var(--border); }
+
+  /* Période */
+  table.portfolio-table .col-periode { font-variant-numeric: tabular-nums; color: var(--ink); font-size: 12px; white-space: nowrap; }
+
   /* Cellule poids : barre + pourcentage */
   .poids-cell { display: inline-flex; align-items: center; gap: 8px; min-width: 100px; }
   .poids-cell .poids-track { flex: 1; height: 8px; background: #f0f1f5; border-radius: 4px; overflow: hidden; min-width: 60px; }
@@ -1247,20 +1274,20 @@ function _t2_portfolio_table(societeName, projets, jalonsAll) {
     switch (T2_PORTF_FIELD) {
       case 'nom':       va = (a.p.nom||'').toLowerCase(); vb = (b.p.nom||'').toLowerCase(); break;
       case 'trl':       va = a.p.trl || 0; vb = b.p.trl || 0; break;
-      case 'trl_cible': va = a.p.trl_cible || 0; vb = b.p.trl_cible || 0; break;
       case 'gap':       va = (a.p.trl_cible||0) - (a.p.trl||0); vb = (b.p.trl_cible||0) - (b.p.trl||0); break;
       case 'axe':       va = (a.p.axe_rdi||'zzz').toLowerCase(); vb = (b.p.axe_rdi||'zzz').toLowerCase(); break;
       case 'pole':      va = (a.p.pole||'zzz').toLowerCase(); vb = (b.p.pole||'zzz').toLowerCase(); break;
       case 'gouv':      va = (a.p.gouvernance||'zzz').toLowerCase(); vb = (b.p.gouvernance||'zzz').toLowerCase(); break;
-      case 'engagees':  va = a.engP; vb = b.engP; break;
+      case 'pi':        va = (a.p.strategie_pi||'zzz').toLowerCase(); vb = (b.p.strategie_pi||'zzz').toLowerCase(); break;
+      case 'engagees':
       case 'poids':     va = a.engP; vb = b.engP; break;
       case 'fp':        va = a.fpP; vb = b.fpP; break;
+      case 'periode':   va = a.p.demarrage || 0; vb = b.p.demarrage || 0; break;
       case 'cert':      va = a.nbJalons ? (a.nbCert/a.nbJalons) : -1; vb = b.nbJalons ? (b.nbCert/b.nbJalons) : -1; break;
       default:          va = a.engP; vb = b.engP;
     }
     if (va < vb) return T2_PORTF_DIR === 'asc' ? -1 : 1;
     if (va > vb) return T2_PORTF_DIR === 'asc' ? 1 : -1;
-    // Tie-break : ordre alphabétique du nom
     return (a.p.nom||'').localeCompare(b.p.nom||'');
   };
   const sorted = enriched.slice().sort(cmp);
@@ -1270,38 +1297,70 @@ function _t2_portfolio_table(societeName, projets, jalonsAll) {
     if (T2_PORTF_FIELD !== field) return '<span class="th-sort-ico">⇅</span>';
     return '<span class="th-sort-ico active">'+(T2_PORTF_DIR === 'desc' ? '▼' : '▲')+'</span>';
   };
-  const th = (field, label, isNum) => '<th class="th-sortable'+(isNum?' num':'')+(T2_PORTF_FIELD===field?' active':'')+'" onclick="sortT2Portfolio(\''+field+'\',\''+safeSoc+'\')" title="Cliquer pour trier sur '+label+'">'+label+' '+sortIcon(field)+'</th>';
+  const th = (field, label, isNum, alignCenter) => {
+    const cls = ['th-sortable'];
+    if (isNum) cls.push('num');
+    if (alignCenter) cls.push('center');
+    if (T2_PORTF_FIELD === field) cls.push('active');
+    return '<th class="'+cls.join(' ')+'" onclick="sortT2Portfolio(\''+field+'\',\''+safeSoc+'\')" title="Cliquer pour trier sur '+label+'">'+label+' '+sortIcon(field)+'</th>';
+  };
+
+  // Helper local : extrait une description courte du projet
+  const projetDesc = (p) => {
+    const desc = p.objectif || p.verrous || '';
+    if (!desc) return '';
+    // Couper à 130 caractères pour que ça reste lisible sur 2 lignes
+    return desc.length > 130 ? desc.substring(0, 130).trim() + '…' : desc;
+  };
+
+  // Helper local : badge Strat. PI avec couleur fixe (style capture)
+  const piBadge = (pi) => {
+    if (!pi || pi === 'N.A' || pi === '—') return '<span class="pi-cell muted">—</span>';
+    return '<span class="pi-cell">'+pi+'</span>';
+  };
+
+  // Helper local : pill Gouvernance (rectangle pleine couleur, style capture)
+  const govPill = (g) => {
+    if (!g) return '<span class="muted">—</span>';
+    const map = { 'Interne': 'gov-interne-pill', 'Codev': 'gov-codev-pill', 'Presta': 'gov-presta-pill' };
+    return '<span class="gov-pill '+(map[g]||'gov-x-pill')+'">'+g.toUpperCase()+'</span>';
+  };
 
   // Lignes
   const rows = sorted.map(({p, engP, valoP, fpP, nbJalons, nbCert}) => {
     const poids = totalEng > 0 ? (100*engP/totalEng) : 0;
-    const tauxCert = nbJalons > 0 ? Math.round(100*nbCert/nbJalons) : null;
+    const desc = projetDesc(p);
+    const periode = (p.demarrage||'—')+' → '+(p.cloture||'—');
     return '<tr>'
-      + '<td class="col-nom"><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--ink);text-decoration:none;font-weight:700;" title="Ouvrir la fiche projet">'+p.nom+'</a>'
-        + '<div class="col-nom-sub">'+(p.demarrage||'—')+' → '+(p.cloture||'—')+'</div></td>'
-      + '<td class="num">'+trlGapBadge(p.trl, p.trl_cible)+'</td>'
-      + '<td>'+axeRDIBadge(p.axe_rdi)+'</td>'
+      + '<td class="col-nom">'
+        + '<a onclick="setView(\'projet:'+p.id+'\')" class="pf-name" title="Ouvrir la fiche projet">'+p.nom+'</a>'
+        + (desc ? '<div class="pf-desc">'+desc+'</div>' : '')
+      + '</td>'
+      + '<td class="col-trl">'
+        + (p.trl || p.trl_cible ? trlBar(p.trl, p.trl_cible) + '<div class="pf-trl-text">'+(p.trl||'—')+' → '+(p.trl_cible||'—')+'</div>' : '<span class="muted">—</span>')
+      + '</td>'
+      + '<td>'+govPill(p.gouvernance)+'</td>'
+      + '<td>'+piBadge(p.strategie_pi)+'</td>'
+      + '<td><span class="pf-axe">'+(p.axe_rdi||'<span class="muted">—</span>')+'</span></td>'
       + '<td>'+(p.pole ? '<span class="badge-soft purple">'+p.pole+'</span>' : '<span class="muted">—</span>')+'</td>'
-      + '<td>'+gouvernanceBadge(p.gouvernance)+'</td>'
       + '<td class="num">'+(engP > 0 ? '<b>'+euro(engP)+'</b>' : '<span class="muted">—</span>')+'</td>'
       + '<td class="num"><div class="poids-cell"><div class="poids-track"><div class="poids-fill" style="width:'+poids.toFixed(1)+'%;"></div></div><div class="poids-pct">'+poids.toFixed(1)+'%</div></div></td>'
-      + '<td class="num">'+(fpP > 0 ? '<b style="color:var(--brand);">'+euro(fpP)+'</b>' : '<span class="muted">—</span>')+'</td>'
-      + '<td class="num">'+(nbJalons > 0 ? nbCert+' / '+nbJalons+(tauxCert!==null?' <span class="muted" style="font-size:10px;">('+tauxCert+'%)</span>':'') : '<span class="muted">aucun jalon</span>')+'</td>'
+      + '<td class="col-periode">'+periode+'</td>'
       + '</tr>';
   }).join('');
 
-  return '<div class="card" style="padding:0; overflow-x:auto;">'
+  return '<div class="card portfolio-card" style="padding:0; overflow-x:auto;">'
     + '<table class="portfolio-table">'
     +   '<thead><tr>'
     +     th('nom', 'Projet')
-    +     th('gap', 'TRL', true)
-    +     th('axe', 'Axe R&D&I')
-    +     th('pole', 'Pôle métier')
+    +     th('gap', 'TRL', false, true)
     +     th('gouv', 'Gouv.')
+    +     th('pi', 'Strat. PI')
+    +     th('axe', 'Axe RDI')
+    +     th('pole', 'Pôle métier')
     +     th('engagees', 'Engagées', true)
     +     th('poids', 'Poids', true)
-    +     th('fp', 'Fin. public', true)
-    +     th('cert', 'Certif.', true)
+    +     th('periode', 'Période')
     +   '</tr></thead>'
     +   '<tbody>'+rows+'</tbody>'
     + '</table>'
@@ -1879,6 +1938,9 @@ function _t1_client(jalons, factures, dossiers, livrables, documents, risques, p
 
     ${nbJalons > 0 ? '<div class="subv-equation" style="background:var(--green-bg); border-color:var(--green); border-left-color:var(--green-dark); margin-top:14px;"><b>Certification :</b> '+nbCertifies+' jalon'+(nbCertifies>1?'s':'')+' certifié'+(nbCertifies>1?'s':'')+' sur '+nbJalons+' ('+Math.round((nbCertifies/nbJalons)*100)+'%) — les jalons certifiés sont validés pour déclaration fiscale.</div>' : ''}
 
+    <div class="section-title"><h2>Dossiers détaillés</h2><span class="tag t1-tag">groupés par exercice</span></div>
+    <div id="t1-dossiers-container">${_t1_dossiers_accordeon(dossiers, jalons, name)}</div>
+
     <div class="section-title">
       <h2>Projets détaillés</h2>
       <span class="tag t1-tag">${projets.length} projet${projets.length>1?'s':''}</span>
@@ -1888,9 +1950,6 @@ function _t1_client(jalons, factures, dossiers, livrables, documents, risques, p
       </div>
     </div>
     <div id="t2-frise-container">${_t2_projets_frise_par_axe(name, jalons)}</div>
-
-    <div class="section-title"><h2>Dossiers détaillés</h2><span class="tag t1-tag">groupés par exercice</span></div>
-    <div id="t1-dossiers-container">${_t1_dossiers_accordeon(dossiers, jalons, name)}</div>
 
     ${dossiers.length ? `<div class="section-title"><h2>Dossiers fiscaux</h2><span class="tag t1-tag">Type × Année</span></div>${dossMatrix}` : ''}
 
