@@ -768,13 +768,13 @@ function _t1_projets_frise(societeName, jalonsAll, yearsJalons) {
   let maxEng = 0;
   projRows.forEach(r => { Object.values(r.engByY).forEach(v => { if (v > maxEng) maxEng = v; }); });
 
-  // Fenêtre de la frise
+  // Fenêtre de la frise — uniquement les années avec jalon enregistré (+ projection N+1)
+  // Volontairement on n'ajoute PAS demarrage/cloture des projets : si une année n'a
+  // aucune dépense recensée elle ne doit pas apparaître comme une colonne vide.
   const allYearsSet = new Set();
   yearsJalons.forEach(y => allYearsSet.add(y));
   projRows.forEach(r => {
     r.anneesJalons.forEach(y => allYearsSet.add(y));
-    if (r.p.demarrage) allYearsSet.add(r.p.demarrage);
-    if (r.p.cloture) allYearsSet.add(r.p.cloture);
     if (r.projectedYear) allYearsSet.add(r.projectedYear);
   });
   const friseYearsRaw = [...allYearsSet].sort((a,b)=>a-b);
@@ -1005,17 +1005,17 @@ function _t2_projets_frise_par_axe(societeName, jalonsAll) {
   let maxEng = 0;
   projRows.forEach(r => { Object.values(r.engByY).forEach(v => { if (v > maxEng) maxEng = v; }); });
 
-  // Fenêtre temporelle commune
+  // Fenêtre temporelle — uniquement les années avec jalon enregistré (+ projection N+1)
+  // Démarrage / clôture administrative des projets ne sont pas pris en compte ici :
+  // une année sans aucune dépense ne doit pas apparaître comme colonne vide.
   const allYearsSet = new Set();
   projRows.forEach(r => {
     r.anneesJalons.forEach(y => allYearsSet.add(y));
-    if (r.p.demarrage) allYearsSet.add(r.p.demarrage);
-    if (r.p.cloture) allYearsSet.add(r.p.cloture);
     if (r.projectedYear) allYearsSet.add(r.projectedYear);
   });
   const friseYearsRaw = [...allYearsSet].sort((a,b)=>a-b);
   if (!friseYearsRaw.length) return '<div class="card empty">Aucune année à afficher.</div>';
-  // Plage continue de l'année du projet le plus ancien jusqu'à la projection la plus tardive (pas de trous)
+  // Plage continue entre la première et la dernière année jalonnée (les trous internes sont conservés visibles, ils représentent des pauses réelles)
   const friseYears = [];
   for (let y = friseYearsRaw[0]; y <= friseYearsRaw[friseYearsRaw.length-1]; y++) friseYears.push(y);
 
