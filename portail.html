@@ -354,6 +354,67 @@
   .mc-step.current .mc-step-lbl { color: var(--brand); font-weight: 700; }
   .mc-step-link { flex: 1; height: 2px; background: linear-gradient(to right, #c8ced7, #c8ced7); margin: 0 -2px; align-self: flex-start; margin-top: 7px; }
 
+  /* Focus millésime (vue année — un seul millésime, étape courante mise en évidence) */
+  .millesime-focus { background: #fff; border: 1px solid var(--brand); border-left: 4px solid var(--brand); border-radius: 6px; padding: 18px 22px; }
+  .mf-header { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 18px; align-items: flex-start; flex-wrap: wrap; }
+  .mf-mil-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; }
+  .mf-mil-amount { font-size: 32px; font-weight: 900; color: var(--brand); margin-top: 4px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .mf-current-info { background: var(--brand-bg); border-radius: 4px; padding: 12px 16px; min-width: 280px; }
+  .mf-current-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--brand); font-weight: 700; }
+  .mf-current-step { font-size: 16px; font-weight: 800; color: var(--brand-dark); margin-top: 4px; }
+  .mf-current-detail { font-size: 12px; color: var(--ink-soft); margin-top: 4px; line-height: 1.4; }
+  .mf-track { display: flex; align-items: center; padding: 8px 0; }
+  .mf-step { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 110px; }
+  .mf-step-num { width: 30px; height: 30px; border-radius: 50%; background: #f0f1f5; color: var(--muted); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; border: 2px solid var(--border); transition: all 0.2s; }
+  .mf-step.done .mf-step-num { background: var(--green-bg); color: var(--green-dark); border-color: var(--green); }
+  .mf-step.current .mf-step-num { background: var(--brand); color: #fff; border-color: var(--brand-dark); box-shadow: 0 0 0 4px var(--brand-bg); transform: scale(1.1); }
+  .mf-step-lbl { font-size: 10.5px; color: var(--muted); text-align: center; line-height: 1.3; max-width: 105px; }
+  .mf-step.done .mf-step-lbl { color: var(--green-dark); font-weight: 600; }
+  .mf-step.current .mf-step-lbl { color: var(--brand); font-weight: 700; }
+  .mf-step-link { flex: 1; height: 2px; background: var(--border); margin: 0 -3px; margin-top: 14px; }
+  .mf-foot { margin-top: 14px; padding: 10px 14px; border-radius: 4px; font-size: 12px; }
+  .mf-foot.ok { background: var(--green-bg); color: var(--green-dark); }
+  .mf-foot.pending { background: var(--paper-2); color: var(--ink-soft); border: 1px dashed var(--border); }
+
+  /* Cartes verrous nommés (vue année T2) */
+  .verrous-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .vc-card { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: 4px; padding: 14px 16px; cursor: pointer; transition: all 0.15s; }
+  .vc-card:hover { border-color: var(--brand); box-shadow: 0 2px 8px rgba(0,0,0,0.04); transform: translateY(-1px); }
+  .vc-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .vc-eng { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .vc-projet { font-weight: 700; color: var(--ink); font-size: 13.5px; margin-bottom: 8px; line-height: 1.3; }
+  .vc-verrou { font-size: 12px; color: var(--ink-soft); line-height: 1.55; padding: 10px 12px; background: var(--paper-2); border-radius: 4px; border-left: 2px solid var(--brand); }
+  .vc-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; }
+  .vc-trl { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .vc-link { color: var(--brand); font-weight: 600; }
+
+  /* Paramètres LF (vue année T3) */
+  .lf-params-card { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 4px; padding: 16px 18px; }
+  .lf-params-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; }
+  .lf-param { padding: 12px 14px; background: var(--paper-2); border-radius: 4px; border: 1px solid var(--border); }
+  .lf-param.ok { background: var(--green-bg); border-color: var(--green); }
+  .lf-param.ko { background: var(--brick-bg); border-color: var(--brick); }
+  .lf-param-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+  .lf-param.ok .lf-param-lbl { color: var(--green-dark); }
+  .lf-param.ko .lf-param-lbl { color: var(--brick-dark); }
+  .lf-param-val { font-size: 16px; font-weight: 800; color: var(--ink); }
+  .lf-param.ok .lf-param-val { color: var(--green-dark); }
+  .lf-param.ko .lf-param-val { color: var(--brick-dark); }
+  .lf-params-note { margin-top: 12px; padding: 8px 12px; background: var(--purple-bg); border-radius: 4px; font-size: 11.5px; color: var(--purple-dark); border-left: 2px solid var(--purple); }
+
+  /* Trajectoire de consommation (vue dossier T1) */
+  table.conso-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.conso-table thead th { background: #f7f7f9; padding: 10px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 2px solid var(--border); font-weight: 700; }
+  table.conso-table thead th.num { text-align: right; }
+  table.conso-table tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border-soft); }
+  table.conso-table tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Statut de cycle CIR (vue projet T1) */
+  .cycle-status { display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.2px; border: 1px solid; }
+  .cycle-status.cs-declare { background: var(--brand-bg); color: var(--brand-dark); border-color: var(--brand); }
+  .cycle-status.cs-impute { background: var(--amber-bg); color: var(--amber-dark); border-color: var(--amber); }
+  .cycle-status.cs-rembourse { background: var(--green-bg); color: var(--green-dark); border-color: var(--green); }
+
   /* Chronique de verrous (pivot du Temps 2 — philosophie PDJ) */
   .chronique-verrous { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: 4px; padding: 16px 20px; }
   .cv-verrou { padding: 12px 14px; background: var(--brand-bg); border-radius: 4px; margin-bottom: 14px; }
@@ -388,6 +449,34 @@
   .these-banner .tb-content { flex: 1; }
   .these-banner .tb-title { font-weight: 700; color: var(--brand-dark); font-size: 13px; margin-bottom: 4px; letter-spacing: -0.2px; }
   .these-banner .tb-text { font-size: 13px; color: var(--ink); line-height: 1.55; }
+
+  /* Frise pluriannuelle des verrous (T2 vue d'ensemble — chronique portefeuille) */
+  table.frise-verrous { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.frise-verrous thead th { background: #f7f7f9; padding: 9px 8px; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 2px solid var(--border); font-weight: 700; font-variant-numeric: tabular-nums; }
+  table.frise-verrous .fv-projet-th { text-align: left; padding-left: 16px; min-width: 280px; }
+  table.frise-verrous .fv-year-th { min-width: 60px; }
+  table.frise-verrous .fv-total-th { text-align: right; padding-right: 14px; min-width: 80px; }
+  table.frise-verrous tbody tr:hover td { background: var(--brand-bg); }
+  table.frise-verrous tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border-soft); }
+  table.frise-verrous td { padding: 12px 8px; vertical-align: middle; }
+  table.frise-verrous td.fv-projet { padding-left: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fv-verrou-flag { font-size: 9px; line-height: 1; flex-shrink: 0; }
+  .fv-verrou-flag.ok { color: var(--green-dark); }
+  .fv-verrou-flag.missing { color: var(--brick-dark); }
+  .fv-projet-name { color: var(--ink); font-weight: 700; text-decoration: none; cursor: pointer; font-size: 12.5px; max-width: 200px; }
+  .fv-projet-name:hover { color: var(--brand); text-decoration: underline; }
+  .fv-axe { font-size: 10px; color: var(--muted); padding: 2px 6px; background: #f5f5f5; border-radius: 3px; flex-shrink: 0; }
+  table.frise-verrous td.fv-cell { text-align: center; padding: 12px 4px; }
+  .fv-dot { display: inline-block; background: rgba(46,58,184,0.4); border-radius: 50%; transition: transform 0.15s; cursor: help; }
+  .fv-dot:hover { transform: scale(1.15); }
+  .fv-dot.some-cert { background: rgba(46,58,184,0.7); }
+  .fv-dot.all-cert { background: var(--green-dark); }
+  table.frise-verrous td.fv-cell.empty { padding: 12px 4px; }
+  table.frise-verrous td.fv-cell.empty::before { content: '·'; color: #d8dde4; font-size: 14px; }
+  table.frise-verrous td.fv-total { text-align: right; padding-right: 14px; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); font-size: 12.5px; }
+  .fv-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 12px 16px; background: #fafbfc; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); }
+  .fv-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+  .fv-legend-sep { color: var(--border); }
   .axe-spectrum { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 10px 0 0; font-size: 10.5px; color: var(--muted); }
   .axe-spectrum .as-lbl { color: var(--muted); margin-right: 4px; font-style: italic; }
   .axe-spectrum .as-axe { padding: 2px 8px; border-radius: 10px; background: #f0f1f5; color: var(--muted); border: 1px solid var(--border); font-weight: 600; font-size: 10px; letter-spacing: 0.2px; }
@@ -881,6 +970,35 @@ function millesimesCycle(millesimes, anneeCourante) {
   return '<div class="millesimes-cycle">'+rows+'</div>';
 }
 
+// Focus sur UN seul millésime — utilisé en vue année. Montre proéminemment l'étape courante.
+function millesimeFocus(annee, ciTotal, anneeCourante) {
+  const age = anneeCourante - annee;
+  const ageClipped = Math.min(age, 4);
+  const stepInfos = [
+    { label: 'Déclaration',                detail: 'Dossier déposé au titre de l\'exercice ' + annee },
+    { label: 'Imputation IS — 1ère année', detail: 'CIR imputé sur l\'IS dû en ' + (annee + 1) },
+    { label: 'Imputation IS — 2ème année', detail: 'CIR imputé sur l\'IS dû en ' + (annee + 2) },
+    { label: 'Imputation IS — 3ème année', detail: 'CIR imputé sur l\'IS dû en ' + (annee + 3) },
+    { label: 'Remboursement du solde',     detail: 'Solde non imputé remboursé par le Trésor à partir de ' + (annee + 4) }
+  ];
+  const stepsHTML = stepInfos.map((s,i) => {
+    let cls = 'mf-step';
+    if (i < ageClipped) cls += ' done';
+    else if (i === ageClipped) cls += ' current';
+    return '<div class="'+cls+'"><div class="mf-step-num">'+(i+1)+'</div><div class="mf-step-lbl">'+s.label+'</div></div>';
+  }).join('<div class="mf-step-link"></div>');
+  const currentInfo = stepInfos[ageClipped];
+  const horizonRemb = annee + 4;
+  return '<div class="millesime-focus">'
+    + '<div class="mf-header">'
+      + '<div><div class="mf-mil-lbl">Millésime '+annee+'</div><div class="mf-mil-amount">'+euro(ciTotal)+'</div></div>'
+      + '<div class="mf-current-info"><div class="mf-current-lbl">Étape courante (' + anneeCourante + ')</div><div class="mf-current-step">'+currentInfo.label+'</div><div class="mf-current-detail">'+currentInfo.detail+'</div></div>'
+    + '</div>'
+    + '<div class="mf-track">'+stepsHTML+'</div>'
+    + (age >= 4 ? '<div class="mf-foot ok">✓ Cycle terminé. Solde remboursable à partir de '+horizonRemb+'.</div>' : '<div class="mf-foot pending">Horizon de remboursement : '+horizonRemb+'</div>')
+    + '</div>';
+}
+
 // Chronique de verrous d'un projet sur les exercices.
 // Reflète la philosophie PDJ : un projet R&D est crédible si ses verrous s'enchaînent, pas s'ils apparaissent isolément.
 function chroniqueVerrous(projet, jalonsDuProjet) {
@@ -918,6 +1036,90 @@ function tripleLecture(items) {
     + '<div class="tl-lecture">'+it.lecture+'</div>'
     + (it.detail ? '<div class="tl-detail">'+it.detail+'</div>' : '')
     + '</div>').join('') + '</div>';
+}
+
+// Frise chronologique pluriannuelle des verrous — vue d'ensemble portefeuille R&D&I.
+// Chaque ligne = un projet, chaque colonne = un exercice. La cellule contient un point
+// dimensionné aux dépenses engagées de l'année et certifié si jalons certifiés.
+// Cette vue rend visible la "chronique" PDJ : qui s'enchaîne d'exercice en exercice ?
+function friseVerrousPortefeuille(projets, jalons, axeFiltre) {
+  if (!projets.length) return '<div class="card empty" style="padding:20px;">Aucun projet à afficher.</div>';
+
+  // Plage d'années couverte par les jalons
+  const allYears = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
+  if (!allYears.length) return '<div class="card empty" style="padding:20px;">Aucun jalon daté pour reconstituer une chronique.</div>';
+  const yearMin = allYears[0], yearMax = allYears[allYears.length - 1];
+  const years = [];
+  for (let y = yearMin; y <= yearMax; y++) years.push(y);
+
+  // Filtrer les projets : ceux qui ont au moins un jalon et matchant l'axe si filtre
+  let projetsFiltrés = projets.filter(p => jalons.some(j => (j.projets_ids||[]).includes(p.id)));
+  if (axeFiltre) projetsFiltrés = projetsFiltrés.filter(p => (p.axe_rdi||'') === axeFiltre);
+  if (!projetsFiltrés.length) return '<div class="card empty" style="padding:20px;">Aucun projet pour ce filtre.</div>';
+
+  // Pour chaque projet, calculer pour chaque année les engagées et cert
+  const enriched = projetsFiltrés.map(p => {
+    const jProj = jalons.filter(j => (j.projets_ids||[]).includes(p.id));
+    const cells = years.map(y => {
+      const jY = jProj.filter(j => j.annee === y);
+      const eng = jY.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+      const cert = jY.filter(j => j.certifie).length;
+      return { y, eng, nbJalons: jY.length, cert };
+    });
+    const totalEng = cells.reduce((s,c) => s+c.eng, 0);
+    const hasVerrou = (p.verrous||'').trim().length >= 5;
+    return { p, cells, totalEng, hasVerrou };
+  }).filter(x => x.totalEng > 0).sort((a,b) => b.totalEng - a.totalEng);
+
+  // Pour normaliser la taille des points : max engagées sur tout le portefeuille filtré
+  const maxEng = Math.max.apply(null, enriched.flatMap(x => x.cells.map(c => c.eng)).concat([1]));
+
+  // Header années
+  const yearsHeader = years.map(y => '<th class="fv-year-th">'+y+'</th>').join('');
+
+  // Lignes projets
+  const rows = enriched.map(({ p, cells, totalEng, hasVerrou }) => {
+    const cellsHTML = cells.map(c => {
+      if (c.eng === 0) return '<td class="fv-cell empty"></td>';
+      // Diamètre proportionnel à la racine des engagées (pour ne pas trop écraser les petits)
+      const ratio = Math.sqrt(c.eng / maxEng);
+      const dim = Math.max(8, Math.round(28 * ratio));
+      const certClass = c.cert > 0 && c.cert === c.nbJalons ? ' all-cert' : (c.cert > 0 ? ' some-cert' : '');
+      return '<td class="fv-cell"><div class="fv-dot'+certClass+'" style="width:'+dim+'px; height:'+dim+'px;" title="'+c.y+' · '+shortEuro(c.eng)+' engagées · '+c.nbJalons+' jalon'+(c.nbJalons>1?'s':'')+(c.cert?' · '+c.cert+' certifié'+(c.cert>1?'s':''):'')+'"></div></td>';
+    }).join('');
+    const verrouFlag = hasVerrou
+      ? '<span class="fv-verrou-flag ok" title="Verrou nommé">●</span>'
+      : '<span class="fv-verrou-flag missing" title="Verrou non formalisé">○</span>';
+    return '<tr>'
+      + '<td class="fv-projet">'
+        + verrouFlag
+        + '<a onclick="setView(\'projet:'+p.id+'\')" class="fv-projet-name">'+p.nom+'</a>'
+        + '<span class="fv-axe">'+(p.axe_rdi||'—')+'</span>'
+      + '</td>'
+      + cellsHTML
+      + '<td class="fv-total">'+shortEuro(totalEng)+'</td>'
+      + '</tr>';
+  }).join('');
+
+  // Légende en bas
+  const legend = '<div class="fv-legend">'
+    + '<span class="fv-legend-item"><span class="fv-dot all-cert" style="width:10px;height:10px;"></span> tous jalons certifiés</span>'
+    + '<span class="fv-legend-item"><span class="fv-dot some-cert" style="width:10px;height:10px;"></span> partiellement certifié</span>'
+    + '<span class="fv-legend-item"><span class="fv-dot" style="width:10px;height:10px;"></span> non certifié</span>'
+    + '<span class="fv-legend-sep">·</span>'
+    + '<span class="fv-legend-item"><span class="fv-verrou-flag ok">●</span> verrou nommé</span>'
+    + '<span class="fv-legend-item"><span class="fv-verrou-flag missing">○</span> verrou manquant</span>'
+    + '<span class="fv-legend-sep">·</span>'
+    + '<span class="fv-legend-item">taille du point ∝ √(dépenses engagées)</span>'
+    + '</div>';
+
+  return '<div class="card frise-verrous-card" style="padding:0; overflow-x:auto;">'
+    + '<table class="frise-verrous">'
+    +   '<thead><tr><th class="fv-projet-th">Projet</th>'+yearsHeader+'<th class="fv-total-th">Total</th></tr></thead>'
+    +   '<tbody>'+rows+'</tbody>'
+    + '</table>'
+    + legend
+    + '</div>';
 }
 
 function renderLivrableRow(l) {
@@ -2331,6 +2533,9 @@ function _t2_client(projets, livrables, reunions, risques, jalons, name) {
       </div>
     </div>
 
+    <div class="section-title"><h2>Chronique pluriannuelle des projets</h2><span class="tag t2-tag">verrous &amp; cadence par exercice</span></div>
+    ${friseVerrousPortefeuille(projets, jalons)}
+
     <div class="section-title"><h2>Indicateurs de pilotage</h2><span class="tag t2-tag">actionnables</span></div>
     <div class="grid c4">
       <div class="card"><div class="muted">Avancement moyen</div><div style="font-size:26px;font-weight:900;">${avancementMoyen !== null ? Math.round(avancementMoyen*100)+'%' : '—'}</div><div class="muted" style="margin-top:4px;">${jalonsEnCours.length} jalons actifs</div></div>
@@ -2724,6 +2929,24 @@ function renderProjet(projetId) {
       }).join('')
     + '</tbody></table></div>' : '';
 
+  // Cumul progressif des engagées et financement public (lecture trajectoire)
+  let cumE = 0, cumFp = 0;
+  const cumEngByYear = engByYearP.map(v => cumE += v);
+  const cumFpByYear = yearsP.map((_, i) => cumFp += (cirByYearP[i]+ciiByYearP[i]+cicoByYearP[i]+subvByYearP[i]));
+
+  // Statut cycle CIR pour chaque millésime du projet
+  const anneeCouranteP = new Date().getFullYear();
+  const millesimesProjet = yearsP.map(y => {
+    const ciY = cirByYearP[yearsP.indexOf(y)] + ciiByYearP[yearsP.indexOf(y)] + cicoByYearP[yearsP.indexOf(y)];
+    const age = anneeCouranteP - y;
+    let statut;
+    if (age < 0) statut = 'À déclarer';
+    else if (age === 0) statut = 'Déclaration en cours';
+    else if (age <= 3) statut = 'Imputation IS — année ' + age + '/3';
+    else statut = 'Solde remboursable';
+    return { y, ciY, age, statut };
+  });
+
   $('panel-t1').innerHTML = `
     ${alertStripT1}
     <div class="lecture-intro">
@@ -2733,7 +2956,16 @@ function renderProjet(projetId) {
     </div>
 
     ${yearsP.length ? `<div class="section-title"><h2>Trajectoire du financement public</h2><span class="tag t1-tag">${yearsP.length} exercice${yearsP.length>1?'s':''}</span></div>
-    <div class="card"><h3>Dépenses engagées vs financement public</h3><div class="chart-wrap"><canvas id="chpj1"></canvas></div></div>` : ''}
+    <div class="grid c2">
+      <div class="card"><h3>Annuel — engagées et financement public</h3><div class="chart-wrap"><canvas id="chpj1"></canvas></div></div>
+      <div class="card"><h3>Cumul progressif</h3><div class="chart-wrap"><canvas id="chpj1cum"></canvas></div></div>
+    </div>` : ''}
+
+    ${millesimesProjet.length ? `<div class="section-title"><h2>Millésimes CIR du projet dans leur cycle</h2><span class="tag t1-tag">statut au ${anneeCouranteP}</span></div>
+      <div class="card" style="padding:0; overflow-x:auto;">
+        <table><thead><tr><th>Millésime</th><th class="num">CI obtenu</th><th>Âge</th><th>Statut dans le cycle CIR</th></tr></thead>
+        <tbody>${millesimesProjet.filter(m => m.ciY > 0).map(m => '<tr><td><b>'+m.y+'</b></td><td class="num">'+euro(m.ciY)+'</td><td>'+(m.age >= 0 ? m.age+' an'+(m.age>1?'s':'') : 'à venir')+'</td><td><span class="cycle-status cs-'+(m.age>=4?'rembourse':(m.age>=1?'impute':'declare'))+'">'+m.statut+'</span></td></tr>').join('')}</tbody></table>
+      </div>` : ''}
 
     <div class="section-title"><h2>Jalons détaillés</h2><span class="tag t1-tag">${jalons.length} jalon${jalons.length>1?'s':''}${nbCertP?' · '+nbCertP+' certifié'+(nbCertP>1?'s':''):''}</span></div>
     <div class="card" style="padding:0; overflow-x:auto;">
@@ -2754,6 +2986,14 @@ function renderProjet(projetId) {
         { label: 'Dép. engagées', type: 'line', data: engByYearP, borderColor: '#090B33', backgroundColor: 'transparent', tension: 0.25, pointRadius: 4, pointBackgroundColor: '#090B33', borderWidth: 2 }
       ]},
       options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => Math.round(v/1000)+' k€' } } }, plugins: { legend: { position: 'bottom' } } }
+    });
+    charts.chpj1cum = new Chart($('chpj1cum'), {
+      type: 'line',
+      data: { labels: yearsP, datasets: [
+        { label: 'Cumul engagées', data: cumEngByYear, borderColor: '#090B33', backgroundColor: 'rgba(9,11,51,0.08)', fill: true, tension: 0.25, pointRadius: 4, pointBackgroundColor: '#090B33', borderWidth: 2 },
+        { label: 'Cumul fin. public', data: cumFpByYear, borderColor: '#2E3AB8', backgroundColor: 'rgba(46,58,184,0.08)', fill: true, tension: 0.25, pointRadius: 4, pointBackgroundColor: '#2E3AB8', borderWidth: 2 }
+      ]},
+      options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v => Math.round(v/1000)+' k€' } } }, plugins: { legend: { position: 'bottom' } } }
     });
   }
 
@@ -2939,12 +3179,15 @@ function renderYear(year) {
 
   const rowsJ = jalons.map(j => '<tr><td>'+j.projet+'</td><td><span class="type-ci '+typeCIClass(j.type_ci)+'">'+(j.type_ci||'—')+'</span></td><td class="num">'+euro(j.depenses_engagees)+'</td><td class="num">'+euro(j.depenses_valorisables)+'</td><td class="num">'+(j.montant_cir?euro(j.montant_cir):'—')+'</td><td class="num">'+(j.montant_cii?euro(j.montant_cii):'—')+'</td><td class="num">'+(j.montant_cico?euro(j.montant_cico):'—')+'</td><td class="num subv-cell">'+(j.subvention_percue?euro(j.subvention_percue):'—')+'</td></tr>').join('');
 
+  const anneeCouranteY = new Date().getFullYear();
+
   $('panel-t1').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Exercice ${year} · Lecture financière</div>
       <h2 class="li-title">Le millésime ${year} dans son cycle de vie</h2>
       <p class="li-lead">Assiette CERFA 2069-A, taux d'effet par dispositif, structure du financement public et statut dans le cycle d'imputation/remboursement. ${hasPrev?'Comparaison à l\'exercice '+(year-1)+' dans les KPIs.':''}</p>
     </div>
+    ${ci > 0 ? `<div class="section-title"><h2>Position dans le cycle CIR</h2><span class="tag t1-tag">millésime ${year}</span></div>${millesimeFocus(year, ci, anneeCouranteY)}` : ''}
     ${hasDispositifs ? `<div class="section-title"><h2>Répartition du financement public ${year}</h2><span class="tag t1-tag">par dispositif et par projet</span></div>
       <div class="grid c2">
         <div class="card"><h3>Mix par dispositif</h3><div class="chart-wrap"><canvas id="chy1"></canvas></div></div>
@@ -3002,6 +3245,21 @@ function renderYear(year) {
     return '<tr><td><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brand);">'+p.nom+'</a></td><td>'+trlBar(p.trl, p.trl_cible)+'</td><td>'+gouvernanceBadge(p.gouvernance)+'</td><td>'+axeRDIBadge(p.axe_rdi)+'</td><td class="num">'+(engP?shortEuro(engP):'—')+'</td></tr>';
   }).join('');
 
+  // Verrous nommés actifs en N : projets ayant un verrou ET au moins un jalon dans l'année
+  const verrousActifs = projetsActifs.filter(p => {
+    const hasVerrou = (p.verrous||'').trim().length >= 5;
+    const hasJalonY = jalons.some(j => (j.projets_ids||[]).includes(p.id));
+    return hasVerrou && hasJalonY;
+  }).map(p => {
+    const engY = jalons.filter(j => (j.projets_ids||[]).includes(p.id)).reduce((s,j) => s+(j.depenses_engagees||0), 0);
+    return { p, engY };
+  }).sort((a,b) => b.engY - a.engY);
+  const verrousMissing = projetsActifs.filter(p => {
+    const hasVerrou = (p.verrous||'').trim().length >= 5;
+    const hasJalonY = jalons.some(j => (j.projets_ids||[]).includes(p.id));
+    return !hasVerrou && hasJalonY;
+  });
+
   $('panel-t2').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Exercice ${year} · Trajectoire R&amp;D&amp;I</div>
@@ -3014,6 +3272,25 @@ function renderYear(year) {
       <div class="card"><div class="muted">Projets actifs</div><div style="font-size:28px;font-weight:900;">${projetsActifs.length}</div><div class="muted" style="margin-top:4px;">jalonnés ou planifiés ${year}</div></div>
       <div class="card"><div class="muted">Mode dominant</div><div style="font-size:18px;font-weight:900;">${(()=>{ const m = Object.entries(govShare).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1])[0]; return m? m[0] : '—'; })()}</div><div class="muted" style="margin-top:4px;">${(()=>{ const tot = Object.values(govShare).reduce((s,v)=>s+v,0); const m = Object.entries(govShare).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1])[0]; return tot && m ? Math.round(100*m[1]/tot)+"% de l'effort engagé" : ''; })()}</div></div>
     </div>
+
+    ${verrousActifs.length ? `<div class="section-title"><h2>Verrous nommés en ${year}</h2><span class="tag t2-tag">${verrousActifs.length} projet${verrousActifs.length>1?'s':''} avec verrou documenté</span></div>
+      <div class="verrous-cards">${verrousActifs.map(({p, engY}) => {
+        const verrou = (p.verrous||'').trim();
+        const verrouShort = verrou.length > 220 ? verrou.substring(0,220).trim()+'…' : verrou;
+        return '<div class="vc-card" onclick="setView(\'projet:'+p.id+'\')">'
+          + '<div class="vc-head"><span class="vc-axe">'+axeRDIBadge(p.axe_rdi)+'</span><span class="vc-eng">'+shortEuro(engY)+' engagés en '+year+'</span></div>'
+          + '<div class="vc-projet">'+p.nom+'</div>'
+          + '<div class="vc-verrou">'+verrouShort+'</div>'
+          + '<div class="vc-foot"><span class="vc-trl">TRL '+(p.trl||'—')+'→'+(p.trl_cible||'—')+'</span><span class="vc-link">→ ouvrir la chronique</span></div>'
+          + '</div>';
+      }).join('')}</div>` : ''}
+
+    ${verrousMissing.length ? `<div class="section-title" style="border-bottom-color:var(--brick);"><h2>Projets sans verrou documenté</h2><span class="tag" style="background:var(--brick-bg);color:var(--brick-dark);border-color:var(--brick);">${verrousMissing.length}</span></div>
+      <div class="card" style="background:var(--brick-bg); border-color:var(--brick); border-left:3px solid var(--brick);">
+        <div style="font-size:11px; color:var(--brick-dark); text-transform:uppercase; letter-spacing:0.6px; font-weight:700; margin-bottom:8px;">À documenter sans délai</div>
+        <ul style="margin:0; padding-left:20px; font-size:13px;">${verrousMissing.map(p => '<li><a onclick="setView(\'projet:'+p.id+'\')" style="cursor:pointer;color:var(--brick-dark);text-decoration:underline;">'+p.nom+'</a></li>').join('')}</ul>
+        <div style="margin-top:10px; font-size:11px; color:var(--muted);">Sans verrou nommé, ces projets n'inscrivent pas leur effort dans une chronique défendable. Au sens FRASCATI/CIR, c'est le verrou qui qualifie la R&amp;D — son absence fragilise la déclaration ${year}.</div>
+      </div>` : ''}
 
     ${Object.keys(engByAxe).length ? `<div class="section-title"><h2>Répartition de l'effort R&amp;D</h2><span class="tag t2-tag">par axe et par pôle</span></div>
     <div class="grid c2">
@@ -3059,6 +3336,10 @@ function renderYear(year) {
   });
   const incohUnique = [...new Map(incoherences.map(x => [x.projet+'|'+x.dispositif, x])).values()];
 
+  // Paramètres LF de l'année consultée — pour ancrer le contexte réglementaire applicable
+  const lfYearKey = year >= 2026 ? '2026' : (year === 2025 ? '2025_apres_15fev' : (year >= 2024 ? '2024' : null));
+  const lfParams = lfYearKey ? LF_PARAMS[lfYearKey] : null;
+
   $('panel-t3').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Exercice ${year} · Lecture stratégique</div>
@@ -3071,6 +3352,18 @@ function renderYear(year) {
       <div class="card"><div class="muted">CI obtenu</div><div style="font-size:28px;font-weight:900;">${shortEuro(ci)}</div><div class="muted" style="margin-top:4px;">CIR/CII/CICO cumulés</div></div>
       <div class="card"><div class="muted">Subventions perçues</div><div style="font-size:28px;font-weight:900;color:var(--gold-dark);">${shortEuro(subv)}</div><div class="muted" style="margin-top:4px;">aides directes</div></div>
     </div>
+
+    ${lfParams ? `<div class="section-title"><h2>Cadre réglementaire applicable en ${year}</h2><span class="tag t3-tag">paramètres LF</span></div>
+      <div class="lf-params-card">
+        <div class="lf-params-grid">
+          <div class="lf-param"><div class="lf-param-lbl">Taux CIR</div><div class="lf-param-val">${Math.round(lfParams.taux_cir*100)} %</div></div>
+          <div class="lf-param"><div class="lf-param-lbl">Forfait personnel</div><div class="lf-param-val">${Math.round(lfParams.forfait_perso*100)} %</div></div>
+          <div class="lf-param ${lfParams.jeune_docteur_actif?'ok':'ko'}"><div class="lf-param-lbl">Jeunes docteurs</div><div class="lf-param-val">${lfParams.jeune_docteur_actif?'actif':'supprimé'}</div></div>
+          <div class="lf-param ${lfParams.brevets_eligibles?'ok':'ko'}"><div class="lf-param-lbl">Brevets &amp; COV</div><div class="lf-param-val">${lfParams.brevets_eligibles?'éligibles':'exclus'}</div></div>
+          <div class="lf-param ${lfParams.veille_techno?'ok':'ko'}"><div class="lf-param-lbl">Veille techno</div><div class="lf-param-val">${lfParams.veille_techno?'éligible':'exclue'}</div></div>
+        </div>
+        ${lfParams.note ? '<div class="lf-params-note">'+lfParams.note+'</div>' : ''}
+      </div>` : ''}
 
     <div class="section-title"><h2>Mise en perspective pluriannuelle</h2><span class="tag t3-tag">3 derniers exercices</span></div>
     <div class="grid c2">
@@ -3203,6 +3496,21 @@ function renderDossier(dossierId) {
       + '</tr>';
   }).join('');
 
+  // Trajectoire de consommation : pour chaque exercice où le dossier a des jalons, montrer cumul progressif
+  const yearsDoss = [...new Set(jalonsDossier.map(j => j.annee).filter(Boolean))].sort();
+  const trajectoireRows = yearsDoss.map(y => {
+    const jY = jalonsDossier.filter(j => j.annee === y);
+    const eng = jY.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+    const valo = jY.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
+    const fp = jY.reduce((s,j) => s+(j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0);
+    const cert = jY.filter(j => j.certifie).length;
+    return { y, eng, valo, fp, nbJ: jY.length, cert };
+  });
+  // Cumul progressif
+  let cumEng = 0, cumFP = 0;
+  trajectoireRows.forEach(r => { cumEng += r.eng; r.cumEng = cumEng; cumFP += r.fp; r.cumFP = cumFP; });
+  const isMultiYear = yearsDoss.length > 1;
+
   $('panel-t1').innerHTML = `
     ${alertStrip}
     <div class="lecture-intro">
@@ -3212,6 +3520,17 @@ function renderDossier(dossierId) {
     </div>
 
     ${tauxEffetRow}
+
+    ${isMultiYear ? `<div class="section-title"><h2>Trajectoire de consommation</h2><span class="tag t1-tag">${yearsDoss.length} exercices · ${yearsDoss[0]} → ${yearsDoss[yearsDoss.length-1]}</span></div>
+      <div class="card" style="padding:0; overflow-x:auto;">
+        <table class="conso-table">
+          <thead><tr><th>Exercice</th><th class="num">Engagées</th><th class="num">Cumul engagées</th><th class="num">Valorisables</th><th class="num">Fin. public</th><th class="num">Cumul fin. public</th><th class="num">Jalons / certif.</th></tr></thead>
+          <tbody>${trajectoireRows.map(r => '<tr><td><b>'+r.y+'</b></td><td class="num">'+euro(r.eng)+'</td><td class="num"><b>'+euro(r.cumEng)+'</b></td><td class="num">'+euro(r.valo)+'</td><td class="num">'+euro(r.fp)+'</td><td class="num"><b>'+euro(r.cumFP)+'</b></td><td class="num">'+r.nbJ+' / '+r.cert+'</td></tr>').join('')}
+          <tr style="border-top:2px solid var(--border); font-weight:700; background:var(--paper-2);"><td>Total</td><td class="num">'+euro(engCalc)+'</td><td class="num">${euro(engCalc)}</td><td class="num">${euro(valoCalc)}</td><td class="num">${euro(fpCalc)}</td><td class="num">${euro(fpCalc)}</td><td class="num">${jalonsDossier.length} / ${nbCert}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:8px; font-size:11px; color:var(--muted); padding:0 4px;">${isSubvDossier ? "Pour une subvention pluriannuelle, le cumul d'engagées vs montant total à consommer signale le rythme de liquidation. Une sous-consommation sur exercice tardif est un risque de perte d'enveloppe." : "Pour un dossier multi-exercices, la séquence montre la cadence de saisie et la régularité de l'effort scientifique."}</div>` : ''}
 
     ${Object.keys(fpByProjD).length ? `<div class="section-title"><h2>Répartition financière du dossier</h2><span class="tag t1-tag">${Object.keys(fpByProjD).length} projet${Object.keys(fpByProjD).length>1?'s':''}</span></div>
       <div class="grid c2">
