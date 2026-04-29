@@ -80,11 +80,21 @@ def _http(method: str, url: str, payload: Optional[dict] = None, timeout: int = 
     raise last_err or NotionError("Notion: échec après retries")
 
 
-def query_database(database_id: str) -> list[dict]:
+def query_database(database_id: str, include_archived: bool = False) -> list[dict]:
+    """Récupère toutes les pages d'une base Notion.
+    Par défaut, exclut les pages archivées et dans la corbeille — c'est l'attendu fonctionnel
+    (une page supprimée dans Notion ne doit plus apparaître dans le portail).
+    Notion expose deux flags qui peuvent indiquer une suppression : `archived` (legacy) et `in_trash` (récent).
+    Les deux sont gérés.
+    """
     pages, payload = [], {"page_size": 100}
     while True:
         res = _http("POST", f"{NOTION_API}/databases/{database_id}/query", payload)
-        pages.extend(res.get("results", []))
+        for p in res.get("results", []):
+            if not include_archived:
+                if p.get("archived") or p.get("in_trash"):
+                    continue
+            pages.append(p)
         if not res.get("has_more"): break
         payload["start_cursor"] = res["next_cursor"]
     return pages
