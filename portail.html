@@ -466,6 +466,33 @@
   .ant-method ul li { margin-bottom: 3px; }
   .ant-method ul li b { color: var(--ink); }
 
+  /* Bouton et encart d'explication LF (modifications réglementaires entre années) */
+  .lf-explain-btn { background: var(--purple-bg); color: var(--purple-dark); border: 1px solid var(--purple); padding: 5px 11px; font-size: 11px; font-weight: 700; border-radius: 12px; cursor: pointer; letter-spacing: 0.2px; transition: all 0.12s; }
+  .lf-explain-btn:hover { background: var(--purple); color: #fff; }
+  .lf-explain-box { margin: 10px 0 14px; padding: 14px 16px; background: var(--purple-bg); border: 1px solid var(--purple); border-left: 3px solid var(--purple-dark); border-radius: 4px; }
+  .lf-explain-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--purple-dark); font-weight: 700; margin-bottom: 8px; }
+  table.lf-explain-table { width: auto; border-collapse: collapse; font-size: 12px; }
+  table.lf-explain-table td { padding: 4px 10px 4px 0; }
+  .lf-old { color: var(--muted); text-decoration: line-through; font-variant-numeric: tabular-nums; }
+  .lf-new { color: var(--brick-dark); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .lf-explain-note { margin-top: 8px; padding: 6px 10px; background: #fff; border-radius: 3px; font-size: 11px; color: var(--ink-soft); font-style: italic; }
+  .lf-explain-impact { margin-top: 8px; font-size: 11px; color: var(--purple-dark); line-height: 1.5; }
+
+  /* Header anticipation : disposition gauche (year+meta) à gauche, bouton LF à droite */
+  .ant-head { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 14px !important; }
+  .ant-head-left { display: flex; flex-direction: column; gap: 4px; }
+
+  /* Diagnostic projet (sous le nom du projet en table top) */
+  .proj-diag { font-size: 10px; color: var(--muted); margin-top: 2px; cursor: help; font-style: italic; }
+  .proj-impact { font-size: 10px; color: var(--amber-dark); margin-top: 2px; cursor: help; font-weight: 700; }
+
+  /* Badges sources étendus : ferme (clos/achevé) */
+  .proj-source.ferme { background: #f5f5f5; color: var(--muted); border: 1px solid var(--border); }
+
+  /* Encart "hors projection" pour transparence sur les exclus */
+  .ant-exclus { margin-top: 12px; padding: 10px 14px; background: var(--paper-2); border-radius: 4px; font-size: 11.5px; color: var(--ink-soft); border-left: 2px solid var(--border); }
+  .ant-exclus b { color: var(--ink); }
+
   /* Chronique de verrous (pivot du Temps 2 — philosophie PDJ) */
   .chronique-verrous { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: 4px; padding: 16px 20px; }
   .cv-verrou { padding: 12px 14px; background: var(--brand-bg); border-radius: 4px; margin-bottom: 14px; }
@@ -1064,29 +1091,35 @@ function tripleLecture(items) {
     + '</div>').join('') + '</div>';
 }
 
-/* ===== Anticipation projetée — estimation dépenses & valorisation 2026/2027 =====
-   Méthode (à expliciter à l'utilisateur) :
-   1. Pour chaque projet actif (cloture >= année cible), on cherche d'abord un jalon déjà saisi
-      pour l'année cible — c'est le "prévu" haute confiance.
-   2. Si aucun jalon, projection par moyenne mobile des 3 derniers exercices renseignés du projet,
-      pondérée par l'avancement restant (1 - avancement_moyen_dernier_exercice).
-   3. Pour CIR/CII/CICO : application des paramètres LF de l'année cible (taux 30%/30%/50%) sur
-      l'assiette valorisable projetée.
-   4. Pour les subventions : pas d'extrapolation tendancielle — elles sont contractuelles. Seuls
-      les jalons prévisionnels saisis sont remontés.
+/* ===== Anticipation projetée — méthode rigoureuse =====
+   Règles métier :
+   1. Continuité : un projet est considéré comme **clos implicitement** si son dernier exercice
+      jalonné est antérieur à l'année courante. Pas de projection sur clos.
+   2. Budget total estimé : le ratio total_engagées / avancement_actuel donne le budget total
+      attendu pour mener le projet à 100 %. Le reste à engager = budget_total - engagées_observées.
+   3. Vélocité d'avancement : la progression annuelle moyenne d'avancement détermine combien
+      d'années de continuité sont nécessaires (1, 2 ou 3 ans). Le reste à engager est lissé sur
+      ces années.
+   4. Ratios projet : valorisable, CIR, CII, CICO sont calculés à partir des **ratios observés
+      sur le projet** (pas des taux théoriques génériques). Permet de tenir compte de la
+      structure réelle des dépenses du projet.
+   5. Paramètres LF de l'année cible : application des règles fiscales en vigueur. Si un poste
+      de dépenses a été supprimé (jeunes docteurs, brevets, veille techno depuis 15/02/2025),
+      cela peut réduire l'assiette — flaggé pour transparence.
+   6. Subventions : non projetées par tendance (contractuelles). Seuls jalons saisis remontent.
 */
-function projeterAnneeCible(projets, jalons, anneeCible) {
-  const results = []; // [{ projet, source: 'saisi'|'tendance'|'inactif', engagees, valorisables, cir, cii, cico, subv }]
+function projeterAnneeCible(projets, jalons, anneeCible, anneeCourante) {
+  const results = [];
   projets.forEach(p => {
     const fin = p.cloture || 0;
-    const debut = p.demarrage || 0;
-    if (fin < anneeCible) {
-      // Projet clôturé — pas d'anticipation
-      results.push({ projet: p, source: 'inactif', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0 });
-      return;
-    }
-    // Jalons saisis pour l'année cible ?
+
+    // Jalons historiques du projet (toutes années sauf cible)
+    const jHist = jalons.filter(j => (j.projets_ids||[]).includes(p.id) && j.annee && j.annee < anneeCible);
     const jSaisis = jalons.filter(j => (j.projets_ids||[]).includes(p.id) && j.annee === anneeCible);
+    const yearsHist = [...new Set(jHist.map(j => j.annee))].sort();
+    const dernYearHist = yearsHist.length ? yearsHist[yearsHist.length - 1] : null;
+
+    // ===== Cas 1 : jalons déjà saisis pour l'année cible =====
     if (jSaisis.length > 0) {
       const eng = jSaisis.reduce((s,j) => s+(j.depenses_engagees||0), 0);
       const valo = jSaisis.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
@@ -1094,44 +1127,195 @@ function projeterAnneeCible(projets, jalons, anneeCible) {
       const cii = jSaisis.reduce((s,j) => s+(j.montant_cii||0), 0);
       const cico = jSaisis.reduce((s,j) => s+(j.montant_cico||0), 0);
       const subv = jSaisis.reduce((s,j) => s+(j.subvention_percue||0), 0);
-      results.push({ projet: p, source: 'saisi', engagees: eng, valorisables: valo, cir, cii, cico, subv });
+      results.push({ projet: p, source: 'saisi', engagees: eng, valorisables: valo, cir, cii, cico, subv, fp: cir+cii+cico+subv });
       return;
     }
-    // Pas de jalon saisi — projection par tendance
-    const jHist = jalons.filter(j => (j.projets_ids||[]).includes(p.id) && j.annee && j.annee < anneeCible).sort((a,b) => b.annee - a.annee);
-    if (jHist.length === 0) {
-      // Projet déclaré actif en 2026/27 mais aucun historique — on ne peut rien projeter
-      results.push({ projet: p, source: 'aucune-base', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0 });
+
+    // ===== Cas 2 : projet clôturé (champ cloture < année cible) =====
+    if (fin && fin < anneeCible) {
+      results.push({ projet: p, source: 'cloture-declaree', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Clôturé en '+fin });
       return;
     }
-    // Moyenne mobile sur les 3 dernières années renseignées
-    const lastYears = [...new Set(jHist.map(j => j.annee))].sort((a,b) => b-a).slice(0, 3);
-    const sumByYear = (field) => lastYears.map(y => jalons.filter(j => (j.projets_ids||[]).includes(p.id) && j.annee === y).reduce((s,j) => s+(j[field]||0), 0));
-    const avg = (arr) => arr.length ? arr.reduce((s,v)=>s+v, 0) / arr.length : 0;
-    const engMoy = avg(sumByYear('depenses_engagees'));
-    const valoMoy = avg(sumByYear('depenses_valorisables'));
-    // Application des taux LF de l'année cible (millésime 2026 et après : architecture maintenue)
+
+    // ===== Cas 3 : aucun historique =====
+    if (yearsHist.length === 0) {
+      results.push({ projet: p, source: 'aucune-base', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Pas d\'historique exploitable' });
+      return;
+    }
+
+    // ===== Cas 4 : continuité interrompue =====
+    // Si le dernier exercice jalonné est antérieur à l'année courante, le projet est considéré comme clos implicitement.
+    // Exemple : jalons jusqu'en 2024, on est en 2026, rien en 2025 → projet clos implicitement, pas de projection.
+    if (dernYearHist < anneeCourante) {
+      results.push({ projet: p, source: 'cloture-implicite', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Aucun jalon depuis '+dernYearHist+' — clôture implicite' });
+      return;
+    }
+
+    // ===== Cas 5 : projection par budget restant + vélocité =====
+
+    // a) Avancement actuel — on prend le MAX par projet (l'avancement est cumulatif)
+    const avancementActuel = Math.max.apply(null, jHist.map(j => (j.avancement === null || j.avancement === undefined) ? 0 : j.avancement).concat([0]));
+
+    // Si avancement à 100 % ou +, projet de fait achevé
+    if (avancementActuel >= 1) {
+      results.push({ projet: p, source: 'acheve', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Avancement 100 % atteint' });
+      return;
+    }
+
+    // b) Total engagées historique
+    const totEngHist = jHist.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+
+    // c) Budget total estimé via ratio engagées/avancement
+    let budgetTotalEstime = null, resteAEngager = null;
+    if (avancementActuel > 0 && totEngHist > 0) {
+      budgetTotalEstime = totEngHist / avancementActuel;
+      resteAEngager = Math.max(0, budgetTotalEstime - totEngHist);
+    } else {
+      // Avancement à 0 ou inconnu — on retombe sur la moyenne mobile des 2-3 dernières années
+      const lastY = yearsHist.slice(-3);
+      const engMoy = lastY.reduce((s,y) => s + jHist.filter(j => j.annee === y).reduce((ss,j) => ss+(j.depenses_engagees||0), 0), 0) / lastY.length;
+      // On suppose 2 ans de continuité par défaut quand on n'a pas d'avancement pour calibrer
+      resteAEngager = engMoy * 2;
+    }
+
+    // d) Vélocité d'avancement : avancement gagné par exercice
+    let velocity = null, anneesRestantes = 1;
+    if (avancementActuel > 0 && yearsHist.length >= 2) {
+      // Si l'avancement est documenté pour chaque année, on prend le MAX par année puis on calcule le delta
+      const avMaxByYear = {};
+      jHist.forEach(j => {
+        if (j.avancement === null || j.avancement === undefined) return;
+        const y = j.annee;
+        avMaxByYear[y] = Math.max(avMaxByYear[y] || 0, j.avancement);
+      });
+      const yearsAv = Object.keys(avMaxByYear).map(Number).sort();
+      if (yearsAv.length >= 2) {
+        const premY = yearsAv[0], dernY = yearsAv[yearsAv.length - 1];
+        const deltaAv = avMaxByYear[dernY] - avMaxByYear[premY];
+        const deltaY = dernY - premY;
+        if (deltaAv > 0 && deltaY > 0) velocity = deltaAv / deltaY;
+      }
+    }
+    // Si vélocité non calculable, prendre l'avancement actuel divisé par le nombre d'années de présence
+    if (velocity === null || velocity <= 0) {
+      const nbYearsActifs = yearsHist.length;
+      if (nbYearsActifs > 0 && avancementActuel > 0) velocity = avancementActuel / nbYearsActifs;
+    }
+    // Calcul du nombre d'années pour finir
+    if (velocity && velocity > 0) {
+      const restantAv = 1 - avancementActuel;
+      anneesRestantes = Math.max(1, Math.min(3, Math.ceil(restantAv / velocity)));
+    } else {
+      anneesRestantes = 1;
+    }
+    // Borne supérieure : si fin déclarée, ne pas projeter au-delà
+    if (fin && fin >= anneeCible) {
+      const yearsTillCloture = fin - anneeCible + 1;
+      anneesRestantes = Math.max(1, Math.min(anneesRestantes, yearsTillCloture));
+    }
+
+    // Position de l'année cible dans la séquence : si projection 2026 et 2027 simultanées,
+    // il faut que la part allouée à 2026 et celle à 2027 soit cohérente (somme = reste à engager).
+    // anneeCible - anneeCourante donne l'index (0 pour 2026 si anneeCourante = 2026)
+    const idxCible = anneeCible - anneeCourante;
+    if (idxCible >= anneesRestantes) {
+      // Au-delà de la durée restante estimée
+      results.push({ projet: p, source: 'au-dela-projection', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Projet estimé terminé avant '+anneeCible+' (durée restante : '+anneesRestantes+' an'+(anneesRestantes>1?'s':'')+')' });
+      return;
+    }
+
+    // Allocation : on lisse uniformément le reste à engager sur les années restantes
+    const engProj = resteAEngager / anneesRestantes;
+
+    // e) Ratios observés sur le projet pour valorisable et dispositifs
+    const totValoHist = jHist.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
+    const totCirHist = jHist.reduce((s,j) => s+(j.montant_cir||0), 0);
+    const totCiiHist = jHist.reduce((s,j) => s+(j.montant_cii||0), 0);
+    const totCicoHist = jHist.reduce((s,j) => s+(j.montant_cico||0), 0);
+    const ratioValo = totEngHist > 0 ? totValoHist / totEngHist : 0;
+    const ratioCirSurValo = totValoHist > 0 ? totCirHist / totValoHist : 0;
+    const ratioCiiSurValo = totValoHist > 0 ? totCiiHist / totValoHist : 0;
+    const ratioCicoSurValo = totValoHist > 0 ? totCicoHist / totValoHist : 0;
+
+    const valoProj = engProj * ratioValo;
+
+    // f) Application des paramètres LF de l'année cible
     const lfKey = anneeCible >= 2026 ? '2026' : (anneeCible === 2025 ? '2025_apres_15fev' : '2024');
     const lfP = LF_PARAMS[lfKey] || LF_PARAMS['2026'];
-    const tauxCir = lfP.taux_cir;
-    // Le type de dispositif réel n'est pas connu sur projection ; on utilise la répartition historique observée
-    const cirHist = jHist.reduce((s,j) => s+(j.montant_cir||0), 0);
-    const ciiHist = jHist.reduce((s,j) => s+(j.montant_cii||0), 0);
-    const cicoHist = jHist.reduce((s,j) => s+(j.montant_cico||0), 0);
-    const totHist = cirHist + ciiHist + cicoHist;
-    let cir=0, cii=0, cico=0;
-    if (totHist > 0) {
-      // Répartition observée appliquée à l'assiette valorisable projetée
-      cir = Math.round(valoMoy * tauxCir * (cirHist/totHist));
-      cii = Math.round(valoMoy * 0.30 * (ciiHist/totHist));
-      cico = Math.round(valoMoy * 0.50 * (cicoHist/totHist));
-    } else {
-      // Pas d'historique de dispositif — application par défaut du taux CIR
-      cir = Math.round(valoMoy * tauxCir);
-    }
-    results.push({ projet: p, source: 'tendance', engagees: Math.round(engMoy), valorisables: Math.round(valoMoy), cir, cii, cico, subv: 0, lastYears });
+
+    // Pour les ratios CIR/CII/CICO, on applique le ratio observé MAIS on plafonne au taux théorique LF
+    // (le taux théorique CIR = 30 %, donc même si historiquement le projet avait 35 %, on plafonne)
+    const cirProj = Math.min(ratioCirSurValo, lfP.taux_cir) * valoProj;
+    const ciiProj = Math.min(ratioCiiSurValo, 0.30) * valoProj;
+    const cicoProj = Math.min(ratioCicoSurValo, 0.50) * valoProj;
+
+    // Détection d'impacts LF : ratios historiques > taux théoriques actuels = baisse anticipée
+    const impactsLF = [];
+    if (ratioCirSurValo > lfP.taux_cir + 0.01) impactsLF.push('Ratio CIR historique ('+(ratioCirSurValo*100).toFixed(0)+'%) plafonné à '+(lfP.taux_cir*100)+'%');
+    if (!lfP.jeune_docteur_actif && totCirHist > 0) impactsLF.push('Effet possible de la suppression jeunes docteurs (LF 2025)');
+    if (!lfP.brevets_eligibles && totCirHist > 0) impactsLF.push('Effet possible de la suppression brevets/COV');
+
+    results.push({
+      projet: p,
+      source: 'tendance',
+      engagees: Math.round(engProj),
+      valorisables: Math.round(valoProj),
+      cir: Math.round(cirProj),
+      cii: Math.round(ciiProj),
+      cico: Math.round(cicoProj),
+      subv: 0,
+      fp: Math.round(cirProj + ciiProj + cicoProj),
+      // Métadonnées de transparence
+      diag: {
+        avancementActuel: avancementActuel,
+        budgetTotalEstime: budgetTotalEstime ? Math.round(budgetTotalEstime) : null,
+        resteAEngager: Math.round(resteAEngager),
+        anneesRestantes: anneesRestantes,
+        velocity: velocity,
+        ratioValo: ratioValo,
+        ratioCirSurValo: ratioCirSurValo,
+        ratioCiiSurValo: ratioCiiSurValo,
+        ratioCicoSurValo: ratioCicoSurValo,
+        impactsLF: impactsLF,
+        derniereAnneeJalonnee: dernYearHist
+      }
+    });
   });
   return results;
+}
+
+/* ===== Comparateur LF — détecte les différences entre deux années pour le bouton d'explication ===== */
+function comparerLF(anneePrec, anneeCible) {
+  const keyPrec = anneePrec >= 2026 ? '2026' : (anneePrec === 2025 ? '2025_apres_15fev' : '2024');
+  const keyCible = anneeCible >= 2026 ? '2026' : (anneeCible === 2025 ? '2025_apres_15fev' : '2024');
+  if (keyPrec === keyCible) return null; // Pas de changement
+  const a = LF_PARAMS[keyPrec], b = LF_PARAMS[keyCible];
+  const diffs = [];
+  if (a.taux_cir !== b.taux_cir) diffs.push({ champ: 'Taux CIR', avant: (a.taux_cir*100)+' %', apres: (b.taux_cir*100)+' %' });
+  if (a.forfait_perso !== b.forfait_perso) diffs.push({ champ: 'Forfait personnel', avant: (a.forfait_perso*100)+' %', apres: (b.forfait_perso*100)+' %' });
+  if (a.jeune_docteur_actif !== b.jeune_docteur_actif) diffs.push({ champ: 'Jeunes docteurs', avant: a.jeune_docteur_actif?'éligible':'supprimé', apres: b.jeune_docteur_actif?'éligible':'supprimé' });
+  if (a.brevets_eligibles !== b.brevets_eligibles) diffs.push({ champ: 'Brevets et COV', avant: a.brevets_eligibles?'éligibles':'exclus', apres: b.brevets_eligibles?'éligibles':'exclus' });
+  if (a.veille_techno !== b.veille_techno) diffs.push({ champ: 'Veille technologique', avant: a.veille_techno?'éligible':'exclue', apres: b.veille_techno?'éligible':'exclue' });
+  return { diffs, noteCible: b.note || null, notePrec: a.note || null };
+}
+
+// Rendu de l'encart explicatif LF (replié par défaut, ouvert par clic sur le bouton)
+function renderLfExplainBox(anneeCible, cmp) {
+  if (!cmp || !cmp.diffs.length) return '';
+  const rows = cmp.diffs.map(d => '<tr><td><b>'+d.champ+'</b></td><td><span class="lf-old">'+d.avant+'</span></td><td>→</td><td><span class="lf-new">'+d.apres+'</span></td></tr>').join('');
+  return '<div class="lf-explain-box" id="lfBox-'+anneeCible+'" style="display:none;">'
+    + '<div class="lf-explain-title">Modifications applicables en '+anneeCible+' par rapport à '+(anneeCible-1)+'</div>'
+    + '<table class="lf-explain-table"><tbody>'+rows+'</tbody></table>'
+    + (cmp.noteCible ? '<div class="lf-explain-note">'+cmp.noteCible+'</div>' : '')
+    + '<div class="lf-explain-impact">Ces modifications sont déjà prises en compte dans les montants estimés ci-dessus. Les projets qui auraient mobilisé fortement un poste désormais exclu (jeunes docteurs, brevets, veille techno) verront leur financement public projeté ajusté à la baisse.</div>'
+    + '</div>';
+}
+
+// Toggle interactif de l'encart LF
+function toggleLfExplain(year) {
+  const box = document.getElementById('lfBox-'+year);
+  if (!box) return;
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
 }
 
 // Frise chronologique pluriannuelle des verrous — vue d'ensemble portefeuille R&D&I.
@@ -2848,8 +3032,8 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
   const lfLecture = 'LF 2025 (15/02/2025) : suppression jeunes docteurs, brevets, veille techno. Forfait personnel 43 % → 40 %. LF 2026 : architecture maintenue, CRC prolongé jusqu\'à fin 2028. Le coefficient évolue ; la décision d\'investir, pilotée par la stratégie scientifique, reste indépendante.';
 
   // ===== Anticipation 2026 et 2027 =====
-  const proj2026 = projeterAnneeCible(projets, jalons, 2026);
-  const proj2027 = projeterAnneeCible(projets, jalons, 2027);
+  const proj2026 = projeterAnneeCible(projets, jalons, 2026, anneeCourante);
+  const proj2027 = projeterAnneeCible(projets, jalons, 2027, anneeCourante);
   const totalsByYear = {};
   [{y: 2026, p: proj2026}, {y: 2027, p: proj2027}].forEach(({y, p}) => {
     totalsByYear[y] = {
@@ -2859,9 +3043,12 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
       cii: p.reduce((s,r) => s+r.cii, 0),
       cico: p.reduce((s,r) => s+r.cico, 0),
       subv: p.reduce((s,r) => s+r.subv, 0),
-      nbActifs: p.filter(r => r.source !== 'inactif' && r.engagees > 0).length,
+      nbActifs: p.filter(r => r.engagees > 0).length,
       nbSaisis: p.filter(r => r.source === 'saisi').length,
       nbTendance: p.filter(r => r.source === 'tendance').length,
+      nbCloture: p.filter(r => r.source === 'cloture-implicite' || r.source === 'cloture-declaree').length,
+      nbAchevee: p.filter(r => r.source === 'acheve').length,
+      nbAuDela: p.filter(r => r.source === 'au-dela-projection').length,
       nbAucune: p.filter(r => r.source === 'aucune-base').length
     };
     totalsByYear[y].fp = totalsByYear[y].cir + totalsByYear[y].cii + totalsByYear[y].cico + totalsByYear[y].subv;
@@ -2872,27 +3059,96 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
   const moyEngHist = lastRealYears.length ? lastRealYears.reduce((s,y) => s + jalons.filter(j => j.annee===y).reduce((ss,j) => ss+(j.depenses_engagees||0), 0), 0) / lastRealYears.length : 0;
   const moyFpHist = lastRealYears.length ? lastRealYears.reduce((s,y) => s + jalons.filter(j => j.annee===y).reduce((ss,j) => ss+(j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0), 0) / lastRealYears.length : 0;
 
+  // Comparaison des paramètres LF entre 2025 et 2026, et entre 2026 et 2027
+  const cmpLF_2025_2026 = comparerLF(2025, 2026);
+  const cmpLF_2026_2027 = comparerLF(2026, 2027);
+
+  // Helpers de rendu locaux
+  const renderSourceBadge = (source) => {
+    if (source === 'saisi') return '<span class="proj-source saisi" title="Jalon prévisionnel déjà saisi en base — haute confiance">●&nbsp;saisi</span>';
+    if (source === 'tendance') return '<span class="proj-source tendance" title="Projection par budget restant et vélocité d\'avancement">~&nbsp;tendance</span>';
+    if (source === 'cloture-implicite') return '<span class="proj-source ferme" title="Aucun jalon depuis l\'an dernier — clôture implicite">⊘&nbsp;clos</span>';
+    if (source === 'cloture-declaree') return '<span class="proj-source ferme" title="Clôture déclarée dépassée">⊘&nbsp;clos</span>';
+    if (source === 'acheve') return '<span class="proj-source ferme" title="Avancement 100 %">✓&nbsp;achevé</span>';
+    if (source === 'au-dela-projection') return '<span class="proj-source aucune" title="Au-delà de la durée restante estimée">›&nbsp;hors horizon</span>';
+    return '<span class="proj-source aucune" title="Pas d\'historique exploitable">?&nbsp;sans base</span>';
+  };
+
+  // Tooltip de transparence pour une projection tendance
+  const renderDiagTooltip = (r) => {
+    if (!r.diag) return '';
+    const d = r.diag;
+    const av = (d.avancementActuel*100).toFixed(0);
+    const vel = d.velocity ? (d.velocity*100).toFixed(0)+' %/an' : 'non calculable';
+    const lines = [
+      'Avancement actuel : '+av+' %',
+      d.budgetTotalEstime ? 'Budget total estimé : '+euro(d.budgetTotalEstime) : '',
+      'Reste à engager : '+euro(d.resteAEngager),
+      'Vélocité avancement : '+vel,
+      'Durée restante estimée : '+d.anneesRestantes+' an'+(d.anneesRestantes>1?'s':''),
+      'Ratio valorisable : '+(d.ratioValo*100).toFixed(0)+' %',
+      d.derniereAnneeJalonnee ? 'Dernier jalon : '+d.derniereAnneeJalonnee : ''
+    ].filter(Boolean);
+    return lines.join(' · ');
+  };
+
   // Rendu d'une carte d'anticipation pour une année cible
   const renderAnticipation = (y, totals, projections) => {
     const deltaEng = moyEngHist > 0 ? Math.round(100 * (totals.eng - moyEngHist) / moyEngHist) : null;
     const deltaFp = moyFpHist > 0 ? Math.round(100 * (totals.fp - moyFpHist) / moyFpHist) : null;
     const tauxLevierProj = totals.eng > 0 ? Math.round(100 * totals.fp / totals.eng) : null;
-    // Top 5 projets contributeurs
-    const top = projections.filter(r => r.engagees > 0).sort((a,b) => b.engagees - a.engagees).slice(0, 5);
-    const topRows = top.map(r => {
-      const sourceBadge = r.source === 'saisi' ? '<span class="proj-source saisi" title="Jalon prévisionnel déjà saisi en base">●&nbsp;saisi</span>'
-        : r.source === 'tendance' ? '<span class="proj-source tendance" title="Projection par tendance des 3 derniers exercices renseignés">~&nbsp;tendance</span>'
-        : '<span class="proj-source aucune" title="Projet actif sans historique exploitable">?&nbsp;sans base</span>';
-      return '<tr><td>'+sourceBadge+'</td><td><a onclick="setView(\'projet:'+r.projet.id+'\')" style="cursor:pointer;color:var(--brand);font-weight:600;">'+r.projet.nom+'</a></td><td class="num">'+euro(r.engagees)+'</td><td class="num">'+euro(r.valorisables)+'</td><td class="num"><b>'+euro(r.cir+r.cii+r.cico+r.subv)+'</b></td></tr>';
+
+    // Détection des changements LF qui s'appliquent à cette année cible
+    const cmpLF = y === 2026 ? cmpLF_2025_2026 : cmpLF_2026_2027;
+    const lfBtn = (cmpLF && cmpLF.diffs.length > 0)
+      ? '<button class="lf-explain-btn" onclick="toggleLfExplain(\''+y+'\')" title="Explication des modifications réglementaires applicables">? modalités '+y+'</button>'
+      : '';
+
+    // Liste des projets en projection (uniquement ceux avec montant > 0)
+    const actifs = projections.filter(r => r.engagees > 0).sort((a,b) => b.engagees - a.engagees);
+    const rowsActifs = actifs.map(r => {
+      const tip = r.diag ? renderDiagTooltip(r) : '';
+      return '<tr>'
+        + '<td>'+renderSourceBadge(r.source)+'</td>'
+        + '<td><a onclick="setView(\'projet:'+r.projet.id+'\')" style="cursor:pointer;color:var(--brand);font-weight:600;">'+r.projet.nom+'</a>'
+        + (tip ? '<div class="proj-diag" title="'+tip.replace(/"/g,'&quot;')+'">'+(r.diag.avancementActuel*100).toFixed(0)+'% avancement · '+(r.diag.anneesRestantes||1)+' an'+(r.diag.anneesRestantes>1?'s':'')+' restants estimés</div>' : '')
+        + (r.diag && r.diag.impactsLF && r.diag.impactsLF.length ? '<div class="proj-impact" title="'+r.diag.impactsLF.join(' · ').replace(/"/g,'&quot;')+'">⚠ impact LF</div>' : '')
+        + '</td>'
+        + '<td class="num">'+euro(r.engagees)+'</td>'
+        + '<td class="num">'+euro(r.valorisables)+'</td>'
+        + '<td class="num"><b>'+euro(r.fp)+'</b></td>'
+        + '</tr>';
     }).join('');
+
+    // Liste des projets exclus (transparence)
+    const exclus = projections.filter(r => r.engagees === 0 && r.source !== 'inactif');
+    const exclusSummary = (() => {
+      const grouped = {};
+      exclus.forEach(r => {
+        const key = r.source;
+        grouped[key] = (grouped[key] || 0) + 1;
+      });
+      const lblMap = {
+        'cloture-implicite': 'clôture implicite (aucun jalon depuis l\'an dernier)',
+        'cloture-declaree': 'clôture déclarée',
+        'acheve': 'avancement 100 %',
+        'au-dela-projection': 'au-delà de la durée restante estimée',
+        'aucune-base': 'pas d\'historique exploitable'
+      };
+      return Object.entries(grouped).map(([k,n]) => n+' '+lblMap[k]).join(' · ');
+    })();
+
     return '<div class="ant-card">'
       + '<div class="ant-head">'
-        + '<div class="ant-year">'+y+'</div>'
-        + '<div class="ant-meta">'+totals.nbActifs+' projet'+(totals.nbActifs>1?'s':'')+' actif'+(totals.nbActifs>1?'s':'')
-          + (totals.nbSaisis ? ' · <b>'+totals.nbSaisis+'</b> saisi'+(totals.nbSaisis>1?'s':'') : '')
-          + (totals.nbTendance ? ' · <b>'+totals.nbTendance+'</b> tendance' : '')
-          + '</div>'
+        + '<div class="ant-head-left"><div class="ant-year">'+y+'</div>'
+          + '<div class="ant-meta">'+totals.nbActifs+' projet'+(totals.nbActifs>1?'s':'')+' projeté'+(totals.nbActifs>1?'s':'')
+            + (totals.nbSaisis ? ' · <b>'+totals.nbSaisis+'</b> saisi'+(totals.nbSaisis>1?'s':'') : '')
+            + (totals.nbTendance ? ' · <b>'+totals.nbTendance+'</b> tendance' : '')
+            + '</div>'
+        + '</div>'
+        + lfBtn
       + '</div>'
+      + (cmpLF && cmpLF.diffs.length > 0 ? renderLfExplainBox(y, cmpLF) : '')
       + '<div class="ant-figures">'
         + '<div class="ant-fig"><div class="ant-fig-lbl">Dépenses engagées</div><div class="ant-fig-val">'+shortEuro(totals.eng)+'</div>'
           + (deltaEng !== null ? '<div class="ant-fig-delta '+(deltaEng>=0?'pos':'neg')+'">'+(deltaEng>=0?'▲ +':'▼ ')+deltaEng+'% vs moyenne 3 ans</div>' : '<div class="ant-fig-delta muted">—</div>')
@@ -2910,9 +3166,10 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
         + (totals.cico>0 ? '<span class="ant-mix-item"><span class="ant-mix-dot" style="background:#00A668;"></span>CICO '+shortEuro(totals.cico)+'</span>' : '')
         + (totals.subv>0 ? '<span class="ant-mix-item"><span class="ant-mix-dot" style="background:#8A6B1A;"></span>Subv '+shortEuro(totals.subv)+'</span>' : '')
       + '</div>'
-      + (top.length ? '<div class="ant-top"><div class="ant-top-lbl">Top contributeurs '+y+'</div>'
-        + '<table class="ant-top-table"><thead><tr><th>Source</th><th>Projet</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">FP estimé</th></tr></thead><tbody>'+topRows+'</tbody></table>'
+      + (rowsActifs ? '<div class="ant-top"><div class="ant-top-lbl">Détail par projet ('+actifs.length+')</div>'
+        + '<table class="ant-top-table"><thead><tr><th>Source</th><th>Projet</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">FP estimé</th></tr></thead><tbody>'+rowsActifs+'</tbody></table>'
         + '</div>' : '<div class="ant-empty">Aucun projet ne porte d\'effort estimé en '+y+'.</div>')
+      + (exclusSummary ? '<div class="ant-exclus"><b>Hors projection :</b> '+exclusSummary+'</div>' : '')
       + '</div>';
   };
 
@@ -2920,7 +3177,7 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
     <div class="lecture-intro">
       <div class="li-eyebrow">Temps III · Lecture stratégique</div>
       <h2 class="li-title">Anticiper 2026 et 2027 dans la trajectoire</h2>
-      <p class="li-lead">Sur la base des projets actifs en base, des plages démarrage→clôture et de la cadence de saisie historique, projection des dépenses, des assiettes valorisables et des financements publics aux paramètres LF en vigueur. Cinq exercices consolidés deviennent un actif de réputation — savoir où l'on va donne la maîtrise.</p>
+      <p class="li-lead">Sur la base de l'avancement déclaré, du budget total estimé et de la vélocité observée, projection du reste à engager sur les exercices à venir. Application des ratios projet et des paramètres LF en vigueur. Savoir où l'on va donne la maîtrise.</p>
     </div>
 
     <div class="these-banner">
@@ -2931,19 +3188,20 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
       </div>
     </div>
 
-    <div class="section-title"><h2>Anticipation 2026 — 2027</h2><span class="tag t3-tag">projection trajectoire · paramètres LF en vigueur</span></div>
+    <div class="section-title"><h2>Anticipation 2026 — 2027</h2><span class="tag t3-tag">projection · paramètres LF en vigueur</span></div>
     <div class="ant-grid">
       ${renderAnticipation(2026, totalsByYear[2026], proj2026)}
       ${renderAnticipation(2027, totalsByYear[2027], proj2027)}
     </div>
     <div class="ant-method">
-      <div class="ant-method-title">Méthodologie</div>
+      <div class="ant-method-title">Méthode de projection</div>
       <ul>
-        <li><b>Saisi</b> ●&nbsp;: jalons prévisionnels déjà renseignés dans Notion pour l'année cible — haute confiance.</li>
-        <li><b>Tendance</b>&nbsp;~&nbsp;: projet actif (clôture &geq; année cible) sans jalon saisi — projection par moyenne mobile des 3 derniers exercices renseignés du projet.</li>
-        <li><b>Sans base</b>&nbsp;?&nbsp;: projet déclaré actif sans historique exploitable — non projeté, à arbitrer manuellement.</li>
-        <li>Application des paramètres LF de l'année cible : taux CIR 30 %, forfait personnel 40 %, exclusion brevets / jeunes docteurs / veille techno (depuis le 15/02/2025), CRC prolongé jusqu'à fin 2028.</li>
-        <li>Les <b>subventions</b> ne sont pas extrapolées — elles sont contractuelles. Seuls les jalons prévisionnels saisis en base remontent dans la projection.</li>
+        <li><b>Continuité requise</b> — un projet sans jalon dans l'année écoulée est considéré comme <b>clos implicitement</b> et exclu de la projection. Pas de tendance sur projet interrompu.</li>
+        <li><b>Budget total estimé</b> = total engagées historique ÷ avancement actuel. Le <b>reste à engager</b> = budget total − engagées observées.</li>
+        <li><b>Vélocité d'avancement</b> = progression moyenne par exercice. La durée restante estimée (1, 2 ou 3 ans) lisse le reste à engager sur ces exercices.</li>
+        <li><b>Ratios projet observés</b> appliqués aux montants projetés : ratio valorisable, ratios CIR/CII/CICO réels du projet, plafonnés aux taux théoriques LF (30 % CIR, 30 % CII, 50 % CICO).</li>
+        <li><b>Paramètres LF de l'année cible</b> appliqués : un poste supprimé (jeunes docteurs, brevets, veille techno depuis 15/02/2025) est signalé comme impact LF sur le projet concerné.</li>
+        <li><b>Subventions</b> non extrapolées — contractuelles. Seuls les jalons saisis remontent.</li>
       </ul>
     </div>
 
