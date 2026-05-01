@@ -338,22 +338,6 @@
 
   /* ===== Composants conceptuels — philosophie PDJ ===== */
 
-  /* Cycle de vie des millésimes CIR (frise trésorerie pluriannuelle) */
-  .millesimes-cycle { display: flex; flex-direction: column; gap: 14px; padding: 8px 0; }
-  .mc-millesime { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; }
-  .mc-mil-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
-  .mc-mil-year { font-weight: 700; color: var(--ink); font-size: 14px; letter-spacing: -0.2px; }
-  .mc-mil-amount { font-weight: 700; color: var(--brand); font-size: 14px; font-variant-numeric: tabular-nums; }
-  .mc-track { display: flex; align-items: center; }
-  .mc-step { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 100px; }
-  .mc-step-dot { width: 14px; height: 14px; border-radius: 50%; background: #e0e3e8; border: 2px solid #c8ced7; transition: all 0.2s; }
-  .mc-step.done .mc-step-dot { background: var(--green); border-color: var(--green-dark); }
-  .mc-step.current .mc-step-dot { background: var(--brand); border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-bg); transform: scale(1.15); }
-  .mc-step-lbl { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.3; max-width: 90px; }
-  .mc-step.done .mc-step-lbl { color: var(--green-dark); font-weight: 600; }
-  .mc-step.current .mc-step-lbl { color: var(--brand); font-weight: 700; }
-  .mc-step-link { flex: 1; height: 2px; background: linear-gradient(to right, #c8ced7, #c8ced7); margin: 0 -2px; align-self: flex-start; margin-top: 7px; }
-
   /* Focus millésime (vue année — un seul millésime, étape courante mise en évidence) */
   .millesime-focus { background: #fff; border: 1px solid var(--brand); border-left: 4px solid var(--brand); border-radius: 6px; padding: 18px 22px; }
   .mf-header { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 18px; align-items: flex-start; flex-wrap: wrap; }
@@ -414,6 +398,33 @@
   .cycle-status.cs-declare { background: var(--brand-bg); color: var(--brand-dark); border-color: var(--brand); }
   .cycle-status.cs-impute { background: var(--amber-bg); color: var(--amber-dark); border-color: var(--amber); }
   .cycle-status.cs-rembourse { background: var(--green-bg); color: var(--green-dark); border-color: var(--green); }
+
+  /* ===== Vue d'ensemble du financement public (T1 vue ensemble) ===== */
+  .fp-overview { display: flex; flex-direction: column; gap: 16px; }
+  /* Bandeau headline avec 3 indicateurs clés */
+  .fp-headline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .fp-headline-block { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: 4px; padding: 16px 20px; }
+  .fp-headline-block:nth-child(2) { border-left-color: var(--green-dark); }
+  .fp-headline-block:nth-child(3) { border-left-color: var(--gold-dark); }
+  .fp-headline-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; }
+  .fp-headline-val { font-size: 28px; font-weight: 900; color: var(--ink); margin-top: 6px; line-height: 1.05; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+  .fp-headline-block:nth-child(1) .fp-headline-val { color: var(--brand); }
+  .fp-headline-sub { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+  .fp-headline-sub b { color: var(--ink); font-weight: 700; }
+  /* Cartes par dispositif */
+  .fp-dispositifs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .fp-disp-card { background: #fff; border: 1px solid var(--border); border-left: 4px solid; border-radius: 4px; padding: 14px 16px; transition: box-shadow 0.15s; }
+  .fp-disp-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+  .fp-disp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .fp-disp-code { color: #fff; padding: 3px 10px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; border-radius: 3px; }
+  .fp-disp-pct { font-size: 12px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .fp-disp-amount { font-size: 20px; font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .fp-disp-label { font-size: 13px; font-weight: 700; color: var(--ink); margin-top: 6px; }
+  .fp-disp-detail { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+
+  @media (max-width: 720px) {
+    .fp-headline { grid-template-columns: 1fr; }
+  }
 
   /* Chronique de verrous (pivot du Temps 2 — philosophie PDJ) */
   .chronique-verrous { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: 4px; padding: 16px 20px; }
@@ -944,31 +955,6 @@ function miniSparkBars(values, labels, currentIdx) {
 }
 
 /* ===== Composants conceptuels — philosophie PDJ ===== */
-
-// Cycle de vie d'un millésime CIR — cinq étapes : déclaration, imputation IS sur 3 ans, remboursement solde.
-// Visualise pour chaque millésime (N, N-1, N-2, N-3) où il en est aujourd'hui dans son parcours fiscal.
-function millesimesCycle(millesimes, anneeCourante) {
-  // millesimes : [{ annee, ci_total, statut: 'declare'|'impute_n1'|'impute_n2'|'impute_n3'|'rembourse' }]
-  if (!millesimes.length) return '<div class="card empty">Aucun millésime CIR à orchestrer.</div>';
-  const rows = millesimes.slice().sort((a,b) => b.annee - a.annee).map(m => {
-    const age = anneeCourante - m.annee;
-    // 0 = année de déclaration ; 1-3 = imputation IS ; 4+ = remboursement
-    const stepsHTML = CIR_CYCLE.map((s,i) => {
-      let cls = 'mc-step';
-      if (i < age) cls += ' done';
-      else if (i === age) cls += ' current';
-      return '<div class="'+cls+'" title="'+s.label+'"><span class="mc-step-dot"></span><span class="mc-step-lbl">'+s.label+'</span></div>';
-    }).join('<div class="mc-step-link"></div>');
-    return '<div class="mc-millesime">'
-      + '<div class="mc-mil-header">'
-        + '<div class="mc-mil-year">Millésime '+m.annee+'</div>'
-        + '<div class="mc-mil-amount">'+shortEuro(m.ci_total||0)+'</div>'
-      + '</div>'
-      + '<div class="mc-track">'+stepsHTML+'</div>'
-      + '</div>';
-  }).join('');
-  return '<div class="millesimes-cycle">'+rows+'</div>';
-}
 
 // Focus sur UN seul millésime — utilisé en vue année. Montre proéminemment l'étape courante.
 function millesimeFocus(annee, ciTotal, anneeCourante) {
@@ -2300,32 +2286,71 @@ function _t1_client(jalons, factures, dossiers, livrables, documents, risques, p
   const nbCertifies = jalons.filter(j => j.certifie).length;
   const nbJalons = jalons.length;
 
-  // Calcul des millésimes CIR vivants (4 derniers déclarés, ceux qui sont en cycle d'imputation/remboursement)
-  const anneeCourante = new Date().getFullYear();
-  const millesimesVivants = [];
-  for (let dy = 4; dy >= 0; dy--) {
-    const y = anneeCourante - dy;
-    const ciAnnee = jalons.filter(j => j.annee === y).reduce((s,j) => s + (j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0), 0);
-    if (ciAnnee > 0) millesimesVivants.push({ annee: y, ci_total: ciAnnee });
-  }
+  // Vue d'ensemble du financement public — agrégation tous dispositifs confondus
+  const fpCirTotal  = jalons.reduce((s,j) => s+(j.montant_cir||0), 0);
+  const fpCiiTotal  = jalons.reduce((s,j) => s+(j.montant_cii||0), 0);
+  const fpCicoTotal = jalons.reduce((s,j) => s+(j.montant_cico||0), 0);
+  const fpSubvTotal = jalons.reduce((s,j) => s+(j.subvention_percue||0), 0);
+  const fpTotal     = fpCirTotal + fpCiiTotal + fpCicoTotal + fpSubvTotal;
+  const engTotal    = jalons.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+  const valoTotal   = jalons.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
+  const tauxValorisation = engTotal > 0 ? Math.round(100*valoTotal/engTotal) : null;
+  const tauxLevier = engTotal > 0 ? Math.round(100*fpTotal/engTotal) : null;
+
+  // Composition par dispositif (% du financement public total)
+  const dispositifsActifs = [
+    { code: 'CIR',  label: 'Crédit Impôt Recherche',         montant: fpCirTotal,  couleur: '#2E3AB8', detail: 'Dispositif fiscal · 30% des dépenses valorisables' },
+    { code: 'CII',  label: 'Crédit Impôt Innovation',         montant: fpCiiTotal,  couleur: '#C01E60', detail: 'Dispositif fiscal · 30% PME (jusqu\'à fin 2027)' },
+    { code: 'CICO', label: 'Crédit Impôt Collaboration',      montant: fpCicoTotal, couleur: '#00A668', detail: 'Dispositif fiscal · 50% (CRC prolongé fin 2028)' },
+    { code: 'Subv', label: 'Subventions publiques',           montant: fpSubvTotal, couleur: '#8A6B1A', detail: 'Aides directes · ANR, BPI, France 2030, autres' }
+  ].filter(d => d.montant > 0);
 
   $('panel-t1').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Temps I · Lecture financière</div>
-      <h2 class="li-title">Le CIR comme trajectoire pluriannuelle</h2>
-      <p class="li-lead">Trois à quatre millésimes vivent toujours en parallèle. Pour une entreprise hors PME, le CIR de l'exercice N s'impute sur l'IS pendant trois ans avant remboursement. La lecture annuelle isolée masque la mécanique de trésorerie réelle.</p>
+      <h2 class="li-title">Les financements publics R&amp;D&amp;I comme trajectoire pluriannuelle</h2>
+      <p class="li-lead">Crédits d'impôt (CIR, CII, CICO) et subventions directes consolidés sur la durée. Un même euro de dépense peut mobiliser plusieurs dispositifs ; la lecture annuelle isolée masque les mécaniques de trésorerie et de levier réel.</p>
     </div>
 
     <div class="these-banner">
       <div class="tb-num">01</div>
       <div class="tb-content">
         <div class="tb-title">Sans vision pluriannuelle, on déclare. Avec, on planifie.</div>
-        <div class="tb-text">Les déblocages fiscaux s'anticipent, les exercices à IS faible se calibrent, les préfinancements bancaires se négocient. Le CIR cesse d'être une recette ponctuelle pour devenir un instrument de pilotage financier.</div>
+        <div class="tb-text">Les déblocages fiscaux s'anticipent, les exercices à IS faible se calibrent, les préfinancements bancaires se négocient. Les financements publics R&amp;D cessent d'être des recettes ponctuelles pour devenir un instrument de pilotage financier.</div>
       </div>
     </div>
 
-    ${millesimesVivants.length ? `<div class="section-title"><h2>Cycle de vie des millésimes</h2><span class="tag t1-tag">${millesimesVivants.length} millésime${millesimesVivants.length>1?'s':''} vivant${millesimesVivants.length>1?'s':''}</span></div>
-    ${millesimesCycle(millesimesVivants, anneeCourante)}` : ''}
+    ${fpTotal > 0 ? `<div class="section-title"><h2>Vue d'ensemble du financement public</h2><span class="tag t1-tag">${dispositifsActifs.length} dispositif${dispositifsActifs.length>1?'s':''} mobilisé${dispositifsActifs.length>1?'s':''}</span></div>
+    <div class="fp-overview">
+      <div class="fp-headline">
+        <div class="fp-headline-block">
+          <div class="fp-headline-lbl">Financement public cumulé</div>
+          <div class="fp-headline-val">${euro(fpTotal)}</div>
+          <div class="fp-headline-sub">${tauxLevier!==null ? '<b>'+tauxLevier+'%</b> des '+shortEuro(engTotal)+' engagés' : ''}</div>
+        </div>
+        <div class="fp-headline-block">
+          <div class="fp-headline-lbl">Dépenses valorisables</div>
+          <div class="fp-headline-val">${euro(valoTotal)}</div>
+          <div class="fp-headline-sub">${tauxValorisation!==null ? '<b>'+tauxValorisation+'%</b> de l\'effort engagé' : ''}</div>
+        </div>
+        <div class="fp-headline-block">
+          <div class="fp-headline-lbl">Certification chronique</div>
+          <div class="fp-headline-val">${nbCertifies} / ${nbJalons}</div>
+          <div class="fp-headline-sub">${nbJalons ? '<b>'+Math.round(100*nbCertifies/nbJalons)+'%</b> sécurisé' : ''}</div>
+        </div>
+      </div>
+      <div class="fp-dispositifs">
+        ${dispositifsActifs.map(d => {
+          const pct = Math.round(100*d.montant/fpTotal);
+          return '<div class="fp-disp-card" style="border-left-color:'+d.couleur+';">'
+            + '<div class="fp-disp-head"><span class="fp-disp-code" style="background:'+d.couleur+';">'+d.code+'</span><span class="fp-disp-pct">'+pct+'%</span></div>'
+            + '<div class="fp-disp-amount">'+euro(d.montant)+'</div>'
+            + '<div class="fp-disp-label">'+d.label+'</div>'
+            + '<div class="fp-disp-detail">'+d.detail+'</div>'
+            + '</div>';
+        }).join('')}
+      </div>
+    </div>` : ''}
 
     <div class="section-title"><h2>Trajectoire des dépenses et du financement public</h2><span class="tag t1-tag">consolidé pluriannuel</span></div>
     <div class="grid c2">
