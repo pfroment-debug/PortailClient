@@ -426,6 +426,46 @@
     .fp-headline { grid-template-columns: 1fr; }
   }
 
+  /* ===== Anticipation 2026/2027 (T3 vue ensemble) ===== */
+  .ant-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .ant-grid { grid-template-columns: 1fr; } }
+  .ant-card { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--brand); border-radius: 6px; padding: 18px 20px; }
+  .ant-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); flex-wrap: wrap; }
+  .ant-year { font-size: 28px; font-weight: 900; color: var(--brand); letter-spacing: -0.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .ant-meta { font-size: 11.5px; color: var(--muted); }
+  .ant-meta b { color: var(--ink); font-weight: 700; }
+  .ant-figures { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+  .ant-fig { padding: 10px 12px; background: var(--paper-2); border-radius: 4px; }
+  .ant-fig-lbl { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 700; }
+  .ant-fig-val { font-size: 20px; font-weight: 900; color: var(--ink); margin-top: 4px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .ant-fig-val.brand { color: var(--brand); }
+  .ant-fig-delta { font-size: 11px; margin-top: 4px; font-weight: 700; }
+  .ant-fig-delta.pos { color: var(--green-dark); }
+  .ant-fig-delta.neg { color: var(--brick-dark); }
+  .ant-fig-delta.muted { color: var(--muted); font-weight: normal; font-style: italic; }
+  .ant-mix { display: flex; flex-wrap: wrap; gap: 12px; padding: 10px 0; margin-bottom: 12px; border-top: 1px dashed var(--border); }
+  .ant-mix-item { font-size: 11.5px; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+  .ant-mix-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .ant-top { padding-top: 8px; border-top: 1px solid var(--border-soft); }
+  .ant-top-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+  table.ant-top-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  table.ant-top-table thead th { padding: 6px 8px; text-align: left; font-size: 9.5px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 700; }
+  table.ant-top-table thead th.num { text-align: right; }
+  table.ant-top-table tbody td { padding: 6px 8px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+  table.ant-top-table tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.ant-top-table tbody tr:last-child td { border-bottom: none; }
+  .proj-source { display: inline-block; padding: 2px 7px; border-radius: 9px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.2px; white-space: nowrap; }
+  .proj-source.saisi { background: var(--green-bg); color: var(--green-dark); border: 1px solid var(--green); }
+  .proj-source.tendance { background: var(--brand-bg); color: var(--brand-dark); border: 1px solid var(--brand); }
+  .proj-source.aucune { background: #f5f5f5; color: var(--muted); border: 1px solid var(--border); }
+  .ant-empty { padding: 14px; text-align: center; color: var(--muted); font-style: italic; font-size: 12px; background: var(--paper-2); border-radius: 4px; }
+  /* Méthodologie */
+  .ant-method { margin-top: 14px; padding: 14px 18px; background: var(--paper-2); border: 1px dashed var(--border); border-radius: 4px; }
+  .ant-method-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+  .ant-method ul { margin: 0; padding-left: 20px; font-size: 11.5px; color: var(--ink-soft); line-height: 1.65; }
+  .ant-method ul li { margin-bottom: 3px; }
+  .ant-method ul li b { color: var(--ink); }
+
   /* Chronique de verrous (pivot du Temps 2 — philosophie PDJ) */
   .chronique-verrous { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: 4px; padding: 16px 20px; }
   .cv-verrou { padding: 12px 14px; background: var(--brand-bg); border-radius: 4px; margin-bottom: 14px; }
@@ -1022,6 +1062,76 @@ function tripleLecture(items) {
     + '<div class="tl-lecture">'+it.lecture+'</div>'
     + (it.detail ? '<div class="tl-detail">'+it.detail+'</div>' : '')
     + '</div>').join('') + '</div>';
+}
+
+/* ===== Anticipation projetée — estimation dépenses & valorisation 2026/2027 =====
+   Méthode (à expliciter à l'utilisateur) :
+   1. Pour chaque projet actif (cloture >= année cible), on cherche d'abord un jalon déjà saisi
+      pour l'année cible — c'est le "prévu" haute confiance.
+   2. Si aucun jalon, projection par moyenne mobile des 3 derniers exercices renseignés du projet,
+      pondérée par l'avancement restant (1 - avancement_moyen_dernier_exercice).
+   3. Pour CIR/CII/CICO : application des paramètres LF de l'année cible (taux 30%/30%/50%) sur
+      l'assiette valorisable projetée.
+   4. Pour les subventions : pas d'extrapolation tendancielle — elles sont contractuelles. Seuls
+      les jalons prévisionnels saisis sont remontés.
+*/
+function projeterAnneeCible(projets, jalons, anneeCible) {
+  const results = []; // [{ projet, source: 'saisi'|'tendance'|'inactif', engagees, valorisables, cir, cii, cico, subv }]
+  projets.forEach(p => {
+    const fin = p.cloture || 0;
+    const debut = p.demarrage || 0;
+    if (fin < anneeCible) {
+      // Projet clôturé — pas d'anticipation
+      results.push({ projet: p, source: 'inactif', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0 });
+      return;
+    }
+    // Jalons saisis pour l'année cible ?
+    const jSaisis = jalons.filter(j => (j.projets_ids||[]).includes(p.id) && j.annee === anneeCible);
+    if (jSaisis.length > 0) {
+      const eng = jSaisis.reduce((s,j) => s+(j.depenses_engagees||0), 0);
+      const valo = jSaisis.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
+      const cir = jSaisis.reduce((s,j) => s+(j.montant_cir||0), 0);
+      const cii = jSaisis.reduce((s,j) => s+(j.montant_cii||0), 0);
+      const cico = jSaisis.reduce((s,j) => s+(j.montant_cico||0), 0);
+      const subv = jSaisis.reduce((s,j) => s+(j.subvention_percue||0), 0);
+      results.push({ projet: p, source: 'saisi', engagees: eng, valorisables: valo, cir, cii, cico, subv });
+      return;
+    }
+    // Pas de jalon saisi — projection par tendance
+    const jHist = jalons.filter(j => (j.projets_ids||[]).includes(p.id) && j.annee && j.annee < anneeCible).sort((a,b) => b.annee - a.annee);
+    if (jHist.length === 0) {
+      // Projet déclaré actif en 2026/27 mais aucun historique — on ne peut rien projeter
+      results.push({ projet: p, source: 'aucune-base', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0 });
+      return;
+    }
+    // Moyenne mobile sur les 3 dernières années renseignées
+    const lastYears = [...new Set(jHist.map(j => j.annee))].sort((a,b) => b-a).slice(0, 3);
+    const sumByYear = (field) => lastYears.map(y => jalons.filter(j => (j.projets_ids||[]).includes(p.id) && j.annee === y).reduce((s,j) => s+(j[field]||0), 0));
+    const avg = (arr) => arr.length ? arr.reduce((s,v)=>s+v, 0) / arr.length : 0;
+    const engMoy = avg(sumByYear('depenses_engagees'));
+    const valoMoy = avg(sumByYear('depenses_valorisables'));
+    // Application des taux LF de l'année cible (millésime 2026 et après : architecture maintenue)
+    const lfKey = anneeCible >= 2026 ? '2026' : (anneeCible === 2025 ? '2025_apres_15fev' : '2024');
+    const lfP = LF_PARAMS[lfKey] || LF_PARAMS['2026'];
+    const tauxCir = lfP.taux_cir;
+    // Le type de dispositif réel n'est pas connu sur projection ; on utilise la répartition historique observée
+    const cirHist = jHist.reduce((s,j) => s+(j.montant_cir||0), 0);
+    const ciiHist = jHist.reduce((s,j) => s+(j.montant_cii||0), 0);
+    const cicoHist = jHist.reduce((s,j) => s+(j.montant_cico||0), 0);
+    const totHist = cirHist + ciiHist + cicoHist;
+    let cir=0, cii=0, cico=0;
+    if (totHist > 0) {
+      // Répartition observée appliquée à l'assiette valorisable projetée
+      cir = Math.round(valoMoy * tauxCir * (cirHist/totHist));
+      cii = Math.round(valoMoy * 0.30 * (ciiHist/totHist));
+      cico = Math.round(valoMoy * 0.50 * (cicoHist/totHist));
+    } else {
+      // Pas d'historique de dispositif — application par défaut du taux CIR
+      cir = Math.round(valoMoy * tauxCir);
+    }
+    results.push({ projet: p, source: 'tendance', engagees: Math.round(engMoy), valorisables: Math.round(valoMoy), cir, cii, cico, subv: 0, lastYears });
+  });
+  return results;
 }
 
 // Frise chronologique pluriannuelle des verrous — vue d'ensemble portefeuille R&D&I.
@@ -2737,19 +2847,104 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
   const lfStatus = 'attention';
   const lfLecture = 'LF 2025 (15/02/2025) : suppression jeunes docteurs, brevets, veille techno. Forfait personnel 43 % → 40 %. LF 2026 : architecture maintenue, CRC prolongé jusqu\'à fin 2028. Le coefficient évolue ; la décision d\'investir, pilotée par la stratégie scientifique, reste indépendante.';
 
+  // ===== Anticipation 2026 et 2027 =====
+  const proj2026 = projeterAnneeCible(projets, jalons, 2026);
+  const proj2027 = projeterAnneeCible(projets, jalons, 2027);
+  const totalsByYear = {};
+  [{y: 2026, p: proj2026}, {y: 2027, p: proj2027}].forEach(({y, p}) => {
+    totalsByYear[y] = {
+      eng: p.reduce((s,r) => s+r.engagees, 0),
+      valo: p.reduce((s,r) => s+r.valorisables, 0),
+      cir: p.reduce((s,r) => s+r.cir, 0),
+      cii: p.reduce((s,r) => s+r.cii, 0),
+      cico: p.reduce((s,r) => s+r.cico, 0),
+      subv: p.reduce((s,r) => s+r.subv, 0),
+      nbActifs: p.filter(r => r.source !== 'inactif' && r.engagees > 0).length,
+      nbSaisis: p.filter(r => r.source === 'saisi').length,
+      nbTendance: p.filter(r => r.source === 'tendance').length,
+      nbAucune: p.filter(r => r.source === 'aucune-base').length
+    };
+    totalsByYear[y].fp = totalsByYear[y].cir + totalsByYear[y].cii + totalsByYear[y].cico + totalsByYear[y].subv;
+  });
+
+  // Référence : moyenne des 3 derniers exercices renseignés (utile pour la mise en perspective)
+  const lastRealYears = annees.slice(-3);
+  const moyEngHist = lastRealYears.length ? lastRealYears.reduce((s,y) => s + jalons.filter(j => j.annee===y).reduce((ss,j) => ss+(j.depenses_engagees||0), 0), 0) / lastRealYears.length : 0;
+  const moyFpHist = lastRealYears.length ? lastRealYears.reduce((s,y) => s + jalons.filter(j => j.annee===y).reduce((ss,j) => ss+(j.montant_cir||0)+(j.montant_cii||0)+(j.montant_cico||0)+(j.subvention_percue||0), 0), 0) / lastRealYears.length : 0;
+
+  // Rendu d'une carte d'anticipation pour une année cible
+  const renderAnticipation = (y, totals, projections) => {
+    const deltaEng = moyEngHist > 0 ? Math.round(100 * (totals.eng - moyEngHist) / moyEngHist) : null;
+    const deltaFp = moyFpHist > 0 ? Math.round(100 * (totals.fp - moyFpHist) / moyFpHist) : null;
+    const tauxLevierProj = totals.eng > 0 ? Math.round(100 * totals.fp / totals.eng) : null;
+    // Top 5 projets contributeurs
+    const top = projections.filter(r => r.engagees > 0).sort((a,b) => b.engagees - a.engagees).slice(0, 5);
+    const topRows = top.map(r => {
+      const sourceBadge = r.source === 'saisi' ? '<span class="proj-source saisi" title="Jalon prévisionnel déjà saisi en base">●&nbsp;saisi</span>'
+        : r.source === 'tendance' ? '<span class="proj-source tendance" title="Projection par tendance des 3 derniers exercices renseignés">~&nbsp;tendance</span>'
+        : '<span class="proj-source aucune" title="Projet actif sans historique exploitable">?&nbsp;sans base</span>';
+      return '<tr><td>'+sourceBadge+'</td><td><a onclick="setView(\'projet:'+r.projet.id+'\')" style="cursor:pointer;color:var(--brand);font-weight:600;">'+r.projet.nom+'</a></td><td class="num">'+euro(r.engagees)+'</td><td class="num">'+euro(r.valorisables)+'</td><td class="num"><b>'+euro(r.cir+r.cii+r.cico+r.subv)+'</b></td></tr>';
+    }).join('');
+    return '<div class="ant-card">'
+      + '<div class="ant-head">'
+        + '<div class="ant-year">'+y+'</div>'
+        + '<div class="ant-meta">'+totals.nbActifs+' projet'+(totals.nbActifs>1?'s':'')+' actif'+(totals.nbActifs>1?'s':'')
+          + (totals.nbSaisis ? ' · <b>'+totals.nbSaisis+'</b> saisi'+(totals.nbSaisis>1?'s':'') : '')
+          + (totals.nbTendance ? ' · <b>'+totals.nbTendance+'</b> tendance' : '')
+          + '</div>'
+      + '</div>'
+      + '<div class="ant-figures">'
+        + '<div class="ant-fig"><div class="ant-fig-lbl">Dépenses engagées</div><div class="ant-fig-val">'+shortEuro(totals.eng)+'</div>'
+          + (deltaEng !== null ? '<div class="ant-fig-delta '+(deltaEng>=0?'pos':'neg')+'">'+(deltaEng>=0?'▲ +':'▼ ')+deltaEng+'% vs moyenne 3 ans</div>' : '<div class="ant-fig-delta muted">—</div>')
+          + '</div>'
+        + '<div class="ant-fig"><div class="ant-fig-lbl">Financement public estimé</div><div class="ant-fig-val brand">'+shortEuro(totals.fp)+'</div>'
+          + (deltaFp !== null ? '<div class="ant-fig-delta '+(deltaFp>=0?'pos':'neg')+'">'+(deltaFp>=0?'▲ +':'▼ ')+deltaFp+'% vs moyenne 3 ans</div>' : '<div class="ant-fig-delta muted">—</div>')
+          + '</div>'
+        + '<div class="ant-fig"><div class="ant-fig-lbl">Taux de levier</div><div class="ant-fig-val">'+(tauxLevierProj!==null?tauxLevierProj+' %':'—')+'</div>'
+          + '<div class="ant-fig-delta muted">FP / engagées</div>'
+          + '</div>'
+      + '</div>'
+      + '<div class="ant-mix">'
+        + (totals.cir>0 ? '<span class="ant-mix-item"><span class="ant-mix-dot" style="background:#2E3AB8;"></span>CIR '+shortEuro(totals.cir)+'</span>' : '')
+        + (totals.cii>0 ? '<span class="ant-mix-item"><span class="ant-mix-dot" style="background:#C01E60;"></span>CII '+shortEuro(totals.cii)+'</span>' : '')
+        + (totals.cico>0 ? '<span class="ant-mix-item"><span class="ant-mix-dot" style="background:#00A668;"></span>CICO '+shortEuro(totals.cico)+'</span>' : '')
+        + (totals.subv>0 ? '<span class="ant-mix-item"><span class="ant-mix-dot" style="background:#8A6B1A;"></span>Subv '+shortEuro(totals.subv)+'</span>' : '')
+      + '</div>'
+      + (top.length ? '<div class="ant-top"><div class="ant-top-lbl">Top contributeurs '+y+'</div>'
+        + '<table class="ant-top-table"><thead><tr><th>Source</th><th>Projet</th><th class="num">Engagées</th><th class="num">Valo.</th><th class="num">FP estimé</th></tr></thead><tbody>'+topRows+'</tbody></table>'
+        + '</div>' : '<div class="ant-empty">Aucun projet ne porte d\'effort estimé en '+y+'.</div>')
+      + '</div>';
+  };
+
   $('panel-t3').innerHTML = `
     <div class="lecture-intro">
       <div class="li-eyebrow">Temps III · Lecture stratégique</div>
-      <h2 class="li-title">Triple lecture : fiscale, institutionnelle, réglementaire</h2>
-      <p class="li-lead">Cinq exercices consolidés deviennent un actif de réputation. Une chronique CIR documentée fait office de due diligence inversée — pour les investisseurs, les acquéreurs, les partenaires industriels, les grands comptes. Cet actif n'est pas mis en avant : il est consultable, daté, produit pour une autorité tierce.</p>
+      <h2 class="li-title">Anticiper 2026 et 2027 dans la trajectoire</h2>
+      <p class="li-lead">Sur la base des projets actifs en base, des plages démarrage→clôture et de la cadence de saisie historique, projection des dépenses, des assiettes valorisables et des financements publics aux paramètres LF en vigueur. Cinq exercices consolidés deviennent un actif de réputation — savoir où l'on va donne la maîtrise.</p>
     </div>
 
     <div class="these-banner">
       <div class="tb-num">03</div>
       <div class="tb-content">
         <div class="tb-title">Le CIR n'est pas une recette à percevoir. C'est une discipline à tenir.</div>
-        <div class="tb-text">À un certain point, le dispositif cesse d'être un outil que l'on actionne pour récupérer une part de dépenses. Il devient un cadre qui structure la manière dont on conçoit, mène et réfléchit la R&amp;D. Pas une question de taille. Pas une question de rythme. Une question de continuité.</div>
+        <div class="tb-text">Anticiper, c'est piloter. Les déblocages de trésorerie se calibrent, les exercices à IS faible se positionnent, les préfinancements bancaires se négocient sur la base d'une trajectoire chiffrée. Sans projection, on subit ; avec, on planifie.</div>
       </div>
+    </div>
+
+    <div class="section-title"><h2>Anticipation 2026 — 2027</h2><span class="tag t3-tag">projection trajectoire · paramètres LF en vigueur</span></div>
+    <div class="ant-grid">
+      ${renderAnticipation(2026, totalsByYear[2026], proj2026)}
+      ${renderAnticipation(2027, totalsByYear[2027], proj2027)}
+    </div>
+    <div class="ant-method">
+      <div class="ant-method-title">Méthodologie</div>
+      <ul>
+        <li><b>Saisi</b> ●&nbsp;: jalons prévisionnels déjà renseignés dans Notion pour l'année cible — haute confiance.</li>
+        <li><b>Tendance</b>&nbsp;~&nbsp;: projet actif (clôture &geq; année cible) sans jalon saisi — projection par moyenne mobile des 3 derniers exercices renseignés du projet.</li>
+        <li><b>Sans base</b>&nbsp;?&nbsp;: projet déclaré actif sans historique exploitable — non projeté, à arbitrer manuellement.</li>
+        <li>Application des paramètres LF de l'année cible : taux CIR 30 %, forfait personnel 40 %, exclusion brevets / jeunes docteurs / veille techno (depuis le 15/02/2025), CRC prolongé jusqu'à fin 2028.</li>
+        <li>Les <b>subventions</b> ne sont pas extrapolées — elles sont contractuelles. Seuls les jalons prévisionnels saisis en base remontent dans la projection.</li>
+      </ul>
     </div>
 
     <div class="section-title"><h2>Triple lecture stratégique</h2><span class="tag t3-tag">cadres de référence externes</span></div>
