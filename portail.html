@@ -1144,10 +1144,14 @@ function projeterAnneeCible(projets, jalons, anneeCible, anneeCourante) {
     }
 
     // ===== Cas 4 : continuité interrompue =====
-    // Si le dernier exercice jalonné est antérieur à l'année courante, le projet est considéré comme clos implicitement.
-    // Exemple : jalons jusqu'en 2024, on est en 2026, rien en 2025 → projet clos implicitement, pas de projection.
-    if (dernYearHist < anneeCourante) {
-      results.push({ projet: p, source: 'cloture-implicite', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Aucun jalon depuis '+dernYearHist+' — clôture implicite' });
+    // Le projet est clos implicitement si rien dans l'année courante NI dans l'année écoulée (N-1).
+    // Exemple : on est en 2026, projection sur 2026 — un projet avec dernier jalon en 2024 est clos
+    // (rien en 2025 ni en 2026). Un projet avec dernier jalon en 2025 est encore vivant et projetable.
+    // Note : la déclaration CIR de l'exercice N-1 se fait au 15 mai N — on est donc encore en train
+    // de saisir 2025 quand on se trouve en 2026, et l'absence de jalon 2026 ne signifie rien.
+    const seuilCloture = anneeCourante - 1; // un dernier jalon < seuilCloture → clos
+    if (dernYearHist < seuilCloture) {
+      results.push({ projet: p, source: 'cloture-implicite', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Aucun jalon depuis '+dernYearHist+' — clôture implicite (rien en '+(anneeCourante-1)+' ni '+anneeCourante+')' });
       return;
     }
 
