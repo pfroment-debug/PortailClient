@@ -3700,10 +3700,16 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
       <div class="card"${expoCritique?' style="border-color:var(--brick);"':''}><div class="muted">Exposition critique</div><div style="font-size:28px;font-weight:900;${expoCritique?'color:var(--brick);':''}">${shortEuro(expoCritique)}</div><div class="muted" style="margin-top:4px;">${expoTotal?'/ '+shortEuro(expoTotal)+' total':'aucune exposition'}</div></div>
     </div>
 
-    ${years.length > 1 ? `<div class="section-title"><h2>Trajectoire du financement public</h2><span class="tag t3-tag">pluriannuel</span></div>
+    ${years.length > 1 ? `<div class="section-title"><h2>Trajectoire du financement public</h2><span class="tag t3-tag">pluriannuel · projection ${(new Date().getFullYear())}-${(new Date().getFullYear())+1} · horizon ${(new Date().getFullYear())+2}</span></div>
       <div class="grid c2">
         <div class="card"><h3>CI + Subventions par année</h3><div class="chart-wrap"><canvas id="ch3a"></canvas></div></div>
         <div class="card"><h3>Taux de financement public par année</h3><div class="chart-wrap"><canvas id="ch3taux"></canvas></div></div>
+      </div>
+      <div class="card" style="padding:10px 14px; margin-top:10px; background:#fafbfc; font-size:11.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:18px; align-items:center;">
+        <span><b style="color:var(--ink);">Lecture :</b></span>
+        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#090B33;border-radius:2px;"></span> Exercice clos (réalisé &amp; certifiable)</span>
+        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#090B3370;border-radius:2px;"></span> Projection (engagements ${(new Date().getFullYear())} &amp; ${(new Date().getFullYear())+1})</span>
+        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:repeating-linear-gradient(45deg,#090B3320,#090B3320 2px,#090B3380 2px,#090B3380 3px);border-radius:2px;"></span> Horizon prospectif ${(new Date().getFullYear())+2} (extension pluriannuelle)</span>
       </div>` : ''}
 
     ${yearsPortef.length > 1 ? `<div class="section-title"><h2>Évolution du portefeuille R&amp;D</h2><span class="tag t3-tag">dynamique</span></div>
@@ -3739,23 +3745,114 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
 
   // === GRAPHIQUES ===
   if (years.length > 1) {
-    // CI + Subventions par année (empilés)
+    // Convention visuelle pour le pluriannuel prospectif :
+    //   • réalisé    : exercice clos et certifié → couleur pleine
+    //   • projection : année courante et N+1 (engagements en cours, non certifiés) → couleur translucide
+    //   • horizon    : N+2 et au-delà (ici 2028) → pattern hachuré + ligne pointillée
+    const currentYear = new Date().getFullYear();
+    const yearPhase = y => {
+      if (y < currentYear) return 'real';
+      if (y <= currentYear + 1) return 'proj';
+      return 'horizon';
+    };
+    // Pattern hachuré canvas pour les barres "horizon" (ne peut pas se faire avec borderDash sur bar Chart.js)
+    function _hatchPattern(hexColor) {
+      const c = document.createElement('canvas');
+      c.width = 8; c.height = 8;
+      const cx = c.getContext('2d');
+      // Fond très léger
+      cx.fillStyle = hexColor + '14'; // ~8% alpha
+      cx.fillRect(0, 0, 8, 8);
+      // Diagonales
+      cx.strokeStyle = hexColor + 'AA'; // ~67% alpha
+      cx.lineWidth = 1.4;
+      cx.beginPath();
+      cx.moveTo(-1, 9); cx.lineTo(9, -1);
+      cx.moveTo(-1, 5); cx.lineTo(5, -1);
+      cx.moveTo(3, 9); cx.lineTo(9, 3);
+      cx.stroke();
+      return cx.createPattern(c, 'repeat');
+    }
+    const _bgForPhase = (hex, phase) => {
+      if (phase === 'real') return hex;
+      if (phase === 'proj') return hex + '70'; // ~44% alpha
+      return _hatchPattern(hex);               // horizon → hachuré
+    };
+    const ciHex = '#090B33', subvHex = '#8A6B1A';
+    const ciBg = years.map(y => _bgForPhase(ciHex, yearPhase(y)));
+    const subvBg = years.map(y => _bgForPhase(subvHex, yearPhase(y)));
+
+    // CI + Subventions par année (empilés) — barres réelles pleines, projection translucides, horizon hachurées
     charts.ch3a = new Chart($('ch3a'), {
       type: 'bar',
       data: {
         labels: years,
         datasets: [
-          { label: 'CI', data: ciByYear, backgroundColor: '#090B33', stack: 'fp' },
-          { label: 'Subventions', data: subvByYear, backgroundColor: '#8A6B1A', stack: 'fp' }
+          { label: 'CI',          data: ciByYear,   backgroundColor: ciBg,   stack: 'fp' },
+          { label: 'Subventions', data: subvByYear, backgroundColor: subvBg, stack: 'fp' }
         ]
       },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => Math.round(v/1000)+' k€' } } } }
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              afterTitle: (items) => {
+                if (!items.length) return '';
+                const y = parseInt(items[0].label, 10);
+                const ph = yearPhase(y);
+                return ph === 'real' ? '· exercice clos' : (ph === 'proj' ? '· projection (engagements en cours)' : '· horizon prospectif');
+              }
+            }
+          }
+        },
+        scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => Math.round(v/1000)+' k€' } } }
+      }
     });
-    // Taux de financement public par année
+
+    // Taux de financement public par année — trait plein sur réalisé, pointillé sur projection/horizon
+    const _pointSize = years.map(y => yearPhase(y) === 'horizon' ? 3 : 5);
+    const _pointBg   = years.map(y => yearPhase(y) === 'real' ? '#1800FF' : (yearPhase(y) === 'proj' ? '#1800FF88' : '#FFFFFF'));
+    const _pointBorder = years.map(y => yearPhase(y) === 'real' ? '#1800FF' : '#1800FF');
+    const _pointBorderW = years.map(y => yearPhase(y) === 'real' ? 0 : 2);
     charts.ch3taux = new Chart($('ch3taux'), {
       type: 'line',
-      data: { labels: years, datasets: [{ label: 'Taux %', data: tauxByYear, borderColor: '#1800FF', backgroundColor: 'rgba(24,0,255,0.08)', fill: true, tension: 0.25, pointRadius: 5, pointBackgroundColor: '#1800FF' }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => v+'%' }, beginAtZero: true } } }
+      data: {
+        labels: years,
+        datasets: [{
+          label: 'Taux %',
+          data: tauxByYear,
+          borderColor: '#1800FF',
+          backgroundColor: 'rgba(24,0,255,0.08)',
+          fill: true, tension: 0.25,
+          pointRadius: _pointSize,
+          pointBackgroundColor: _pointBg,
+          pointBorderColor: _pointBorder,
+          pointBorderWidth: _pointBorderW,
+          segment: {
+            // Le segment qui ENTRE dans une année de projection/horizon devient pointillé
+            borderDash: ctx => years[ctx.p1.parsed.x] >= currentYear ? [6, 4] : undefined
+          }
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterTitle: (items) => {
+                if (!items.length) return '';
+                const y = parseInt(items[0].label, 10);
+                const ph = yearPhase(y);
+                return ph === 'real' ? '· exercice clos' : (ph === 'proj' ? '· projection' : '· horizon prospectif');
+              }
+            }
+          }
+        },
+        scales: { y: { ticks: { callback: v => v+'%' }, beginAtZero: true } }
+      }
     });
   }
   if (yearsPortef.length > 1) {
