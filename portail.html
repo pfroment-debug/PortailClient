@@ -3442,18 +3442,62 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
   const expoCritique = risquesOuverts.filter(r => r.severite === 'Critique').reduce((s,r) => s+(r.montant_expose||0), 0);
   const expoTotal = risquesOuverts.reduce((s,r) => s+(r.montant_expose||0), 0);
 
-  // Évolution temporelle — étendue jusqu'à 2028 pour visualiser la trajectoire prospective
-  // (la lecture DG inclut systématiquement les exercices 2026, 2027, 2028 même sans données,
-  //  pour cadrer la projection pluriannuelle).
+  // Évolution temporelle — séries pluriannuelles avec PROJECTION RIGOUREUSE pour les exercices à venir.
+  // Convention :
+  //   • year < currentYear  → réalisé : montants effectivement saisis en jalons (exercice clos)
+  //   • year ≥ currentYear  → projection : moteur projeterAnneeCible() qui combine
+  //                            (a) jalons prévisionnels déjà saisis pour cette année (source 'saisi'),
+  //                            (b) projection par budget restant + vélocité d'avancement (source 'tendance'),
+  //                            (c) plafonnement aux paramètres LF de l'année cible.
+  // Les exercices 2026-2028 reflètent ainsi la trajectoire de financement public **calculée**, en cohérence
+  // stricte avec la section "Anticipation 2026 — 2027" affichée plus bas (mêmes règles, même moteur).
+  const _currentYearForProj = new Date().getFullYear();
   const yearsObserved = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
-  const yMin = yearsObserved.length ? yearsObserved[0] : 2024;
-  const yMax = Math.max(yearsObserved.length ? yearsObserved[yearsObserved.length-1] : 2025, 2028);
+  const yMin = yearsObserved.length ? Math.min(yearsObserved[0], _currentYearForProj - 3) : (_currentYearForProj - 3);
+  const yMax = Math.max(yearsObserved.length ? yearsObserved[yearsObserved.length-1] : _currentYearForProj-1, _currentYearForProj + 2);
   const years = [];
   for (let y = yMin; y <= yMax; y++) years.push(y);
-  const ciByYear = years.map(y => jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.montant_ci||0), 0));
-  const subvByYear = years.map(y => jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.subvention_percue||0), 0));
-  const engByYear = years.map(y => jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.depenses_engagees||0), 0));
+
+  // Pré-calcul des projections par année cible (≥ currentYear). Le moteur gère lui-même
+  // les jalons saisis pour cette année (intégrés en source 'saisi').
+  const _projByYear = {};
+  years.forEach(y => {
+    if (y >= _currentYearForProj) {
+      _projByYear[y] = projeterAnneeCible(projets, jalons, y, _currentYearForProj);
+    }
+  });
+
+  // Construction des séries — valeur réalisée pour le passé, projection pour le présent/futur
+  const _ciFromProj = (projResults) => projResults.reduce((s,r) => s + r.cir + r.cii + r.cico, 0);
+  const _subvFromProj = (projResults) => projResults.reduce((s,r) => s + r.subv, 0);
+  const _engFromProj = (projResults) => projResults.reduce((s,r) => s + r.engagees, 0);
+
+  const ciByYear = years.map(y => {
+    if (_projByYear[y]) return _ciFromProj(_projByYear[y]);
+    return jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.montant_ci||0), 0);
+  });
+  const subvByYear = years.map(y => {
+    if (_projByYear[y]) return _subvFromProj(_projByYear[y]);
+    return jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.subvention_percue||0), 0);
+  });
+  const engByYear = years.map(y => {
+    if (_projByYear[y]) return _engFromProj(_projByYear[y]);
+    return jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.depenses_engagees||0), 0);
+  });
   const tauxByYear = years.map((y,i) => engByYear[i] > 0 ? ((ciByYear[i] + subvByYear[i]) / engByYear[i]) * 100 : 0);
+
+  // Méta-données pour les tooltips et la transparence : nombre de projets contribuant à chaque année future,
+  // par source (saisi / tendance). Permet de qualifier la projection ("3 saisis + 5 tendance" par exemple).
+  const _projMetaByYear = {};
+  years.forEach(y => {
+    if (!_projByYear[y]) return;
+    const r = _projByYear[y];
+    _projMetaByYear[y] = {
+      nbSaisis: r.filter(x => x.source === 'saisi' && x.engagees > 0).length,
+      nbTendance: r.filter(x => x.source === 'tendance' && x.engagees > 0).length,
+      nbActifs: r.filter(x => x.engagees > 0).length,
+    };
+  });
 
   // Évolution du portefeuille : nombre de projets actifs par année
   const allYears = years.length ? [Math.min(...years, ...projets.map(p => p.demarrage||9999)), Math.max(...years, ...projets.map(p => p.cloture||0))] : [0,0];
@@ -3695,7 +3739,7 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
     <div class="section-title"><h2>Indicateurs stratégiques</h2><span class="tag t3-tag">KPI DG</span></div>
     <div class="grid c4">
       <div class="card"><div class="muted">Taux financement public</div><div style="font-size:28px;font-weight:900;color:var(--brand);">${Math.round(tauxFinPubGlobal*100)}%</div><div class="muted" style="margin-top:4px;">(CI + subv.) / dép. engagées</div></div>
-      <div class="card"><div class="muted">CI cumulé</div><div style="font-size:28px;font-weight:900;">${shortEuro(ciTotal)}</div><div class="muted" style="margin-top:4px;">sur ${years.length} exercice${years.length>1?'s':''}</div></div>
+      <div class="card"><div class="muted">CI cumulé</div><div style="font-size:28px;font-weight:900;">${shortEuro(ciTotal)}</div><div class="muted" style="margin-top:4px;">sur ${yearsObserved.length} exercice${yearsObserved.length>1?'s':''} clos</div></div>
       <div class="card"><div class="muted">Subventions cumulées</div><div style="font-size:28px;font-weight:900;color:var(--gold-dark);">${shortEuro(subvTotal)}</div><div class="muted" style="margin-top:4px;">aides hors CI</div></div>
       <div class="card"${expoCritique?' style="border-color:var(--brick);"':''}><div class="muted">Exposition critique</div><div style="font-size:28px;font-weight:900;${expoCritique?'color:var(--brick);':''}">${shortEuro(expoCritique)}</div><div class="muted" style="margin-top:4px;">${expoTotal?'/ '+shortEuro(expoTotal)+' total':'aucune exposition'}</div></div>
     </div>
@@ -3705,11 +3749,12 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
         <div class="card"><h3>CI + Subventions par année</h3><div class="chart-wrap"><canvas id="ch3a"></canvas></div></div>
         <div class="card"><h3>Taux de financement public par année</h3><div class="chart-wrap"><canvas id="ch3taux"></canvas></div></div>
       </div>
-      <div class="card" style="padding:10px 14px; margin-top:10px; background:#fafbfc; font-size:11.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:18px; align-items:center;">
+      <div class="card" style="padding:10px 14px; margin-top:10px; background:#fafbfc; font-size:11.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:14px; align-items:center;">
         <span><b style="color:var(--ink);">Lecture :</b></span>
-        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#090B33;border-radius:2px;"></span> Exercice clos (réalisé &amp; certifiable)</span>
-        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#090B3370;border-radius:2px;"></span> Projection (engagements ${(new Date().getFullYear())} &amp; ${(new Date().getFullYear())+1})</span>
-        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:repeating-linear-gradient(45deg,#090B3320,#090B3320 2px,#090B3380 2px,#090B3380 3px);border-radius:2px;"></span> Horizon prospectif ${(new Date().getFullYear())+2} (extension pluriannuelle)</span>
+        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#090B33;border-radius:2px;"></span> Réalisé (jalons saisis · exercice clos)</span>
+        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#090B3370;border-radius:2px;"></span> Projection ${(new Date().getFullYear())}-${(new Date().getFullYear())+1}</span>
+        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:repeating-linear-gradient(45deg,#090B3320,#090B3320 2px,#090B3380 2px,#090B3380 3px);border-radius:2px;"></span> Horizon prospectif ${(new Date().getFullYear())+2}</span>
+        <span style="flex-basis:100%; margin-top:4px; font-size:11px; color:var(--muted);">Méthode projection : jalons prévisionnels saisis (haute confiance) + tendance par budget restant et vélocité d'avancement, plafonnée aux paramètres LF de l'année cible. Détail projet par projet dans la section <i>Anticipation ${(new Date().getFullYear())} — ${(new Date().getFullYear())+1}</i> ci-dessous.</span>
       </div>` : ''}
 
     ${yearsPortef.length > 1 ? `<div class="section-title"><h2>Évolution du portefeuille R&amp;D</h2><span class="tag t3-tag">dynamique</span></div>
@@ -3802,7 +3847,14 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
                 if (!items.length) return '';
                 const y = parseInt(items[0].label, 10);
                 const ph = yearPhase(y);
-                return ph === 'real' ? '· exercice clos' : (ph === 'proj' ? '· projection (engagements en cours)' : '· horizon prospectif');
+                if (ph === 'real') return '· exercice clos (réalisé)';
+                const meta = _projMetaByYear[y];
+                if (!meta || meta.nbActifs === 0) return ph === 'proj' ? '· projection (aucun projet actif)' : '· horizon prospectif (aucun projet actif)';
+                const parts = [];
+                if (meta.nbSaisis) parts.push(meta.nbSaisis + ' saisi'+(meta.nbSaisis>1?'s':''));
+                if (meta.nbTendance) parts.push(meta.nbTendance + ' tendance');
+                const phaseLabel = ph === 'proj' ? 'Projection' : 'Horizon prospectif';
+                return '· ' + phaseLabel + ' · ' + parts.join(' + ') + ' (' + meta.nbActifs + ' projet'+(meta.nbActifs>1?'s':'')+' actif'+(meta.nbActifs>1?'s':'')+')';
               }
             }
           }
@@ -3846,7 +3898,11 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
                 if (!items.length) return '';
                 const y = parseInt(items[0].label, 10);
                 const ph = yearPhase(y);
-                return ph === 'real' ? '· exercice clos' : (ph === 'proj' ? '· projection' : '· horizon prospectif');
+                if (ph === 'real') return '· exercice clos';
+                const meta = _projMetaByYear[y];
+                if (!meta || meta.nbActifs === 0) return ph === 'proj' ? '· projection' : '· horizon prospectif';
+                const phaseLabel = ph === 'proj' ? 'Projection' : 'Horizon prospectif';
+                return '· ' + phaseLabel + ' (' + meta.nbActifs + ' projet'+(meta.nbActifs>1?'s':'')+' actif'+(meta.nbActifs>1?'s':'')+')';
               }
             }
           }
