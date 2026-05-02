@@ -1243,7 +1243,7 @@ function projeterAnneeCible(projets, jalons, anneeCible, anneeCourante) {
     }
 
     // d) Vélocité d'avancement : avancement gagné par exercice
-    let velocity = null, anneesRestantes = 1;
+    let velocity = null;
     if (avancementActuel > 0 && yearsHist.length >= 2) {
       // Si l'avancement est documenté pour chaque année, on prend le MAX par année puis on calcule le delta
       const avMaxByYear = {};
@@ -1265,31 +1265,53 @@ function projeterAnneeCible(projets, jalons, anneeCible, anneeCourante) {
       const nbYearsActifs = yearsHist.length;
       if (nbYearsActifs > 0 && avancementActuel > 0) velocity = avancementActuel / nbYearsActifs;
     }
-    // Calcul du nombre d'années pour finir
-    if (velocity && velocity > 0) {
+
+    // === Durée TOTALE de projection (ancrée à anneeCourante, pas à anneeCible) ===
+    // Règle de pilotage DG : la cloture déclarée du projet est la source de vérité du plan.
+    // Elle pilote le portefeuille (test "p.cloture >= y" pour considérer un projet actif),
+    // donc elle doit aussi piloter la projection budgétaire — sinon incohérence visible :
+    // un projet qualifié "actif en 2028" dans l'évolution du portefeuille apparaîtrait à 0
+    // dans la trajectoire de financement public.
+    //
+    // La vélocité observée devient un INDICATEUR DE RISQUE (signal "vélocité < cloture"
+    // remonté dans diag.alertesVelocite) et non plus une troncature qui ferait
+    // disparaître le projet des projections. Si la vélocité indique un retard, c'est un
+    // sujet de pilotage, pas un motif d'effacer le budget restant à engager.
+    let dureeTotaleRestante;
+    let alertesVelocite = null;
+    if (fin && fin >= anneeCourante) {
+      // Cloture déclarée → on respecte le plan
+      dureeTotaleRestante = fin - anneeCourante + 1;
+      // Détection : vélocité estime le projet fini avant la cloture déclarée
+      if (velocity && velocity > 0) {
+        const restantAv = 1 - avancementActuel;
+        const dureeVelocite = Math.max(1, Math.ceil(restantAv / velocity - 1e-9));
+        if (dureeVelocite < dureeTotaleRestante) {
+          alertesVelocite = 'Vélocité observée ('+(velocity*100).toFixed(0)+'%/an) suggère fin '+(anneeCourante + dureeVelocite - 1)+' — clôture déclarée '+fin;
+        }
+      }
+    } else if (velocity && velocity > 0) {
+      // Pas de cloture déclarée → estimation par vélocité (plafonnée à 3 ans pour rester prudent)
+      // Le -1e-9 absorbe les imprécisions flottantes ((1-0.6)/0.2 = 2.0000…0004 sinon ceil → 3)
       const restantAv = 1 - avancementActuel;
-      anneesRestantes = Math.max(1, Math.min(3, Math.ceil(restantAv / velocity)));
+      dureeTotaleRestante = Math.max(1, Math.min(3, Math.ceil(restantAv / velocity - 1e-9)));
     } else {
-      anneesRestantes = 1;
-    }
-    // Borne supérieure : si fin déclarée, ne pas projeter au-delà
-    if (fin && fin >= anneeCible) {
-      const yearsTillCloture = fin - anneeCible + 1;
-      anneesRestantes = Math.max(1, Math.min(anneesRestantes, yearsTillCloture));
+      // Ni cloture déclarée ni vélocité calculable → 1 an (conservateur)
+      dureeTotaleRestante = 1;
     }
 
-    // Position de l'année cible dans la séquence : si projection 2026 et 2027 simultanées,
-    // il faut que la part allouée à 2026 et celle à 2027 soit cohérente (somme = reste à engager).
-    // anneeCible - anneeCourante donne l'index (0 pour 2026 si anneeCourante = 2026)
+    // Position de l'année cible dans la séquence (0 = anneeCourante, 1 = anneeCourante+1, ...)
     const idxCible = anneeCible - anneeCourante;
-    if (idxCible >= anneesRestantes) {
-      // Au-delà de la durée restante estimée
-      results.push({ projet: p, source: 'au-dela-projection', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Projet estimé terminé avant '+anneeCible+' (durée restante : '+anneesRestantes+' an'+(anneesRestantes>1?'s':'')+')' });
+    if (idxCible < 0 || idxCible >= dureeTotaleRestante) {
+      // Au-delà de la durée totale de projection (projet estimé terminé avant l'année cible)
+      results.push({ projet: p, source: 'au-dela-projection', engagees: 0, valorisables: 0, cir: 0, cii: 0, cico: 0, subv: 0, fp: 0, motif: 'Projet estimé terminé avant '+anneeCible+' (durée totale projetée : '+dureeTotaleRestante+' an'+(dureeTotaleRestante>1?'s':'')+' depuis '+anneeCourante+')' });
       return;
     }
 
-    // Allocation : on lisse uniformément le reste à engager sur les années restantes
-    const engProj = resteAEngager / anneesRestantes;
+    // Allocation : on lisse uniformément le reste à engager sur la durée totale restante.
+    // anneesRestantes = dureeTotaleRestante (alias conservé pour le diag de sortie qui était documenté)
+    const anneesRestantes = dureeTotaleRestante;
+    const engProj = resteAEngager / dureeTotaleRestante;
 
     // e) Ratios observés sur le projet pour valorisable et dispositifs
     const totValoHist = jHist.reduce((s,j) => s+(j.depenses_valorisables||0), 0);
@@ -1341,6 +1363,7 @@ function projeterAnneeCible(projets, jalons, anneeCible, anneeCourante) {
         ratioCiiSurValo: ratioCiiSurValo,
         ratioCicoSurValo: ratioCicoSurValo,
         impactsLF: impactsLF,
+        alertesVelocite: alertesVelocite,
         derniereAnneeJalonnee: dernYearHist
       }
     });
