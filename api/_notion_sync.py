@@ -309,6 +309,18 @@ def transform_projet(page, societe_by_id):
     # Pôle métier (select Notion) — distinct de l'axe R&DI
     pole = _try(page, ["Pôle", "Pole"], _x_select) or ""
 
+    # Axe ANR (select Notion) — code A.xx, B.xx, …, H.xx + libellé.
+    # Utilisé en lecture stratégique pour le mapping vers les 15 axes France 2030.
+    axe_anr = _try(page, ["Axe ANR"], _x_select) or ""
+
+    # Nomenclature CIR — nouvelle structure hiérarchique (mai 2026) :
+    #   "CIR principal"  = grande catégorie (ex. "A4 STIC")
+    #   "CIR secondaire" = sous-thématique optionnelle (ex. "A4h IA / apprentissage / NLP")
+    # La cohérence (formule Notion) compare les 2 premiers caractères des deux.
+    cir_principal  = _try(page, ["CIR principal"], _x_select) or ""
+    cir_secondaire = _try(page, ["CIR secondaire"], _x_select) or ""
+    coherence_cir  = _try(page, ["Cohérence CIR"], _x_text) or ""
+
     return {
         "id":           _norm(page["id"]),
         "societe":      _resolve_name(page, societe_by_id, ["Société 2026"]),
@@ -326,6 +338,10 @@ def transform_projet(page, societe_by_id):
         "score_d":      int(score_d),
         "axe_rdi":      axe,
         "pole":         pole,
+        "axe_anr":          axe_anr,
+        "cir_principal":    cir_principal,
+        "cir_secondaire":   cir_secondaire,
+        "coherence_cir":    coherence_cir,
         "tot_cir_cii_rollup":         tot_cir_cii,
         "tot_cico_rollup":            tot_cico,
         "tot_subv_rollup":            tot_subv,
