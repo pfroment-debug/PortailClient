@@ -321,6 +321,12 @@ def transform_projet(page, societe_by_id):
     cir_secondaire = _try(page, ["CIR secondaire"], _x_select) or ""
     coherence_cir  = _try(page, ["Cohérence CIR"], _x_text) or ""
 
+    # Axe stratégique France 2030 — formule Notion sur la base Projets 2026 (mai 2026).
+    # Mappe automatiquement l'axe ANR vers l'un des 15 axes France 2030, ou
+    # « Transition écologique & durabilité » / « hors axes stratégiques ». Le portail
+    # consomme ce champ tel quel — la règle vit dans Notion (cf. axeStrategique() côté JS).
+    axe_strategique = _try(page, ["Axe stratégique"], _x_text) or ""
+
     return {
         "id":           _norm(page["id"]),
         "societe":      _resolve_name(page, societe_by_id, ["Société 2026"]),
@@ -342,6 +348,7 @@ def transform_projet(page, societe_by_id):
         "cir_principal":    cir_principal,
         "cir_secondaire":   cir_secondaire,
         "coherence_cir":    coherence_cir,
+        "axe_strategique":  axe_strategique,
         "tot_cir_cii_rollup":         tot_cir_cii,
         "tot_cico_rollup":            tot_cico,
         "tot_subv_rollup":            tot_subv,
