@@ -3442,8 +3442,14 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
   const expoCritique = risquesOuverts.filter(r => r.severite === 'Critique').reduce((s,r) => s+(r.montant_expose||0), 0);
   const expoTotal = risquesOuverts.reduce((s,r) => s+(r.montant_expose||0), 0);
 
-  // Évolution temporelle
-  const years = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
+  // Évolution temporelle — étendue jusqu'à 2028 pour visualiser la trajectoire prospective
+  // (la lecture DG inclut systématiquement les exercices 2026, 2027, 2028 même sans données,
+  //  pour cadrer la projection pluriannuelle).
+  const yearsObserved = [...new Set(jalons.map(j => j.annee).filter(Boolean))].sort();
+  const yMin = yearsObserved.length ? yearsObserved[0] : 2024;
+  const yMax = Math.max(yearsObserved.length ? yearsObserved[yearsObserved.length-1] : 2025, 2028);
+  const years = [];
+  for (let y = yMin; y <= yMax; y++) years.push(y);
   const ciByYear = years.map(y => jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.montant_ci||0), 0));
   const subvByYear = years.map(y => jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.subvention_percue||0), 0));
   const engByYear = years.map(y => jalons.filter(j => j.annee === y).reduce((s,j) => s+(j.depenses_engagees||0), 0));
@@ -3473,18 +3479,6 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
   const axesRows = Object.entries(axesData).sort((a,b) => b[1].ci - a[1].ci).map(([a,d]) =>
     '<tr><td><b>'+a+'</b></td><td class="num">'+d.count+'</td><td class="num">'+euro(d.valo)+'</td><td class="num"><b>'+euro(d.ci)+'</b></td><td class="num">TRL '+(d.count?(d.trlSum/d.count).toFixed(1):'—')+' → '+(d.count?(d.trlCibleSum/d.count).toFixed(1):'—')+'</td></tr>'
   ).join('');
-
-  // Positionnement dans le portefeuille PDJ
-  const toutesSoc = DATA.societes.filter(s => s.statut === 'Client');
-  const rang = toutesSoc.map(s => {
-    const ci = DATA.jalons.filter(j => j.societe === s.nom).reduce((sum,j) => sum+(j.montant_ci||0), 0);
-    const eng = DATA.jalons.filter(j => j.societe === s.nom).reduce((sum,j) => sum+(j.depenses_engagees||0), 0);
-    const subv = DATA.jalons.filter(j => j.societe === s.nom).reduce((sum,j) => sum+(j.subvention_percue||0), 0);
-    return { nom: s.nom, ci, taux: eng>0 ? (ci+subv)/eng : 0 };
-  }).sort((a,b) => b.ci - a.ci);
-  const monRangCI = rang.findIndex(x => x.nom === name) + 1;
-  const rangTaux = [...rang].sort((a,b) => b.taux - a.taux);
-  const monRangTaux = rangTaux.findIndex(x => x.nom === name) + 1;
 
   // Triple lecture stratégique : où en est le client face à chacun des trois cadres externes
   const anneeCourante = new Date().getFullYear();
@@ -3721,21 +3715,6 @@ function _t3_client(jalons, projets, risques, contacts, documents, name) {
         <table><thead><tr><th>Axe RDI</th><th class="num">Projets</th><th class="num">Dép. valorisées</th><th class="num">CI cumulé</th><th class="num">TRL moyen</th></tr></thead>
         <tbody>${axesRows}</tbody></table>
       </div>` : ''}
-
-    <div class="section-title"><h2>Positionnement dans le portefeuille PDJ</h2><span class="tag t3-tag">benchmark</span></div>
-    <div class="grid c2">
-      <div class="card"><div class="muted">Rang en volume CI</div><div style="font-size:30px;font-weight:900;color:var(--brand);">#${monRangCI || '—'} / ${rang.length}</div><div class="muted" style="margin-top:4px;">sur ${rang.length} clients</div></div>
-      <div class="card"><div class="muted">Rang en taux de financement</div><div style="font-size:30px;font-weight:900;color:var(--brand);">#${monRangTaux || '—'} / ${rangTaux.length}</div><div class="muted" style="margin-top:4px;">efficacité comparée</div></div>
-    </div>
-    <div class="card" style="padding:0; overflow-x:auto; margin-top:16px;">
-      <table><thead><tr><th>Rang CI</th><th>Client</th><th class="num">CI cumulé</th><th class="num">Taux fin. public</th><th>Part</th></tr></thead>
-      <tbody>${rang.map((x,i) => {
-        const total = rang.reduce((s,r) => s+r.ci, 0) || 1;
-        const part = Math.round((x.ci/total)*100);
-        const isMe = x.nom === name;
-        return '<tr'+(isMe?' style="background:var(--brand-bg);font-weight:700;"':'')+'><td><b>#'+(i+1)+'</b></td><td>'+x.nom+(isMe?' ← vous':'')+'</td><td class="num">'+shortEuro(x.ci)+'</td><td class="num">'+Math.round(x.taux*100)+'%</td><td class="num">'+part+'%</td></tr>';
-      }).join('')}</tbody></table>
-    </div>
 
     ${contacts.length ? `<div class="section-title"><h2>Équipe cliente</h2><span class="tag t3-tag">${contacts.length} contact${contacts.length>1?'s':''}</span></div>
       <div class="team-grid">${contacts.map(c => `<div class="team-card">
